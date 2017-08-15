@@ -1,3 +1,0 @@
-useDynLib(SubDiff, .registration=TRUE)
-exportPattern("^[[:alpha:]]+")
-importFrom(Rcpp, evalCpp)
