@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // ModePoly
 NumericVector ModePoly(NumericVector roots, double nIter, double tol);
-RcppExport SEXP _subdiff_ModePoly(SEXP rootsSEXP, SEXP nIterSEXP, SEXP tolSEXP) {
+RcppExport SEXP subdiff_ModePoly(SEXP rootsSEXP, SEXP nIterSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_subdiff_ModePoly", (DL_FUNC) &_subdiff_ModePoly, 3},
+    {"subdiff_ModePoly", (DL_FUNC) &subdiff_ModePoly, 3},
     {NULL, NULL, 0}
 };
 
