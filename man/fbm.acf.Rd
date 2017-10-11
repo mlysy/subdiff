@@ -4,12 +4,12 @@
 \alias{fbm.acf}
 \title{Acf function for the increment of fBM process.}
 \usage{
-fbm.acf(alpha, dt, N)
+fbm.acf(alpha, dT, N)
 }
 \arguments{
 \item{alpha}{fBM parameter, range from 0 to 2.}
 
-\item{dt}{interobservation time.}
+\item{dT}{interobservation time.}
 
 \item{N}{number of samples.}
 }

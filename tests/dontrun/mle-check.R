@@ -73,3 +73,11 @@ mle.check <- function(loglik, theta.mle, itheta, theta.names, theta.rng,
         line = 1, outer = TRUE)
   par(opar) # restore plot parameters
 }
+
+#' 
+test.fbm.prof.cl <- function(alpha, Xt, dT, ds, Tz) {
+  N <- floor(nrow(Xt)/ds) - 1
+  acf1 <- fbm.acf(alpha, dT * ds, N)
+  Tz$setAcf(acf1)
+  composite.prof(Y = Xt, X = dT, acf = Tz, ds = ds)
+}

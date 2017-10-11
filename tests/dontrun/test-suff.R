@@ -1,51 +1,43 @@
 require(subdiff)
 source("D:/GitHub/SubDiff/tests/dontrun/mle-check.R")
-source("D:/GitHub/SubDiff/tests/dontrun/composite-full.R")
 
+# paremeters
 alpha <- 0.8
-N <- 1800
-dt <- 1/60
-acf1 <- fbm.acf(alpha, dt, N)
-dY <- rSnorm(n = 1, acf = acf1)
-Yt <- c(0, cumsum(dY))
+N <- 100
+dT <- 1/60
+Beta <- matrix(c(1.4, 2.6), 1, 2)
+Sigma <- matrix(c(2, 0, 0, 3), 2, 2)
+
+# generating time series
+acf1 <- fbm.acf(alpha, dT, N)
+dY <- rbind(0, rSnorm(n = 2, acf = acf1))
+Yt <- apply(dY, 2, cumsum)
 tSeq <- 0:N + 1
-Xt <- as.matrix(tSeq)
-Yt <- as.matrix(Xt * 1.4 + Yt)
-Toep1 <- Toeplitz(acf = acf1)
+Xt <- as.matrix(tSeq * dT)
+Yt <- as.matrix(Yt) %*% Sigma + Xt %*% Beta
 
-suff1 <- composite.suff(Y = Yt, X = Xt, acf = Toep1, ds = 1)
-suff1$Betahat
-suff1$S / N
+plot(Yt[, 1], type = "l")
 
-N2 <- floor((N+1)/2) - 1
-acf2 <- fbm.acf(alpha, dt * 2, N2)
-Toep2 <- Toeplitz(acf = acf2)
+#  ------------------------------------------------------------------------
 
-suff2 <- composite.suff(Y = Yt, X = Xt, acf = Toep2, ds = 2)
-suff2$Betahat
-suff2$S / N2 / 2
+ds <- 4
+N2 <- floor((N+1)/ds) - 1
+Tz2 <- Toeplitz(n = N2)
 
-N3 <- floor((N+1)/3) - 1
-acf3 <- fbm.acf(alpha, dt * 3, N3)
-Toep3 <- Toeplitz(acf = acf3)
+alpha2 <- optimize(f = test.fbm.prof.cl, interval = c(0, 2), Xt = Yt, dT = dT, ds = ds, Tz = Tz2, 
+                  maximum = TRUE)$maximum
+acf2 <- fbm.acf(alpha2, ds*dT, N2)
+Tz2$setAcf(acf2)
+suff2 <- composite.suff(Y = Yt, X = dT, acf = Tz2, ds = ds)
+theta <- c(alpha2, suff2$Betahat[1], suff2$Betahat[2], suff2$S[1, 1], suff2$S[2, 2], suff2$S[2, 1])
 
-suff3 <- composite.suff(Y = Yt, X = Xt, acf = Toep3, ds = 3)
-suff3$Betahat
-suff3$S / N3 / 3
-
-N4 <- floor((N+1)/4) - 1
-acf4 <- fbm.acf(alpha, dt * 4, N4)
-Toep4 <- Toeplitz(acf = acf4)
-
-suff4 <- composite.suff(Y = Yt, X = Xt, acf = Toep4, ds = 4)
-suff4$Betahat
-suff4$S / N4 / 4
-
-comp.test <- function(theta) {
-  Beta <- as.matrix(theta[1])
-  Sigma <- as.matrix(theta[2])
-  ans <- composite.full(Y = Yt, X = Xt, Beta, Sigma, acf = Toep4, ds = 4)
+comp.test2 <- function(theta) {
+  Beta <- matrix(c(theta[2], theta[3]), 1, 2)
+  Sigma <- matrix(c(theta[4], theta[6], theta[6], theta[5]), 2, 2)
+  acf2 <- fbm.acf(theta[1], ds*dT, N2)
+  Tz2$setAcf(acf2)
+  ans <- composite.full(Y = Yt, X = dT, Beta, Sigma, acf = Tz2, ds = ds)
   ans
 }
 
-mle.check(comp.test, c(as.numeric(suff4$Betahat), as.numeric(suff4$S/N4/4)))
+mle.check(comp.test2, theta)

@@ -1,63 +1,78 @@
-#' nested function for sufficient statistics of composite likelihood
-#' relationship between the nrow of Yt and acf: length(acf) = floor(Yt/ds) - 1
+#' @title Sufficient Statistics for Profile Composite Likelihood Inference
+#' @description 
+#' @param Y Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case 
+#' would be Y_ds ~ MN(X_ds*Beta, V_ds, Sigma)
+#' @param X Linear drift of time series. If X is of length 1, X_ds = rep(X, n)
+#' @param acf ACF of columnwise-variance matrix \code{V_ds}, either vector or Toeplitz-object
+#' @param ds Downsampling rate, starting at 2
+#' @note length of acf should equals floor(Yt/ds) - 1
+#' @return a list with the following elements:
+#' \itemize{
+#'    \item \code{Betahat = sum(t(Xi)V^{-1}Xi)^{-1}sum(t(Xi)V^{-1}Yi})
+#'    \item \code{S = sum(t(Yi-Xi*Betahat)V^{-1}(Yi-Xi*Betahat))/n.ds/ds}
+#'    \item \code{ldV = log(|V|)}
+#'    \item \code{n.ds = floor(nrow(Y)/ds) - 1}
+#' }
 #' @export
 composite.suff <- function(Y, X, acf, ds) {
   n <- nrow(Y)
   q <- ncol(Y)
   n.ds <- floor(n / ds) - 1
-  
-  if(length(X) == 1) {
-    X <- matrix(X, n, 1)
-  }
-  
   noBeta <- all(X == 0)
+  if(length(X) == 1) {
+    dX <- matrix(X*ds, n.ds, 1)
+    p <- 1
+  } else {
+    p <- ncol(X)
+  }
   
   # variance type
-  if(!missing(acf)) {
+  if(class(acf) == "Toeplitz") {
     if(ncol(acf) != n.ds) {
-      stop("Given acf is incompatible with nrow(Y) and npred.")
+      stop("Given acf is incompatible with nrow(Y) and ds.")
     }
-    if(is.vector(acf)) {
-      Tz <- Toeplitz(acf = acf)
-    } else if(class(acf) == "Toeplitz") {
-      var.type <- "Toeplitz"
-      Tz <- acf
-      acf <- Tz$getAcf()
+  } else if(is.vector(acf)) {
+    if(length(acf) != n.ds) {
+      stop("Given acf is incompatible with nrow(Y) and ds.")
     }
+    acf <- Toeplitz(acf = acf)
   } else {
-    stop("Acf missing without default value.")
+    stop("Acf must be either vector or Toeplitz-class")
   }
   
-  S <- matrix(0, q, q)
-  
   if(!noBeta){
-    XvX <- matrix(0, q, q)
-    XvY <- matrix(0, q, q)
+    XvX <- matrix(0, p, p)
+    XvY <- matrix(0, q, p)
     
     for(ii in 1:ds) {
       Yt <- downSample(Y, ds, ii)
-      Yi <- apply(Yt, 2, diff)
-      Xt <- downSample(X, ds, ii)
-      Xi <- apply(Xt, 2, diff)
-      vX <- solve(Tz, Xi)
-      XvX <- XvX + crossprod(Xi, vX)
-      XvY <- XvY + crossprod(Yi, vX)
+      dY <- apply(Yt, 2, diff)
+      if(length(X) != 1) {
+        Xt <- downSample(Xt, ds, ii)
+        dX <- apply(Xt, 2, diff)
+      }
+      vX <- solve(acf, dX)
+      XvX <- XvX + crossprod(dX, vX)
+      XvY <- XvY + crossprod(dY, vX)
     }
     XvY <- t(XvY)
     Betahat <- solve(XvX, XvY)
-  } else {
-    Betahat <- matrix(0, 1, q)
   }
   
+  S <- matrix(0, q, q)
   for(ii in 1:ds) {
     Yt <- downSample(Y, ds, ii)
-    Yi <- apply(Yt, 2, diff)
-    Xt <- downSample(X, ds, ii)
-    Xi <- apply(Xt, 2, diff)
-    Yi <- Yi - Xi %*% Betahat
-    S <- S + crossprod(Yi, solve(Tz, Yi))
+    dY <- apply(Yt, 2, diff)
+    if(!noBeta) {
+      if(length(X) != 1) {
+        Xt <- downSample(Xt, ds, ii)
+        dX <- apply(Xt, 2, diff)
+      }
+      dY <- dY - dX %*% Betahat
+    }
+    S <- S + crossprod(dY, solve(acf, dY))
   }
-  ldV <- determinant(Tz)
+  ldV <- determinant(acf)
   
-  list(Betahat = Betahat, S = S, ldV = ldV, n.ds = n.ds)
+  list(Betahat = Betahat, S = S/n.ds/ds, ldV = ldV, n.ds = n.ds)
 }

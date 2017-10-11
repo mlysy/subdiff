@@ -6,6 +6,20 @@
 \usage{
 composite.full(Y, X, Beta, Sigma, acf, ds)
 }
-\description{
-full likelihood for composite
+\arguments{
+\item{Y}{Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case 
+would be Y_ds ~ MN(X_ds*Beta, V_ds, Sigma)}
+
+\item{X}{Linear drift of time series. If X is of length 1, X_ds = rep(X, n)}
+
+\item{Beta}{Parameter for linear drift}
+
+\item{Sigma}{Parameter for row-wise covariance matrix}
+
+\item{acf}{ACF of column-wise covariance matrix \code{V_ds}, either vector or Toeplitz-object}
+
+\item{ds}{Downsampling rate, starting at 2}
+}
+\value{
+Composite likelihood likelihood using profile sufficient statistics
 }

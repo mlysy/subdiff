@@ -2,31 +2,22 @@
 % Please edit documentation in R/composite-prof.R
 \name{composite.prof}
 \alias{composite.prof}
-\title{Profile Likelihood for Composite}
+\title{Profile Composite Likelihood}
 \usage{
 composite.prof(suff, Y, X, acf, ds, noSigma = FALSE)
 }
 \arguments{
-\item{Y}{Position of process}
+\item{Y}{Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case 
+would be Y_ds ~ MN(X_ds*Beta, V_ds, Sigma)}
 
-\item{X}{Position of mean}
+\item{X}{Linear drift of time series. If X is of length 1, X_ds = rep(X, n)}
 
-\item{acf}{Acf of downsampled increment process}
+\item{acf}{ACF of columnwise-variance matrix \code{V_ds}, either vector or Toeplitz-object}
 
-\item{ds}{Downsampling rate}
+\item{ds}{Downsampling rate, starting at 2}
 
-\item{noSigma}{flag for Sigma matrix}
+\item{noSigma}{logic, assume Sigma is identity matrix if true.}
 }
 \value{
-a list with the following elements:
-\itemize{
-   \item \code{Betahat = sum(t(Xi)V^{-1}Xi)^{-1}sum(t(Xi)V^{-1}Yi})
-   \item \code{S = sum(t(Yi-Xi*Betahat)V^{-1}(Yi-Xi*Betahat))}
-   \item \code{ldV = log(|V|)}
-   \item \code{n.ds = nrow(Y.ds) - 1}
-   \item \code{loglik}
-}
-}
-\note{
-We assume that the weights [w1, w2, ..., wK] are equal, thus it is omitted in estimation
+Composite likelihood likelihood using profile sufficient statistics
 }
