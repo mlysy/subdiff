@@ -16,10 +16,14 @@ crouse.msd <- function(t, alpha, tmin, tmax) {
   ind <- !(iL | iU) # inner, i.e., subdiffusion
   # calculate msd
   a <- (1-alpha) * sqrt(pi/8)*srng #a = 1/a;
-  z <- (s[ind]-smin)/srng
   msd <- rep(NA, length(s)) #zeros(size(s));
-  msd[ind] <- exp(s[ind] - a * pnorm(binomial()$linkfun(z)))
+  if(any(ind)) {
+    z <- (s[ind]-smin)/srng
+    msd[ind] <- exp(s[ind] - a * pnorm(logit(z)))
+  }
   msd[iL] <- t[iL]
   msd[iU] <- exp(-a) * t[iU]
   msd
 }
+
+logit <- function(x) log(x) - log(1-x)
