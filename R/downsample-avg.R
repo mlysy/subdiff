@@ -9,7 +9,7 @@
 #' @param se logic, return the standard error of MLE instead of covariance matix if true
 #' @param trans logic, return the 'normalized' parameters 
 #' @export
-downsample.avg1 <- function(Xt, dT, Tz, ds, varCal = FALSE, se = FALSE, trans = FALSE) {
+downsample.avg <- function(Xt, dT, Tz, ds, varCal = FALSE, se = FALSE, trans = FALSE) {
   N <- nrow(Xt)
   q <- ncol(Xt)
   N.ds <- floor(N/ds) - 1

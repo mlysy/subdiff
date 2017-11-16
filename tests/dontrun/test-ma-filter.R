@@ -1,9 +1,10 @@
+# test for ma-filter
 require(subdiff)
 source("D:/GitHub/SubDiff/tests/dontrun/mle-check.R")
 
 # paremeters
 alpha <- 0.8
-N <- 1000
+N <- 100
 dT <- 1/60
 Beta <- matrix(c(1.4, 2.6), 1, 2)
 Sigma <- matrix(c(2, 0, 0, 3), 2, 2)
