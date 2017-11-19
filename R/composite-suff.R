@@ -1,6 +1,6 @@
 #' @title Sufficient Statistics for Profile Composite Likelihood Inference
-#' @description 
-#' @param Y Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case 
+#'
+#' @param Y Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case
 #' would be Y_ds ~ MN(X_ds*Beta, V_ds, Sigma)
 #' @param X Linear drift of time series. If X is of length 1, X_ds = rep(X, n)
 #' @param acf ACF of columnwise-variance matrix \code{V_ds}, either vector or Toeplitz-object
@@ -25,7 +25,7 @@ composite.suff <- function(Y, X, acf, ds) {
   } else {
     p <- ncol(X)
   }
-  
+
   # variance type
   if(class(acf) == "Toeplitz") {
     if(ncol(acf) != n.ds) {
@@ -39,11 +39,11 @@ composite.suff <- function(Y, X, acf, ds) {
   } else {
     stop("Acf must be either vector or Toeplitz-class")
   }
-  
+
   if(!noBeta){
     XvX <- matrix(0, p, p)
     XvY <- matrix(0, q, p)
-    
+
     for(ii in 1:ds) {
       Yt <- downSample(Y, ds, ii)
       dY <- apply(Yt, 2, diff)
@@ -58,7 +58,7 @@ composite.suff <- function(Y, X, acf, ds) {
     XvY <- t(XvY)
     Betahat <- solve(XvX, XvY)
   }
-  
+
   S <- matrix(0, q, q)
   for(ii in 1:ds) {
     Yt <- downSample(Y, ds, ii)
@@ -73,6 +73,6 @@ composite.suff <- function(Y, X, acf, ds) {
     S <- S + crossprod(dY, solve(acf, dY))
   }
   ldV <- determinant(acf)
-  
+
   list(Betahat = Betahat, S = S/n.ds/ds, ldV = ldV, n.ds = n.ds)
 }

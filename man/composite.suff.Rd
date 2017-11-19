@@ -7,7 +7,7 @@
 composite.suff(Y, X, acf, ds)
 }
 \arguments{
-\item{Y}{Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case 
+\item{Y}{Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case
 would be Y_ds ~ MN(X_ds*Beta, V_ds, Sigma)}
 
 \item{X}{Linear drift of time series. If X is of length 1, X_ds = rep(X, n)}
