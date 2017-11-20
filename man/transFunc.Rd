@@ -19,6 +19,6 @@ transFunc(alpha, Beta, Sigma, trans)
 vector
 }
 \description{
-transfrorm {alpha, Beta, Sigma} into {logit(alpha/2), Beta, SLR(Sigma)}, where 
+transfrorm {alpha, Beta, Sigma} into {logit(alpha/2), Beta, SLR(Sigma)}, where
 SLR(Sigma) = {D = (var1 + var2)/2, D2 = (var1 - var2), logit((rho+1)/2)}
 }

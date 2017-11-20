@@ -4,7 +4,7 @@
 #' @param N number of samples.
 #' @return vector of length N.
 #' @export
-fbm.acf <- function(alpha, dT, N) {
+fbm_acf <- function(alpha, dT, N) {
   if(N == 1) {
     acf <- dT^alpha
   } else {

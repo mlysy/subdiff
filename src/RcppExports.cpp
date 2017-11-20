@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// ma1Resid
+NumericMatrix ma1Resid(NumericMatrix Xt, double rho);
+RcppExport SEXP _subdiff_ma1Resid(SEXP XtSEXP, SEXP rhoSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type Xt(XtSEXP);
+    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
+    rcpp_result_gen = Rcpp::wrap(ma1Resid(Xt, rho));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ModePoly
 NumericVector ModePoly(NumericVector roots, double nIter, double tol);
 RcppExport SEXP _subdiff_ModePoly(SEXP rootsSEXP, SEXP nIterSEXP, SEXP tolSEXP) {
@@ -20,6 +32,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_subdiff_ma1Resid", (DL_FUNC) &_subdiff_ma1Resid, 2},
     {"_subdiff_ModePoly", (DL_FUNC) &_subdiff_ModePoly, 3},
     {NULL, NULL, 0}
 };

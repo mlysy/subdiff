@@ -1,5 +1,5 @@
 #' @title transform parameters into standard form
-#' @description transfrorm {alpha, Beta, Sigma} into {logit(alpha/2), Beta, SLR(Sigma)}, where 
+#' @description transfrorm {alpha, Beta, Sigma} into {logit(alpha/2), Beta, SLR(Sigma)}, where
 #' SLR(Sigma) = {D = (var1 + var2)/2, D2 = (var1 - var2), logit((rho+1)/2)}
 #' @param alpha fBM parameter
 #' @param Beta linear drift parameter
@@ -54,7 +54,7 @@ itransFunc <- function(theta, trans) {
     if(trans) {
       alpha <- 2 * ilogit(alpha)
       Sigma[1] <- exp(2 * theta[3])
-    } 
+    }
   } else if (p == 6) {
     # q <- 2
     alpha <- theta[1]
@@ -81,7 +81,7 @@ logit <- function(p) {
 }
 
 ilogit <- function(p) {
-  exp(p) / (1+exp(p))
+  1/(1+exp(-p))
 }
 
 
@@ -99,7 +99,7 @@ ilogit <- function(p) {
 #   theta <- transFunc(alpha, Beta, Sigma, FALSE)
 #   theta
 #   itransFunc(theta, FALSE)
-# 
+#
 #   # p = 2
 #   Beta <- matrix(c(1.4, -.5), 1, 2)
 #   Sigma <- matrix(c(1.9, -.31, -.31, 4.1), 2, 2)
@@ -111,5 +111,5 @@ ilogit <- function(p) {
 #   theta <- transFunc(alpha, Beta, Sigma, FALSE)
 #   theta
 #   itransFunc(theta, FALSE)
-# 
+#
 # }

@@ -25,6 +25,6 @@ downsample.naive(Xt, dT, Tz, ds, pos = 1, varCal = FALSE, se = FALSE,
 \item{trans}{logic, return the 'normalized' parameters}
 }
 \description{
-We assume that time series dY follows MN(Beta * dT, V_incr.fBM, Sigma), 
+We assume that time series dY follows MN(Beta * dT, V_incr.fBM, Sigma),
 thus downsampled dY_ds follows MN(Beta * ds * dT, V_ds.incr.fBM, Sigma).
 }
