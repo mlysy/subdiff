@@ -15,6 +15,11 @@ export(itrans_Sigma)
 export(itrans_alpha)
 export(itrans_rho)
 export(lsc_resid)
+<<<<<<< HEAD
+=======
+export(ma3_fit)
+export(mle.cov)
+>>>>>>> origin/underscore
 export(msd)
 export(prony.acf)
 export(prony.coeff)
