@@ -12,7 +12,7 @@ fds_fit(dX, dT, type = "naive", Tz, ds, var_calc = TRUE)
 \item{dT}{Interobservation time.}
 
 \item{type}{type of downsampling method, "naive" means using basic downsampling method, "comp"
-means using composite downsampling method, "avg" means using average downsampling method}
+means using composite downsampling method}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
