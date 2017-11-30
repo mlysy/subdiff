@@ -74,5 +74,5 @@ composite.suff <- function(Y, X, acf, ds) {
   }
   ldV <- determinant(acf)
 
-  list(Betahat = Betahat, S = S/n.ds/ds, ldV = ldV, n.ds = n.ds)
+  list(Beta = Betahat, S = S, ldV = ldV, n.ds = n.ds)
 }
