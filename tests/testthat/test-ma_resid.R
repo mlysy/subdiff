@@ -5,9 +5,9 @@ context("ma_resid")
 ntest <- 20
 test_that("Z = resid(filter(Z))", {
   for(jj in 1:ntest) {
-    N <- sample(10:100, 1)
+    N <- sample(10:50, 1)
     qq <- sample(1:5, 1)
-    rho <- runif(1,-.9,.9)
+    rho <- runif(1,-.5,.5)
     Z <- matrix(rnorm(N*qq), N, qq)
     X <- matrix(NA, N, qq)
     X[1,] <- (1-rho) * Z[1,]
