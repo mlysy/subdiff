@@ -1,7 +1,7 @@
-#' ACF of fBM + Dynamic Error
+#' ACF2 of fBM + Dynamic Error
 #'
 #' @param alpha Subdiffusion exponent
-#' @param tau Width of averaging time-window.
+#' @param tau Ratio of time-window over \code{dT}, range from 0 to 1.
 #' @param dT Vector of time points \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }
 #' @param N length
 #' @details 
@@ -12,17 +12,27 @@
 #' fdyn.msd(alpha = 0.8, tau = 1/600, t = (1:200) * 1/60)
 #' @export
 fdyn_acf <- function(alpha, tau, dT, N) {
-  alpha <- alpha/2
-  tau <- tau * dT
-  tSeq <- dT * 1:N
-  msd <- .fdyn.msd(alpha, tau, tSeq)
-  msd2acf(msd)
+  vec <- .g_func2(alpha, tau, dT, N)
+  if(N == 1) {
+    acf <- 2 * vec[2] - 2 * vec[1]
+  } else {
+    acf <- vec[1:N + 1] + c(vec[2], vec[1:(N - 1)]) - 2 * vec[1:N]  
+  }
+  acf
 }
 
-
-.fdyn.msd <- function(alpha, tau, t){
-  tau <- t/tau
-  alpha2 <- alpha+2
-  eta <- ((tau+1)^alpha2 + (tau-1)^alpha2 - 2*tau^alpha2 - 2)/alpha2
-  eta * tau^alpha/(alpha+1)
+.g_func2 <- function(alpha, tau, dT, N) {
+  vec <- (0:N) / tau
+  alpha2 <- alpha + 2
+  ans <- (vec + 1)^alpha2 + abs(vec - 1)^alpha2 - 2 * vec^alpha2
+  ans * (tau * dT)^alpha / (alpha+1) / alpha2 / 2
 }
+
+# 
+# fdyn_acf4 <- function(alpha, tau, dT, N) {
+#   msd <- rep(NA, N)
+#   for(ii in 1:N) {
+#     msd[ii] <- g_func(alpha, tau, dT, ii)
+#   }
+#   msd2acf(msd)
+# }

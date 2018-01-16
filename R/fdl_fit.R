@@ -20,7 +20,7 @@ fdl_fit <- function(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, 
   if(type == "dynamic localization") {
     ntheta <- 3+q+nq
     theta_hat <- rep(NA, ntheta)
-    theta_names <- c("gamma", "tau", "sigma2", paste0("mu", 1:q), paste0("lambda", 1:nq))
+    theta_names <- c("gamma", "tau", "sigma", paste0("mu", 1:q), paste0("lambda", 1:nq))
     if(missing(Tz)) Tz <- Toeplitz(n = N)
     # profile likelihood on transformed scale
     ll.prof <- function(theta) {
@@ -86,7 +86,7 @@ fdl_fit <- function(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, 
     # calculate MLE
     fit <- optim(fn = ll.prof, par = c(0,0.1),
                  control = list(fnscale = -1, ...))
-    if(fit$convergence != 0) stop("optim did not converge.")
+    if(fit$convergence != 0) warning("optim did not converge.")
     theta_hat[1:2] <- fit$par # profiled parameters
     acf1 <- fdyn_acf(itrans_alpha(theta_hat[1]), theta_hat[2], dT, N)
     Tz$setAcf(acf1)
@@ -99,7 +99,7 @@ fdl_fit <- function(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, 
   if(type == "localization") {
     ntheta <- 2+q+nq
     theta_hat <- rep(NA, ntheta)
-    theta_names <- c("gamma", "tau", "sigma2", paste0("mu", 1:q), paste0("lambda", 1:nq))
+    theta_names <- c("gamma", "tau", "sigma", paste0("mu", 1:q), paste0("lambda", 1:nq))
     if(missing(Tz)) Tz <- Toeplitz(n = N)
     # profile likelihood on transformed scale
     ll.prof <- function(theta) {
@@ -107,7 +107,7 @@ fdl_fit <- function(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, 
         -Inf
       } else {
         alpha <- itrans_alpha(theta[1])
-        sigma2 <- theta[2]
+        sigma2 <- theta[2]^2
         acf1 <- fbm_acf(alpha, dT, N) + sigma2 * c(2, -1, rep(0, N-2))
         Tz$setAcf(acf1)
         suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
@@ -117,7 +117,7 @@ fdl_fit <- function(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, 
     # likelihood on transformed scale
     loglik <- function(theta) {
       alpha <- itrans_alpha(theta[1])
-      sigma2 <- theta[2]
+      sigma2 <- theta[2]^2
       mu <- theta[2+1:q]
       Sigma <- itrans_Sigma(theta[2+q+1:nq]) # default: log(D)
       acf1 <- fbm_acf(alpha, dT, N) + sigma2 * c(2, -1, rep(0, N-2))
@@ -128,7 +128,7 @@ fdl_fit <- function(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, 
     # calculate MLE
     fit <- optim(fn = ll.prof, par = c(0, 0.1),
                  control = list(fnscale = -1, ...))
-    if(fit$convergence != 0) stop("optim did not converge.")
+    if(fit$convergence != 0) warning("optim did not converge.")
     theta_hat[1:2] <- fit$par # profiled parameters
     acf1 <- fbm_acf(itrans_alpha(theta_hat[1]), dT, N) + 
       theta_hat[2] * c(2, -1, rep(0, N-2))

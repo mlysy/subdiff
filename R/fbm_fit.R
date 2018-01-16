@@ -54,6 +54,5 @@ fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
     rownames(V_hat) <- theta_names
     ans <- list(coef = theta_hat, vcov = V_hat)
   }
-  class(ans) <- "subdiff_fbm"
   ans
 }

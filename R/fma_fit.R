@@ -44,7 +44,7 @@ fma_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   # calculate MLE
   fit <- optim(fn = ll.prof, par = c(0,0),
                control = list(fnscale = -1, ...))
-  if(fit$convergence != 0) stop("optim did not converge.")
+  if(fit$convergence != 0) warning("optim did not converge.")
   theta_hat[1:2] <- fit$par # profiled parameters
   Tz$setAcf(fbm_acf(itrans_alpha(theta_hat[1]), dT, N))
   dY <- ma_resid(dX, rho = itrans_rho(theta_hat[2]))

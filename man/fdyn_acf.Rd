@@ -2,21 +2,21 @@
 % Please edit documentation in R/fdyn_acf.R
 \name{fdyn_acf}
 \alias{fdyn_acf}
-\title{ACF of fBM + Dynamic Error}
+\title{ACF2 of fBM + Dynamic Error}
 \usage{
 fdyn_acf(alpha, tau, dT, N)
 }
 \arguments{
 \item{alpha}{Subdiffusion exponent}
 
-\item{tau}{Width of averaging time-window.}
+\item{tau}{Ratio of time-window over \code{dT}, range from 0 to 1.}
 
 \item{dT}{Vector of time points \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }}
 
 \item{N}{length}
 }
 \description{
-ACF of fBM + Dynamic Error
+ACF2 of fBM + Dynamic Error
 }
 \details{
 this function returns the MSD of \eqn{Y_t}, the integral of fBM process \eqn{X_t} with subdiffusion 
