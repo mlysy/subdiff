@@ -4,7 +4,7 @@
 \alias{fma_fit}
 \title{Fit the fractional MA(1) model.}
 \usage{
-fma_fit(dX, dT, Tz, var_calc = TRUE, ...)
+fma_fit(dX, dT, nlag, Tz, var_calc = TRUE, ...)
 }
 \arguments{
 \item{dX}{one or two-column matrix of trajectory increments.}

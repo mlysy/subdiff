@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // ma1Resid
 NumericMatrix ma1Resid(NumericMatrix Xt, double rho);
-RcppExport SEXP _subdiff_ma1Resid(SEXP XtSEXP, SEXP rhoSEXP) {
+RcppExport SEXP subdiff_ma1Resid(SEXP XtSEXP, SEXP rhoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -17,9 +17,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ma2Resid
+NumericMatrix ma2Resid(NumericMatrix Xt, double rho1, double rho2);
+RcppExport SEXP subdiff_ma2Resid(SEXP XtSEXP, SEXP rho1SEXP, SEXP rho2SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type Xt(XtSEXP);
+    Rcpp::traits::input_parameter< double >::type rho1(rho1SEXP);
+    Rcpp::traits::input_parameter< double >::type rho2(rho2SEXP);
+    rcpp_result_gen = Rcpp::wrap(ma2Resid(Xt, rho1, rho2));
+    return rcpp_result_gen;
+END_RCPP
+}
+// ma3Resid
+NumericMatrix ma3Resid(NumericMatrix Xt, double rho1, double rho2, double rho3);
+RcppExport SEXP subdiff_ma3Resid(SEXP XtSEXP, SEXP rho1SEXP, SEXP rho2SEXP, SEXP rho3SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type Xt(XtSEXP);
+    Rcpp::traits::input_parameter< double >::type rho1(rho1SEXP);
+    Rcpp::traits::input_parameter< double >::type rho2(rho2SEXP);
+    Rcpp::traits::input_parameter< double >::type rho3(rho3SEXP);
+    rcpp_result_gen = Rcpp::wrap(ma3Resid(Xt, rho1, rho2, rho3));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ModePoly
 NumericVector ModePoly(NumericVector roots, double nIter, double tol);
-RcppExport SEXP _subdiff_ModePoly(SEXP rootsSEXP, SEXP nIterSEXP, SEXP tolSEXP) {
+RcppExport SEXP subdiff_ModePoly(SEXP rootsSEXP, SEXP nIterSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,8 +59,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_subdiff_ma1Resid", (DL_FUNC) &_subdiff_ma1Resid, 2},
-    {"_subdiff_ModePoly", (DL_FUNC) &_subdiff_ModePoly, 3},
+    {"subdiff_ma1Resid", (DL_FUNC) &subdiff_ma1Resid, 2},
+    {"subdiff_ma2Resid", (DL_FUNC) &subdiff_ma2Resid, 3},
+    {"subdiff_ma3Resid", (DL_FUNC) &subdiff_ma3Resid, 4},
+    {"subdiff_ModePoly", (DL_FUNC) &subdiff_ModePoly, 3},
     {NULL, NULL, 0}
 };
 
