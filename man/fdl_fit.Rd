@@ -2,7 +2,7 @@
 % Please edit documentation in R/fdl_fit.R
 \name{fdl_fit}
 \alias{fdl_fit}
-\title{Fit the fractional AR(1) model.}
+\title{Fit the fractional dynamic localization error model.}
 \usage{
 fdl_fit(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, ...)
 }
@@ -13,6 +13,8 @@ fdl_fit(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, ...)
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
+\item{type}{One of "dynamic localization", "dynamic" or "localization".}
+
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 
 \item{...}{Additional \code{control} arguments to \code{stats::optim}.}
@@ -21,12 +23,14 @@ fdl_fit(dX, dT, Tz, type = "dynamic localization", var_calc = TRUE, ...)
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 }
 \description{
-Fit the fractional AR(1) model.
+Fit the fractional dynamic localization error model.
 }
 \details{
 The fractional AR(1) model has the form
 \deqn{
-\Delta X_n = (1-\rho) \Delta Z_n + \rho \Delta X_{n-1},
+X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
 }
-where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed 
+scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and 
+\code{\link{trans_Sigma}}.
 }

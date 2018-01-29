@@ -65,7 +65,7 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   ans
 }
 
-#' Nested function
+#' residual of fractional MA model
 ma_resid <- function(dX, rho) {
   if(length(rho) == 1) {
     ans <- ma1_resid(dX, rho)

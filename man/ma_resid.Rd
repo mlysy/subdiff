@@ -2,10 +2,10 @@
 % Please edit documentation in R/fma_fit.R
 \name{ma_resid}
 \alias{ma_resid}
-\title{Nested function}
+\title{residual of fractional MA model}
 \usage{
 ma_resid(dX, rho)
 }
 \description{
-Nested function
+residual of fractional MA model
 }

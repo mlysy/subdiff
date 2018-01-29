@@ -4,12 +4,14 @@
 \alias{fdyn_fit}
 \title{Fit the fractional AR(1) model.}
 \usage{
-fdyn_fit(dX, dT, Tz, var_calc = TRUE)
+fdyn_fit(dX, dT, tau, Tz, var_calc = TRUE)
 }
 \arguments{
 \item{dX}{one or two-column matrix of trajectory increments.}
 
 \item{dT}{Interobservation time.}
+
+\item{tau}{Camera exposure time divided by \code{dT}}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
