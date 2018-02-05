@@ -4,13 +4,17 @@
 \alias{msd}
 \title{Mean Square Displacement}
 \usage{
-msd(Xt, lag = 20)
+msd(Xt, dT, nlag = 30, msd.only = TRUE)
 }
 \arguments{
 \item{Xt}{trajectory}
 
-\item{lag}{order of MSD of interested, default 20}
+\item{dT}{interobservation time, required when computing slope \code{alpha}}
+
+\item{nlag}{order of MSD of interested, default 20}
+
+\item{msd.only}{logical, return both computed msd and slope of msd when TRUE}
 }
 \value{
-vector of length \code{lag}
+vector of length \code{nlag}
 }
