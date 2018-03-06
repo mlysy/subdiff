@@ -1,6 +1,6 @@
 require(subdiff)
 
-context("ma_resid")
+context("ma1_resid")
 
 ntest <- 20
 test_that("Z = resid(filter(Z))", {
@@ -14,7 +14,7 @@ test_that("Z = resid(filter(Z))", {
     for(ii in 2:N) {
       X[ii,] <- (1-rho) * Z[ii,] + rho * Z[ii-1,]
     }
-    Z2 <- ma_resid(as.matrix(X), rho)
+    Z2 <- ma1_resid(as.matrix(X), rho)
     expect_equal(Z, Z2, tol = 1e-5)
   }
 })

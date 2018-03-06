@@ -25,7 +25,7 @@ fma_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   ll.prof <- function(theta) {
     alpha <- itrans_alpha(theta[1])
     rho <- itrans_rho(theta[2])
-    dY <- ma_resid(dX, rho)
+    dY <- ma1_resid(dX, rho)
     Tz$setAcf(fbm_acf(alpha, dT, N))
     suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
     lmn.prof(suff) - log(1-rho)*N*q
@@ -36,7 +36,7 @@ fma_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     rho <- itrans_rho(theta[2])
     mu <- theta[2+1:q]
     Sigma <- itrans_Sigma(theta[2+q+1:nq]) # default: log(D)
-    dY <- ma_resid(dX, rho)
+    dY <- ma1_resid(dX, rho)
     Tz$setAcf(fbm_acf(alpha, dT, N))
     suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
     lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) - log(1-rho)*N*q
@@ -44,10 +44,10 @@ fma_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   # calculate MLE
   fit <- optim(fn = ll.prof, par = c(0,0),
                control = list(fnscale = -1, ...))
-  if(fit$convergence != 0) stop("optim did not converge.")
+  if(fit$convergence != 0) warning("optim did not converge.")
   theta_hat[1:2] <- fit$par # profiled parameters
   Tz$setAcf(fbm_acf(itrans_alpha(theta_hat[1]), dT, N))
-  dY <- ma_resid(dX, rho = itrans_rho(theta_hat[2]))
+  dY <- ma1_resid(dX, rho = itrans_rho(theta_hat[2]))
   suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
   theta_hat[2+1:q] <- suff$Beta
   theta_hat[2+q+1:nq] <- trans_Sigma(suff$S/suff$n)

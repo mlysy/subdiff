@@ -3,7 +3,7 @@ using namespace Rcpp;
 
 // nested function
 // convert MA(1) process into its eps with given rho
-//[[Rcpp::export("ma_resid")]]
+//[[Rcpp::export("ma1_resid")]]
 NumericMatrix ma1Resid(NumericMatrix Xt, double rho) {
   int N = Xt.nrow();
   int D = Xt.ncol();

@@ -36,7 +36,7 @@ fma_resid <- function(theta, dX, dT) {
   rho <- itrans_rho(theta[2])
   mu <- theta[2+1:q]
   Sigma <- itrans_Sigma(theta[q+2+1:nq])
-  dY <- ma_resid(dX, rho)
+  dY <- ma1_resid(dX, rho)
   lsc_resid(dY, dT, mu, fbm_acf(alpha, dT, N), Sigma)
 }
 
