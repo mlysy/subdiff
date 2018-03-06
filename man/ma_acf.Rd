@@ -7,14 +7,20 @@
 ma_acf(alpha, rho, dT, N)
 }
 \arguments{
+\item{alpha}{TBD}
+
 \item{rho}{parameter of MA model}
+
+\item{dT}{TBD}
+
+\item{N}{TBD}
 }
 \value{
-vector of length N
+Vector of length N
 }
 \description{
 ACF of the Moving Average Model
 }
 \details{
-Yt = (1-rho) Xt + rho Xt-1, where Xt is fBM process with parameter alpha
+\code{Yt = (1-rho) Xt + rho Xt-1}, where \code{Xt} is fBM process with parameter \code{alpha}.
 }

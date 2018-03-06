@@ -15,7 +15,7 @@ fma_fit(dX, dT, nlag, Tz, var_calc = TRUE, ...)
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 
-\item{...}{Additional \code{control} arguments to \code{stats::optim}.}
+\item{...}{Additional arguments to \code{stats::optim}.}
 }
 \value{
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).

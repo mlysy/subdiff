@@ -1,11 +1,12 @@
 #' ACF of the Autoregressive Model
-#' @param alpha
-#' @param rho parameter of MA model
-#' @param dT
-#' @param N
-#' @return vector of length N
-#' @details 
-#' Yt = (1-rho) Yt-1 + rho Xt, where Xt is fBM process with parameter alpha
+#'
+#' @param alpha TBD
+#' @param rho Parameter of AR model
+#' @param dT TBD
+#' @param N TBD
+#' @return Vector of length N
+#' @details
+#' \code{Yt = (1-rho) Yt-1 + rho Xt}, where \code{Xt} is fBM process with parameter \code{alpha}.
 #' @export
 ar_acf <- function(alpha, rho, dT, N, nlim = 1e2) {
   if(rho > 0) {
@@ -21,7 +22,7 @@ ar_acf <- function(alpha, rho, dT, N, nlim = 1e2) {
   acf2 * rho^2
 }
 
-#' nested function
+# nested function
 .ar_terms <- function(acf1, rho1, k, nlim) {
   mat.temp <- matrix(NA, nlim, nlim)
   for(ii in 1:nlim-1) {

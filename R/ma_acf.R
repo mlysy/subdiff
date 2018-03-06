@@ -1,11 +1,12 @@
 #' ACF of the Moving Average Model
-#' @param alpha
+#'
+#' @param alpha TBD
 #' @param rho parameter of MA model
-#' @param dT
-#' @param N
-#' @return vector of length N
-#' @details 
-#' Yt = (1-rho) Xt + rho Xt-1, where Xt is fBM process with parameter alpha
+#' @param dT TBD
+#' @param N TBD
+#' @return Vector of length N
+#' @details
+#' \code{Yt = (1-rho) Xt + rho Xt-1}, where \code{Xt} is fBM process with parameter \code{alpha}.
 #' @export
 ma_acf <- function(alpha, rho, dT, N) {
   acf1 <- fbm_acf(alpha, dT, N+1)
@@ -26,15 +27,15 @@ ma_acf <- function(alpha, rho, dT, N) {
 #   }
 #   mat
 # }
-# 
+#
 # # test
 # rho <- .2
 # N <- 5
 # m1 <- mat_func(rho, N)
 # acf1 <- rnorm(N+1)
 # m1 %*% toeplitz(acf1) %*% t(m1)
-# 
-# # 
-# 
+#
+# #
+#
 # range(toeplitz(ar_acf(acf1, rho)) - m1 %*% toeplitz(acf1) %*% t(m1))
 

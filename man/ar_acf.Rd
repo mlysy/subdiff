@@ -7,14 +7,20 @@
 ar_acf(alpha, rho, dT, N, nlim = 100)
 }
 \arguments{
-\item{rho}{parameter of MA model}
+\item{alpha}{TBD}
+
+\item{rho}{Parameter of AR model}
+
+\item{dT}{TBD}
+
+\item{N}{TBD}
 }
 \value{
-vector of length N
+Vector of length N
 }
 \description{
 ACF of the Autoregressive Model
 }
 \details{
-Yt = (1-rho) Yt-1 + rho Xt, where Xt is fBM process with parameter alpha
+\code{Yt = (1-rho) Yt-1 + rho Xt}, where \code{Xt} is fBM process with parameter \code{alpha}.
 }
