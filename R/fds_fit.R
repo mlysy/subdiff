@@ -22,49 +22,8 @@ fds_fit <- function(dX, dT, type = "naive", Tz, ds, var_calc = TRUE) {
   # downsampling
   Xt <- downSample(Xt, ds)
   dX <- apply(Xt, 2, diff)
-  # memory allocation and change interobservation time
-  N <- nrow(dX)
-  q <- ncol(dX)
-  dT <- dT*ds
-  nq <- if(q == 1) 1 else 3
-  ntheta <- 1+q+nq
-  theta_hat <- rep(NA, ntheta)
-  theta_names <- c("gamma", paste0("mu", 1:q), paste0("lambda", 1:nq))
-  if(missing(Tz)) Tz <- Toeplitz(n = N)
-  # profile likelihood on transformed scale
-  ll.prof <- function(theta) {
-    alpha <- itrans_alpha(theta)
-    Tz$setAcf(fbm_acf(alpha, dT, N))
-    suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    lmn.prof(suff)
-  }
-  # likelihood on transformed scale
-  loglik <- function(theta) {
-    alpha <- itrans_alpha(theta[1])
-    mu <- theta[1+1:q]
-    Sigma <- itrans_Sigma(theta[1+q+1:nq]) # default: log(D)
-    Tz$setAcf(fbm_acf(alpha, dT, N))
-    suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
-  }
-  # calculate MLE
-  fit <- optimize(f = ll.prof, interval = c(0, 2), maximum = TRUE)
-  theta_hat[1] <- fit$maximum # profiled parameters
-  Tz$setAcf(fbm_acf(itrans_alpha(theta_hat[1]), dT, N))
-  suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-  theta_hat[1+1:q] <- suff$Beta
-  theta_hat[1+q+1:nq] <- trans_Sigma(suff$S/suff$n)
-  names(theta_hat) <- theta_names
-  ans <- theta_hat # no-copy unless ans is modified
-  if(var_calc) {
-    # variance estimate
-    V_hat <- hessian(loglik, x = theta_hat)
-    V_hat <- solveV(-V_hat)
-    colnames(V_hat) <- theta_names
-    rownames(V_hat) <- theta_names
-    ans <- list(coef = theta_hat, vcov = V_hat)
-  }
-  ans
+  
+  fbm_fit(dX, dT*ds, Tz, var_calc)
 }
 
 .ds.comp <- function(Xt, dT, Tz, ds, var_calc) {

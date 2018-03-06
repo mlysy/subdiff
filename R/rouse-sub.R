@@ -38,7 +38,7 @@ rouse.sub <- function(alpha, tau, K, rouse.alpha = FALSE, ...) {
                    interval = uScale)$min
   # effective subdiffusion and diffusivity coefficients
   if(!rouse.alpha) alpha <- NULL
-  aD <- .subdiff.fit(seq(uMin, uMax, len = nPrec), r, C, alpha)
+  aD <- .subdiff.fit(seq(uMin, uMax, len = nPrec), r, C, K, alpha)
   c(tmin = exp(uMin), tmax = exp(uMax), aD)
 }
 
@@ -103,7 +103,7 @@ rouse.sub <- function(alpha, tau, K, rouse.alpha = FALSE, ...) {
 
 # effective subdiffusion and diffusivity constants
 # only estimates alpha if it is NULL
-.subdiff.fit <- function(useq, r, C, alpha = NULL) {
+.subdiff.fit <- function(useq, r, C, K, alpha = NULL) {
   msd <- prony.msd(exp(useq), r = r, C = C)*K
   yy <- log(msd)
   xx <- useq

@@ -5,6 +5,14 @@ ma1_resid <- function(Xt, rho) {
     .Call(`_subdiff_ma1Resid`, Xt, rho)
 }
 
+ma2_resid <- function(Xt, rho1, rho2) {
+    .Call(`_subdiff_ma2Resid`, Xt, rho1, rho2)
+}
+
+ma3_resid <- function(Xt, rho1, rho2, rho3) {
+    .Call(`_subdiff_ma3Resid`, Xt, rho1, rho2, rho3)
+}
+
 ModePoly <- function(roots, nIter, tol) {
     .Call(`_subdiff_ModePoly`, roots, nIter, tol)
 }
