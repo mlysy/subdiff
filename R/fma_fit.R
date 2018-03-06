@@ -4,7 +4,7 @@
 #' @param dT Interobservation time.
 #' @param Tz Optional Toeplitz matrix for intermediate calculations.
 #' @param var_calc If \code{TRUE}, also estimate variance matrix.
-#' @param ... Additional \code{control} arguments to \code{stats::optim}.
+#' @param ... Additional arguments to \code{stats::optim}.
 #' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 #' @details The fractional MA(1) model has the form
 #' \deqn{
@@ -32,7 +32,7 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
     lmn.prof(suff) - log(1-sum(rho))*N*q
   }
   # likelihood on transformed scale
-  loglik <- function(theta) {
+  negloglik <- function(theta) {
     alpha <- itrans_alpha(theta[1])
     rho <- itrans_rho(theta[1+1:nlag])
     mu <- theta[1+nlag+1:q]
@@ -43,8 +43,7 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
     lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) - log(1-sum(rho))*N*q
   }
   # calculate MLE
-  fit <- optim(fn = ll.prof, par = rep(0,nlag+1),
-               control = list(fnscale = -1, ...))
+  fit <- optim(fn = ll.prof, par = rep(0,nlag+1), ...)
   if(fit$convergence != 0) warning("optim did not converge.")
   theta_hat[1+0:nlag] <- fit$par # profiled parameters
   Tz$setAcf(fbm_acf(itrans_alpha(theta_hat[1]), dT, N))
@@ -56,8 +55,8 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   ans <- theta_hat # no-copy unless ans is modified
   if(var_calc) {
     # variance estimate
-    V_hat <- hessian(loglik, x = theta_hat)
-    V_hat <- solveV(-V_hat)
+    V_hat <- hessian(negloglik, x = theta_hat)
+    V_hat <- solveV(V_hat)
     colnames(V_hat) <- theta_names
     rownames(V_hat) <- theta_names
     ans <- list(coef = theta_hat, vcov = V_hat)
