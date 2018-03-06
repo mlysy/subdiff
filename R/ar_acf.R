@@ -7,8 +7,12 @@
 #' @details 
 #' Yt = (1-rho) Yt-1 + rho Xt, where Xt is fBM process with parameter alpha
 #' @export
-ar_acf <- function(alpha, rho, dT, N, nlim = 1e3) {
-  rho1 <- 1-rho
+ar_acf <- function(alpha, rho, dT, N, nlim = 1e2) {
+  if(rho > 0) {
+    rho1 <- 1-rho
+  } else {
+    rho1 <- 1/(1-rho)
+  }
   acf1 <- fbm_acf(alpha, dT, N+nlim)
   acf2 <- rep(NA, N)
   for(ii in 1:N) {

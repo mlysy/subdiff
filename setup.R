@@ -2,7 +2,6 @@
 
 # for recompiling package
 # first quit R, then setwd() to where setup.R is found. then:
-pkg.path <- getwd()
 pkg.path <- "D:/GitHub/SubDiff"
 
 # regenerates Rcpp interface (i.e., RcppExports)

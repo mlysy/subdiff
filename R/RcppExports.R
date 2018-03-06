@@ -2,18 +2,18 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 ma1_resid <- function(Xt, rho) {
-    .Call(subdiff_ma1Resid, Xt, rho)
+    .Call(`_subdiff_ma1Resid`, Xt, rho)
 }
 
 ma2_resid <- function(Xt, rho1, rho2) {
-    .Call(subdiff_ma2Resid, Xt, rho1, rho2)
+    .Call(`_subdiff_ma2Resid`, Xt, rho1, rho2)
 }
 
 ma3_resid <- function(Xt, rho1, rho2, rho3) {
-    .Call(subdiff_ma3Resid, Xt, rho1, rho2, rho3)
+    .Call(`_subdiff_ma3Resid`, Xt, rho1, rho2, rho3)
 }
 
 ModePoly <- function(roots, nIter, tol) {
-    .Call(subdiff_ModePoly, roots, nIter, tol)
+    .Call(`_subdiff_ModePoly`, roots, nIter, tol)
 }
 

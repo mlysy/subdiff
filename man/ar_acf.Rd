@@ -4,7 +4,7 @@
 \alias{ar_acf}
 \title{ACF of the Autoregressive Model}
 \usage{
-ar_acf(alpha, rho, dT, N, nlim = 1000)
+ar_acf(alpha, rho, dT, N, nlim = 100)
 }
 \arguments{
 \item{rho}{parameter of MA model}
