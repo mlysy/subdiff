@@ -2,6 +2,7 @@
 #'
 #' @param dX one or two-column matrix of trajectory increments.
 #' @param dT Interobservation time.
+#' @param nlag Maximum number of lags for the fMA model.
 #' @param Tz Optional Toeplitz matrix for intermediate calculations.
 #' @param var_calc If \code{TRUE}, also estimate variance matrix.
 #' @param ... Additional arguments to \code{stats::optim}.
@@ -23,13 +24,13 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   theta_names <- c("gamma", paste0("eta", 1:nlag), paste0("mu", 1:q), paste0("lambda", 1:nq))
   if(missing(Tz)) Tz <- Toeplitz(n = N)
   # profile likelihood on transformed scale
-  ll.prof <- function(theta) {
+  negll.prof <- function(theta) {
     alpha <- itrans_alpha(theta[1])
     rho <- itrans_rho(theta[1+1:nlag])
     dY <- ma_resid(dX, rho)
     Tz$setAcf(fbm_acf(alpha, dT, N))
     suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
-    lmn.prof(suff) - log(1-sum(rho))*N*q
+    -lmn.prof(suff) + log(1-sum(rho))*N*q
   }
   # likelihood on transformed scale
   negloglik <- function(theta) {
@@ -40,11 +41,11 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
     dY <- ma_resid(dX, rho)
     Tz$setAcf(fbm_acf(alpha, dT, N))
     suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
-    lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) - log(1-sum(rho))*N*q
+    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) + log(1-sum(rho))*N*q
   }
   # calculate MLE
-  fit <- optim(fn = ll.prof, par = rep(0,nlag+1), ...)
-  if(fit$convergence != 0) warning("optim did not converge.")
+  fit <- optim(fn = negll.prof, par = rep(0,nlag+1), ...)
+  if(fit$convergence != 0) stop("optim did not converge.")
   theta_hat[1+0:nlag] <- fit$par # profiled parameters
   Tz$setAcf(fbm_acf(itrans_alpha(theta_hat[1]), dT, N))
   dY <- ma_resid(dX, rho = itrans_rho(theta_hat[1+1:nlag]))

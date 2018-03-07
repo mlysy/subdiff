@@ -11,6 +11,8 @@ fma_fit(dX, dT, nlag, Tz, var_calc = TRUE, ...)
 
 \item{dT}{Interobservation time.}
 
+\item{nlag}{Maximum number of lags for the fMA model.}
+
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
