@@ -6,6 +6,7 @@
 \alias{fma_resid}
 \alias{far_resid}
 \alias{fds_resid}
+\alias{fdl_resid}
 \title{Model-based residual calculations.}
 \usage{
 fbm_resid(theta, dX, dT)
@@ -15,6 +16,8 @@ fma_resid(theta, dX, dT)
 far_resid(theta, dX, dT)
 
 fds_resid(theta, dX, dT, type, ds)
+
+fdl_resid(theta, dX, dT, type)
 }
 \arguments{
 \item{theta}{Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).}
