@@ -15,9 +15,9 @@ fma_resid(theta, dX, dT)
 
 far_resid(theta, dX, dT)
 
-fds_resid(theta, dX, dT, type, ds)
+fds_resid(theta, dX, dT, type = "naive", ds, full = TRUE)
 
-fdl_resid(theta, dX, dT, type)
+fdl_resid(theta, dX, dT, type = "dynamic localization")
 }
 \arguments{
 \item{theta}{Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).}
@@ -26,7 +26,7 @@ fdl_resid(theta, dX, dT, type)
 
 \item{dT}{Interobservation time.}
 
-\item{type, ds}{Additional arguments specifying for the downsampling estimator (see \code{\link{fds_fit}}).}
+\item{type, ds, full}{Additional arguments specifying for the downsampling estimator (see \code{\link{fds_fit}}).}
 }
 \value{
 A one or two-column matrix of white noise residuals (see Details).

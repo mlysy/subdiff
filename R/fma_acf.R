@@ -1,4 +1,4 @@
-#' ACF of the Moving Average Model
+#' ACF of the Moving Average Model with fBM Noise
 #'
 #' @param alpha TBD
 #' @param rho parameter of MA model
@@ -8,7 +8,7 @@
 #' @details
 #' \code{Yt = (1-rho) Xt + rho Xt-1}, where \code{Xt} is fBM process with parameter \code{alpha}.
 #' @export
-ma_acf <- function(alpha, rho, dT, N) {
+fma_acf <- function(alpha, rho, dT, N) {
   acf1 <- fbm_acf(alpha, dT, N+1)
   acf2 <- rep(NA, N)
   rho1 <- 1 - rho

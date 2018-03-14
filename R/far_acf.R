@@ -1,4 +1,4 @@
-#' ACF of the Autoregressive Model
+#' ACF of the Autoregressive Model with fBM Noise
 #'
 #' @param alpha TBD
 #' @param rho Parameter of AR model
@@ -8,7 +8,7 @@
 #' @details
 #' \code{Yt = (1-rho) Yt-1 + rho Xt}, where \code{Xt} is fBM process with parameter \code{alpha}.
 #' @export
-ar_acf <- function(alpha, rho, dT, N, nlim = 1e2) {
+far_acf <- function(alpha, rho, dT, N, nlim = 1e2) {
   if(rho > 0) {
     rho1 <- 1-rho
   } else {

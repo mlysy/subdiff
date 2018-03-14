@@ -5,7 +5,7 @@
 #' @param theta Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).
 #' @param dX One or two-column matrix of increments.
 #' @param dT Interobservation time.
-#' @param type,ds Additional arguments specifying for the downsampling estimator (see \code{\link{fds_fit}}).
+#' @param type,ds,full Additional arguments specifying for the downsampling estimator (see \code{\link{fds_fit}}).
 #' @return A one or two-column matrix of white noise residuals (see Details).
 #' @details Each of the models provided by the package generates a normal data matrix \eqn{\Delta X} via the linear transformation
 #' \deqn{
@@ -36,8 +36,7 @@ fma_resid <- function(theta, dX, dT) {
   rho <- itrans_rho(theta[2])
   mu <- theta[2+1:q]
   Sigma <- itrans_Sigma(theta[q+2+1:nq])
-  dY <- ma1_resid(dX, rho)
-  lsc_resid(dY, dT, mu, fbm_acf(alpha, dT, N), Sigma)
+  lsc_resid(dX, dT, mu, fma_acf(alpha, rho, dT, N), Sigma)
 }
 
 #' @rdname subdiff-resid
@@ -56,7 +55,7 @@ far_resid <- function(theta, dX, dT) {
 
 #' @rdname subdiff-resid
 #' @export
-fds_resid <- function(theta, dX, dT, type, ds) {
+fds_resid <- function(theta, dX, dT, type = "naive", ds, full = TRUE) {
   Xt <- apply(rbind(0, dX), 2, cumsum) # recover Xt
   q <- ncol(Xt) # problem dimensions
   N <- nrow(Xt)
@@ -69,15 +68,28 @@ fds_resid <- function(theta, dX, dT, type, ds) {
     Xt_ds <- downSample(Xt, ds)
     dX_ds <- apply(Xt_ds, 2, diff)
     ans <- lsc_resid(dX_ds, ds*dT, mu, fbm_acf(alpha, ds*dT, N_ds), Sigma)
+    if(full) {
+     for(ii in 2:ds) {
+       Xt_ds <- downSample(Xt, ds, pos = ii)
+       dX_ds <- apply(Xt_ds, 2, diff)
+       theta2 <- fbm_fit(dX_ds, dT*ds, var_calc = FALSE)
+       alpha2 <- itrans_alpha(theta2[1]) # parameters
+       mu2 <- theta2[1+1:q]
+       Sigma2 <- itrans_Sigma(theta2[1+q+1:nq])
+       ans2 <- lsc_resid(dX_ds, ds*dT, mu2, fbm_acf(alpha2, ds*dT, N_ds), Sigma2)
+       ans <- rbind(ans, ans2)
+     } 
+    }
   } else {
     dX <- apply(Xt, 2, diff)
     ans <- lsc_resid(dX, dT, mu, fbm_acf(alpha, dT, N-1), Sigma)
   }
+  ans
 }
 
 #' @rdname subdiff-resid
 #' @export
-fdl_resid <- function(theta, dX, dT, type) {
+fdl_resid <- function(theta, dX, dT, type = "dynamic localization") {
   q <- ncol(dX) # problem dimensions
   N <- nrow(dX)
   nq <- if(q == 1) 1 else 3

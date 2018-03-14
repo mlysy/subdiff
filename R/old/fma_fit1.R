@@ -13,7 +13,7 @@
 #' }
 #' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
 #' @export
-fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
+fma_fit1 <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   # memory allocation
   N <- nrow(dX)
   q <- ncol(dX)
@@ -27,9 +27,10 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   negll.prof <- function(theta) {
     alpha <- itrans_alpha(theta[1])
     rho <- itrans_rho(theta[1+1:nlag])
-    Tz$setAcf(fma_acf(alpha, rho, dT, N))
-    suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.prof(suff)
+    dY <- ma_resid(dX, rho)
+    Tz$setAcf(fbm_acf(alpha, dT, N))
+    suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
+    -lmn.prof(suff) + log(1-sum(rho))*N*q
   }
   # likelihood on transformed scale
   negloglik <- function(theta) {
@@ -37,16 +38,18 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
     rho <- itrans_rho(theta[1+1:nlag])
     mu <- theta[1+nlag+1:q]
     Sigma <- itrans_Sigma(theta[1+nlag+q+1:nq]) # default: log(D)
-    Tz$setAcf(fma_acf(alpha, rho, dT, N))
-    suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    dY <- ma_resid(dX, rho)
+    Tz$setAcf(fbm_acf(alpha, dT, N))
+    suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
+    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) + log(1-sum(rho))*N*q
   }
   # calculate MLE
   fit <- optim(fn = negll.prof, par = rep(0,nlag+1), ...)
   if(fit$convergence != 0) stop("optim did not converge.")
   theta_hat[1+0:nlag] <- fit$par # profiled parameters
-  Tz$setAcf(fma_acf(itrans_alpha(theta_hat[1]), itrans_rho(theta_hat[1+1:nlag]), dT, N))
-  suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
+  Tz$setAcf(fbm_acf(itrans_alpha(theta_hat[1]), dT, N))
+  dY <- ma_resid(dX, rho = itrans_rho(theta_hat[1+1:nlag]))
+  suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
   theta_hat[1+nlag+1:q] <- suff$Beta
   theta_hat[1+nlag+q+1:nq] <- trans_Sigma(suff$S/suff$n)
   names(theta_hat) <- theta_names
@@ -58,6 +61,20 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
     colnames(V_hat) <- theta_names
     rownames(V_hat) <- theta_names
     ans <- list(coef = theta_hat, vcov = V_hat)
+  }
+  ans
+}
+
+#' residual of fractional MA model
+ma_resid <- function(dX, rho) {
+  if(length(rho) == 1) {
+    ans <- ma1_resid(dX, rho)
+  } else if(length(rho) == 2) {
+    ans <- ma2_resid(dX, rho[1], rho[2])
+  } else if(length(rho) == 3) {
+    ans <- ma3_resid(dX, rho[1], rho[2], rho[3])
+  } else{
+    stop("Lag of fMA model is at most 3")
   }
   ans
 }
