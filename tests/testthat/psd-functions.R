@@ -23,7 +23,7 @@ prony.psd.rC <- function(fseq, lambda, vsigma, Temp) {
   K <- length(lambda)
   N <- length(fseq)
   # coefficients
-  rC <- prony.coeff(lambda)
+  rC <- subdiff::prony.coeff(lambda)
   r <- rC$r
   C <- rC$C
   Sx <- C[1]^2 / (2 * pi * fseq)^2 # BM component

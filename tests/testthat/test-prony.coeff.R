@@ -1,4 +1,3 @@
-require(subdiff)
 source("psd-functions.R")
 
 context("Prony-GLE PSD")

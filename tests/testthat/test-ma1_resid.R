@@ -1,4 +1,3 @@
-## require(subdiff)
 
 context("ma1_resid")
 

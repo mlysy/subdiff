@@ -1,5 +1,3 @@
-require(subdiff)
-require(SuperGauss)
 
 context("Prony-GLE ACF and MSD")
 

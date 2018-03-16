@@ -1,4 +1,3 @@
-require(subdiff)
 
 context("rho trans/itrans")
 

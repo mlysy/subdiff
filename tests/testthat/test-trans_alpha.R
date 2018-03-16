@@ -1,4 +1,3 @@
-require(subdiff)
 
 context("alpha trans/itrans")
 
