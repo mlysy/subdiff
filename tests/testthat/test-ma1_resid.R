@@ -1,4 +1,4 @@
-require(subdiff)
+## require(subdiff)
 
 context("ma1_resid")
 
