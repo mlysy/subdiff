@@ -1,5 +1,5 @@
 
-context("farfit")
+context("far_fit")
 
 source("fit-functions.R")
 
@@ -15,7 +15,7 @@ loglik <- function(theta, dX, dT, Tz) {
   Tz$setAcf(fbm_acf(alpha, dT, N))
   dY <- ar_resid(dX, rho)
   suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
-  lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) - log(1 - rho) * N * q
+  lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) - log(1 - rho) * N * nq
 }
 
 ntest <- 10
@@ -31,16 +31,20 @@ test_that("MLE is at the mode of the projection plots.", {
     rho <- runif(1, -1, 1)
     ndims <- sample(1:2, 1)
     dX <- as.matrix(rSnorm(n = ndims,
-                           acf = fbm_acf(alpha, dT, N+1)))
-    dY <- dX * (1-rho)
-    for(ii in 2:N) {
-      dY[ii,] <- (1-rho) * dX[ii,] + rho * dY[ii-1,]
-    }
-    theta_hat <- far_fit(dX, dT, var_calc = FALSE) # fit MLE
+                           acf = fbm_acf(alpha, dT, N)))
+    ## dY <- dX * (1-rho)
+    ## for(ii in 2:N) {
+    ##   dY[ii,] <- (1-rho) * dX[ii,] + rho * dY[ii-1,]
+    ## }
+    dY <- apply((1-rho)*dX, 2, function(x) {
+      as.numeric(filter(x, filter = rho, method = "recursive"))
+    })
+    ## dY2 <- filter(x = (1-rho)*dX[,1], filter = rho, method = "recursive")
+    theta_hat <- far_fit(dY, dT, var_calc = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz(n = N) # memory allocation
     ocheck <- optim_proj(xsol = theta_hat,
-                         fun = function(theta) loglik(theta, dX, dT, Tz),
+                         fun = function(theta) loglik(theta, dY, dT, Tz),
                          plot = FALSE, xrng = .05, npts = 20)
     expect_lt(max.xdiff(ocheck), .01)
   })

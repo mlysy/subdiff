@@ -1,7 +1,23 @@
 
-context("fbm_fit")
+context("fdl_fit")
 
 source("fit-functions.R")
+
+# fdl profile likelihood
+profll <- function(theta, dX, dT, Tz) {
+  N <- nrow(dX)
+  nd <- ncol(dX)
+  nq <- getq(nd)
+  alpha <- itrans_alpha(theta[1])
+  tau <- itrans_tau(theta[2])
+  sigma2 <- exp(2*theta[3])
+  acf1 <- fdyn_acf(alpha, tau, dT, N)
+  acf1[1:2] <- acf1[1:2] + sigma2 * c(2,-1)
+  Tz$setAcf(acf1)
+  suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
+  lmn.prof(suff)
+}
+
 
 # fdl loglikelihood
 loglik <- function(theta, dX, dT, Tz) {
@@ -10,7 +26,7 @@ loglik <- function(theta, dX, dT, Tz) {
   nq <- getq(nd)
   alpha <- itrans_alpha(theta[1])
   tau <- itrans_tau(theta[2])
-  sigma2 <- theta[3]^2
+  sigma2 <- exp(2*theta[3])
   mu <- theta[1+1:nd]
   Sigma <- itrans_Sigma(theta[1+nd+1:nq]) # default: log(D)
   Tz$setAcf(fdyn_acf(alpha, tau, dT, N) + sigma2 * c(2,-1,rep(0,N-2)))
@@ -27,19 +43,20 @@ test_that("MLE is at the mode of the projection plots.", {
     # simulate data
     N <- sample(1000:2000, 1)
     dT <- runif(1)
-    alpha <- runif(1, 0, 2)
+    alpha <- runif(1, 0, 1)
     tau <- runif(1, 0, 1)
-    sigma2 <- runif(1, 0, 0.003)
+    sig <- runif(1, 0, 0.05)
     ndims <- sample(1:2, 1)
-    dX <- as.matrix(rSnorm(n = ndims,
-                           acf = fdyn_acf(alpha, tau, dT, N)))
-    dX <- dX + sqrt(sigma2) * matrix(rnorm(N*ndims), N, ndims)
-    theta_hat <- fdl_fit(dX, dT, var_calc = FALSE) # fit MLE
+    acf1 <- fdyn_acf(alpha, tau, dT, N)
+    acf1[1:2] <- acf1[1:2] + sig^2 * c(2,-1)
+    dX <- as.matrix(rSnorm(n = ndims, fft = FALSE, acf = acf1))
+    theta_hat <- fdl_fit(dX, dT, var_calc = FALSE,
+                         control = list(maxit = 1e6)) # fit MLE
     # projection plots
     Tz <- Toeplitz(n = N) # memory allocation
-    ocheck <- optim_proj(xsol = theta_hat,
-                         fun = function(theta) loglik(theta, dX, dT, Tz),
-                         plot = FALSE, xrng = .05, npts = 20)
-    expect_lt(max.xdiff(ocheck), .01)
+    ocheck <- optim_proj(xsol = theta_hat[1:3],
+                         fun = function(theta) profll(theta, dX, dT, Tz),
+                         plot = FALSE, xrng = 1, npts = 50, equalize = FALSE)
+    expect_lt(max.xdiff(ocheck), .05)
   })
 })
