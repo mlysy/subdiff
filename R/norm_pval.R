@@ -1,6 +1,7 @@
 #' P-value calculation for various normality tests.
 #'
 #' @param x Vector of observations.
+#' @param stdn Logical, whether or not to test against standard normal distribution, or take mean and variance to be unknown.
 #' @return p-value of the normality test.
 #' @name norm_pval
 #' @details The following normality tests are currently implemented:
@@ -21,7 +22,33 @@
 # anderson-darling test
 #' @rdname norm_pval
 #' @export
-ad_pval <- function(x) ad.test(x)$p.value
+ad_pval <- function(x, stdn = TRUE) {
+  x <- sort(x)
+  n <- length(x)
+  if (n < 8) stop("sample size must be greater than 7")
+  if(stdn) {
+    mu <- 0
+    sig <- 1
+  } else {
+    mu <- mean(x)
+    sig <- sd(x)
+  }
+  logp1 <- pnorm((x - mu)/sig, log.p = TRUE)
+  logp2 <- pnorm(-(x - mu)/sig, log.p = TRUE)
+  h <- (2 * seq(1:n) - 1) * (logp1 + rev(logp2))
+  A <- -n - mean(h)
+  AA <- (1 + 0.75/n + 2.25/n^2) * A
+  if(AA < 0.2) {
+    pval <- 1 - exp(-13.436 + 101.14 * AA - 223.73 * AA^2)
+  } else if(AA < 0.34) {
+    pval <- 1 - exp(-8.318 + 42.796 * AA - 59.938 * AA^2)
+  } else if(AA < 0.6) {
+    pval <- exp(0.9177 - 4.279 * AA - 1.38 * AA^2)
+  } else if(AA < 10) {
+    pval <- exp(1.2937 - 5.709 * AA + 0.0186 * AA^2)
+  } else pval <- 3.7e-24
+  pval
+}
 
 # shapiro-wilk test
 #' @rdname norm_pval

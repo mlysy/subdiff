@@ -40,9 +40,9 @@ pval_plot <- function(dstats, data_name, ylog = TRUE, pvcut, rcut) {
   YY[YY < 1e-10] <- 1e-10
   ylim <- range(YY)
   nstat <- ncol(YY)
-  xx <- dstats[,"zmax"]
+  xx <- dstats[,"rmax"]
   ylab <- expression(p[SW], p[AD], p[BC])
-  xlab <- expression(Z[max])
+  xlab <- expression(R[max])
   log <- ifelse(ylog, "y", "")
   log <- rep(log, nstat)
   main <- c("Shapiro-Wilk Test",
@@ -93,9 +93,9 @@ gof_plot <- function(Xt, dT, theta, type = c("qq", "hist"), main) {
   main <- paste0("Residuals: PC", c(1, 2))
   main <- c(main, "Residuals: Combined")
   xlab <- expression(Z[1], Z[2])
-  pval.ad <- c(ad.pval(Z[,1]), ad.pval(Z[,2]), ad.pval(c(Z)))
-  pval.sw <- c(sw.pval(Z[,1]), sw.pval(Z[,2]), sw.pval(c(Z)))
-  pval.bc <- c(bc.pval(Z[,1]), bc.pval(Z[,2]))
+  pval.ad <- c(ad_pval(Z[,1]), ad_pval(Z[,2]), ad_pval(c(Z)))
+  pval.sw <- c(sw_pval(Z[,1]), sw_pval(Z[,2]), sw_pval(c(Z)))
+  pval.bc <- c(bc_pval(Z[,1]), bc_pval(Z[,2]))
   pval.bc <- c(pval.bc, pbeta(min(pval.bc), 1, 2))
   for(ii in 1:3) {
     lgd <- paste0("p[", c("AD", "SW", "BC"), "]==",

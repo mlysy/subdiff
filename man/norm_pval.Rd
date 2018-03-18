@@ -7,7 +7,7 @@
 \alias{bc_pval}
 \title{P-value calculation for various normality tests.}
 \usage{
-ad_pval(x)
+ad_pval(x, stdn = TRUE)
 
 sw_pval(x)
 
@@ -15,6 +15,8 @@ bc_pval(x)
 }
 \arguments{
 \item{x}{Vector of observations.}
+
+\item{stdn}{Logical, whether or not to test against standard normal distribution, or take mean and variance to be unknown.}
 }
 \value{
 p-value of the normality test.
