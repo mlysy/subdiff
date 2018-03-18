@@ -11,6 +11,7 @@ devtools::install(pkg = pkg.path, args = "--clean") # installs the package
 devtools::build(pkg = pkg.path) # builds a tar.gz file
 
 # check
+setwd("D:/GitHub")
 devtools::check("SubDiff")
 
 # restart R before testing changes
