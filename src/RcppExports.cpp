@@ -5,6 +5,17 @@
 
 using namespace Rcpp;
 
+// log1pexp_wrapper
+NumericVector log1pexp_wrapper(NumericVector x);
+RcppExport SEXP _subdiff_log1pexp_wrapper(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(log1pexp_wrapper(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // ma1Resid
 NumericMatrix ma1Resid(NumericMatrix Xt, double rho);
 RcppExport SEXP _subdiff_ma1Resid(SEXP XtSEXP, SEXP rhoSEXP) {
@@ -59,6 +70,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_subdiff_log1pexp_wrapper", (DL_FUNC) &_subdiff_log1pexp_wrapper, 1},
     {"_subdiff_ma1Resid", (DL_FUNC) &_subdiff_ma1Resid, 2},
     {"_subdiff_ma2Resid", (DL_FUNC) &_subdiff_ma2Resid, 3},
     {"_subdiff_ma3Resid", (DL_FUNC) &_subdiff_ma3Resid, 4},

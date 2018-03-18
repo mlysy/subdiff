@@ -42,3 +42,6 @@ scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)
 
 The functions \code{fdy_fit} and \code{flo_fit} fit pure dynamic error and pur localization error models, respectively.
 }
+\note{
+To improve convergence, currently a small penalty term is employed to keep \code{sigma} away from 0 and \code{tau} away from 0 or 1.  Namely the penalty is \code{pen(sigma, tau) = log(sigma) + logit(tau)}.  However, this penalty is not accounted for in the variance calculation...sandwich estimator?
+}

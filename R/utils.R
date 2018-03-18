@@ -11,3 +11,8 @@ solveV <- function(V, x, ldV = FALSE) {
   }
   ans
 }
+
+#--- logit and its inverse -----------------------------------------------------
+
+logit <- function(x) log(x) - log(1-x)
+ilogit <- function(x) 1/(1+exp(-x))

@@ -17,6 +17,7 @@
 #' \code{\link{trans_Sigma}}.
 #'
 #' The functions \code{fdy_fit} and \code{flo_fit} fit pure dynamic error and pur localization error models, respectively.
+#' @note To improve convergence, currently a small penalty term is employed to keep \code{sigma} away from 0 and \code{tau} away from 0 or 1.  Namely the penalty is \code{pen(sigma, tau) = log(sigma) + logit(tau)}.  However, this penalty is not accounted for in the variance calculation...sandwich estimator?
 #' @export
 fdl_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
   # memory allocation
@@ -37,7 +38,9 @@ fdl_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.prof(suff)
+    nlp <- -lmn.prof(suff)
+    # penalty on tau, sigma
+    nlp + log1pe(theta[2]) + log1pe(-theta[2]) - theta[3]
   }
   # likelihood on transformed scale
   negloglik <- function(theta) {
@@ -50,13 +53,17 @@ fdl_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    nll <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    # penalty on tau, sigma
+    nll + log1pe(theta[2]) + log1pe(-theta[2]) - theta[3]
   }
   # calculate MLE
   if(missing(theta0)) theta0 <- c(1, .1, .1)
   tpar <- c(trans_alpha(theta0[1]), trans_tau(theta0[2]), log(theta0[3]))
   fit <- optim(fn = negll.prof, par = tpar, ...)
-  if(fit$convergence != 0) stop("optim did not converge.")
+  if(fit$convergence != 0) {
+    stop("optim did not converge (error code = ", fit$convergence, ").")
+  }
   theta_hat[1:3] <- fit$par # profiled parameters
   acf1 <- fdyn_acf(alpha = itrans_alpha(theta_hat[1]),
                    tau = itrans_tau(theta_hat[2]), dT, N)
@@ -187,3 +194,14 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   }
   ans
 }
+
+#-------------------------------------------------------------------------------
+
+# f_X(x) = 1, y = exp(x).
+# x = log(y) => dx = dy/y
+# f_Y(y) = 1/y
+
+# logistic penalty: pen(p) = log(p) + log(1-p)
+# p = ilogit(eta) = 1/(1+exp(eta))
+# 1-p = exp(eta)/(1+exp(eta)) * exp(-eta)/exp(-eta) = 1/(exp(-eta)+1)
+# => pen(eta) = log(1) - log(1+exp(eta)) + log(1) - log(1+exp(-eta))

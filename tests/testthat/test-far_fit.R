@@ -45,7 +45,7 @@ test_that("MLE is at the mode of the projection plots.", {
     Tz <- Toeplitz(n = N) # memory allocation
     ocheck <- optim_proj(xsol = theta_hat,
                          fun = function(theta) loglik(theta, dY, dT, Tz),
-                         plot = FALSE, xrng = .05, npts = 20)
-    expect_lt(max.xdiff(ocheck), .01)
+                         plot = FALSE, xrng = .1, npts = 20)
+    expect_lt(max.xdiff(ocheck), .05)
   })
 })
