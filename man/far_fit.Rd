@@ -4,7 +4,7 @@
 \alias{far_fit}
 \title{Fit the fractional AR(1) model.}
 \usage{
-far_fit(dX, dT, Tz, var_calc = TRUE, ...)
+far_fit(dX, dT, Tz, var_calc = TRUE, theta0, ...)
 }
 \arguments{
 \item{dX}{one or two-column matrix of trajectory increments.}
@@ -15,7 +15,9 @@ far_fit(dX, dT, Tz, var_calc = TRUE, ...)
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 
-\item{...}{Additional \code{control} arguments to \code{stats::optim}.}
+\item{theta0}{Length-2 vector of initial values for \code{(alpha, rho)}.  Default value is \code{(1, 0)}.}
+
+\item{...}{Additional arguments to \code{\link[stats]{optim}}.}
 }
 \value{
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
