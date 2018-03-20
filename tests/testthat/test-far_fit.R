@@ -15,7 +15,7 @@ loglik <- function(theta, dX, dT, Tz) {
   Tz$setAcf(fbm_acf(alpha, dT, N))
   dY <- ar_resid(dX, rho)
   suff <- lmn.suff(Y = dY, X = dT, acf = Tz)
-  lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) - log(1 - rho) * N * nq
+  lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff) - log(1 - rho) * N * nd
 }
 
 ntest <- 10
