@@ -15,7 +15,7 @@ setwd("D:/GitHub")
 devtools::check("SubDiff")
 
 # restart R before testing changes
-testthat::test_package("SubDiff")
+testthat::test_package("subdiff")
 
 # cran check
 
