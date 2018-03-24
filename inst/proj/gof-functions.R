@@ -138,3 +138,17 @@ gof_plot <- function(Xt, dT, theta, type = c("qq", "hist"), main) {
 
 #--- msd reconstruction --------------------------------------------------------
 
+# path reconstruction
+fbm_recon <- function(theta, dX, dT, Z) {
+  if(missing(Z)) Z <- fbm_resid(theta, dX, dT) # residuals
+  # map residuals to corresponding normal quantiles
+  N <- nrow(Z)
+  q <- ncol(Z)
+  nq <- if(q == 1) 1 else 3
+  Zr <- matrix(qnorm(rank(Z)/(length(Z)+1)), N, ncol(Z))
+  # transform to data scale
+  Zr <- cholZX(Z = Zr, acf = fbm_acf(alpha = itrans_alpha(theta[1]), dT, N))
+  ed <- eigen(itrans_Sigma(lambda = theta[1+q + 1:nq]))
+  C <- t(ed$vec) * sqrt(ed$val)
+  t(t(Zr %*% C) + theta[1+1:q] * dT)
+}
