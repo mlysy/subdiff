@@ -57,8 +57,8 @@ double modePoly(int nIter, double tol, int nRoots, double *roots,
   return(0.5*(ll+lh));
 }
 
-//[[Rcpp::export]]
-NumericVector ModePoly(NumericVector roots, double nIter, double tol) {
+//[[Rcpp::export(".ModePoly")]]
+NumericVector ModePoly(NumericVector roots, int nIter, double tol) {
   // local variables
   int nRoots = roots.length();
   // output variables

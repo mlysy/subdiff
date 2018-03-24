@@ -14,21 +14,16 @@
 #' @param lambda coefficients of the sum of OU processes.
 #' @param N number of samples.
 #' @param dt interobservation time.
-#' @param ... Additional arguments to \code{prony.coeff} for obtaining the BM-OU coefficients.
+#' @param ... Additional arguments to \code{\link{prony_coeff}} for obtaining the BM-OU coefficients.
 #' @return Vector of autocorrelations.
 #' @export
-prony.acf <- function(lambda, N, dt, ...) {
+prony_acf <- function(lambda, N, dt, ...) {
   acf <- rep(0, N)
   # prony coefficients
-  rC <- prony.coeff(lambda, ...)
+  rC <- prony_coeff(lambda, ...)
   r <- rC$r
   C <- rC$C
   K <- length(C) # number of modes
-  ## hasr <- !missing(r)
-  ## hasC <- !missing(C)
-  ## if(hasC && !hasr) stop("Cannot supply C without r.")
-  ## if(!hasr) r <- modePoly(lambda, ...)
-  ## if(!hasC) C <- prony.coeff(lambda, r = r)$C
   # acf calculations
   if(K > 1) {
     for(ii in 1:(K-1)) {

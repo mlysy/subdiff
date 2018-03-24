@@ -18,8 +18,8 @@ test_that("MSD => ACF", {
     dt <- runif(1)
     N <- 1e4
     tseq <- 1:N*dt
-    acf <- prony.acf(lambda, N, dt)
-    msd <- prony.msd(tseq, lambda)
+    acf <- prony_acf(lambda, N, dt)
+    msd <- prony_msd(tseq, lambda)
     expect_equal(acf, msd2acf(msd))
   }
 })
@@ -35,8 +35,8 @@ test_that("ACF => MSD", {
     dt <- runif(1)
     N <- 1e4
     tseq <- 1:N*dt
-    acf <- prony.acf(lambda, N, dt)
-    msd <- prony.msd(tseq, lambda)
+    acf <- prony_acf(lambda, N, dt)
+    msd <- prony_msd(tseq, lambda)
     expect_equal(msd, acf2msd(acf))
   }
 })

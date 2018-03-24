@@ -5,7 +5,7 @@
 #' @param tmin,tmax Endpoints of the subdiffusive regime.
 #' @return MSD vector.
 #' @export
-crouse.msd <- function(t, alpha, tmin, tmax) {
+crouse_msd <- function(t, alpha, tmin, tmax) {
   s <- log(t)
   # subdiffusive range
   smin <- log(tmin)

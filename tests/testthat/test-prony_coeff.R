@@ -17,10 +17,10 @@ test_that("PSD FFT == PSD BM+OU", {
     tau <- runif(1, 1e-4, 1e-2)
     lambda <- ((1:K)/K)^(1/alpha)/tau
     fseq <- exp(seq(log(1e-6), log(1e6), len = 1000))
-    psd1 <- prony.psd.lambda(fseq,
+    psd1 <- prony_psd_lambda(fseq,
                              lambda = lambda, vsigma = vsigma, Temp = Temp)
-    rC <- prony.coeff(lambda)
-    psd2 <- prony.psd.rC(fseq,
+    rC <- prony_coeff(lambda)
+    psd2 <- prony_psd_rC(fseq,
                          lambda = lambda, vsigma = vsigma, Temp = Temp)
     expect_equal(log(psd1), log(psd2))
   }

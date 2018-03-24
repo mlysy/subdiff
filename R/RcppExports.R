@@ -17,7 +17,7 @@ ma3_resid <- function(Xt, rho1, rho2, rho3) {
     .Call(`_subdiff_ma3Resid`, Xt, rho1, rho2, rho3)
 }
 
-ModePoly <- function(roots, nIter, tol) {
+.ModePoly <- function(roots, nIter, tol) {
     .Call(`_subdiff_ModePoly`, roots, nIter, tol)
 }
 

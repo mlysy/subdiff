@@ -1,6 +1,7 @@
 #' MSD of the Rouse-GLE model.
 #'
 #' Mean Squared Displacement of the Rouse-GLE transient subdiffusion model.
+#'
 #' @details The Rouse-GLE satisfies the integro-differential equation
 #' \deqn{
 #' F_t - \int_{-\infty}^t \gamma(t-s) \dot X_s ds = 0,
@@ -18,8 +19,8 @@
 #' @param ... Additional arguments to pass to \code{prony.msd}.
 #' @return Vector of mean square displacements.
 #' @export
-rouse.msd <- function(t, alpha, tau, K, ...) {
+rouse_msd <- function(t, alpha, tau, K, ...) {
   lambda <- ((1:K)/K)^(1/alpha) / tau
-  msd <- prony.msd(t, lambda, ...)
+  msd <- prony_msd(t, lambda, ...)
   msd * K
 }

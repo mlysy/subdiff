@@ -4,6 +4,6 @@
 # lambda: vector of roots
 # nSteps: number of steps
 # tol: tolerance
-modePoly <- function(lambda, nsteps = 100, tol = 0){
-  ModePoly(lambda, nsteps, tol)
+mode_poly <- function(lambda, nsteps = 100, tol = 0){
+  .ModePoly(lambda, nsteps, tol)
 }

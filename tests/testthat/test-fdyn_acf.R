@@ -1,7 +1,7 @@
 
 context("fdyn_acf")
 
-ntest <- 20
+ntest <- 2
 test_that("fdyn_acf formula is correct.", {
   replicate(ntest, {
     # parameters

@@ -1,7 +1,7 @@
 # spectral density of Prony-GLE
 
 # psd directly in frequency space
-prony.psd.lambda <- function(fseq, lambda, vsigma, Temp = 298) {
+prony_psd_lambda <- function(fseq, lambda, vsigma, Temp = 298) {
   kB <- 1.3806488e-23 # Boltzmann constant, J/K
   K <- length(lambda)
   N <- length(fseq)
@@ -18,12 +18,12 @@ prony.psd.lambda <- function(fseq, lambda, vsigma, Temp = 298) {
 }
 
 # psd from r/C time-domain representation
-prony.psd.rC <- function(fseq, lambda, vsigma, Temp) {
+prony_psd_rC <- function(fseq, lambda, vsigma, Temp) {
   kB <- 1.3806488e-23 # Boltzmann constant, J/K
   K <- length(lambda)
   N <- length(fseq)
   # coefficients
-  rC <- subdiff::prony.coeff(lambda)
+  rC <- subdiff::prony_coeff(lambda)
   r <- rC$r
   C <- rC$C
   Sx <- C[1]^2 / (2 * pi * fseq)^2 # BM component

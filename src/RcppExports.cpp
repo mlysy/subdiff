@@ -56,13 +56,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // ModePoly
-NumericVector ModePoly(NumericVector roots, double nIter, double tol);
+NumericVector ModePoly(NumericVector roots, int nIter, double tol);
 RcppExport SEXP _subdiff_ModePoly(SEXP rootsSEXP, SEXP nIterSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type roots(rootsSEXP);
-    Rcpp::traits::input_parameter< double >::type nIter(nIterSEXP);
+    Rcpp::traits::input_parameter< int >::type nIter(nIterSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
     rcpp_result_gen = Rcpp::wrap(ModePoly(roots, nIter, tol));
     return rcpp_result_gen;

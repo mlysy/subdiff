@@ -18,50 +18,50 @@
 #' @param alpha Rouse-GLE subdiffusion coefficient.
 #' @param K Number of modes in relaxation spectrum.
 #' @param tau Shortest timescale of force memory.
-#' @param rouse.alpha whether to use the Rouse-GLE's \code{alpha} parameter or estimate \code{alpha} by least-squares.
-#' @param ... Additional arguments to pass to \code{prony.coeff}.
+#' @param est_alpha If \code{FALSE}, use the Rouse-GLE's \code{alpha} parameter, otherwise estimate \code{alpha} by least-squares.
+#' @param ... Additional arguments to pass to \code{prony_coeff}.
 #' @return Vector with named elements \code{tmin}, \code{tmax}, \code{alpha}, and \code{D}.
 #' @export
-rouse.sub <- function(alpha, tau, K, rouse.alpha = FALSE, ...) {
+rouse_sub <- function(alpha, tau, K, est_alpha = TRUE, ...) {
   nPrec <- 5e3 # for fitting D_eff and alpha_eff
   lambda <- ((1:K)/K)^(1/alpha)/tau
   # Rouse coefficients
-  rC <- prony.coeff(lambda, ...)
+  rC <- prony_coeff(lambda, ...)
   r <- rC$r
   C <- rC$C
   # subdiffusive timescale
-  uScale <- .init.uScale(alpha, tau, K, r, C) # overcover, then decrease
+  uScale <- .init_uScale(alpha, tau, K, r, C) # overcover, then decrease
   # inflection method for subdiffusive timescale
-  uMin <- optimize(f = function(u) .prony.lmsd(u, r, C)[3],
+  uMin <- optimize(f = function(u) .prony_lmsd(u, r, C)[3],
                    interval = uScale)$min
-  uMax <- optimize(f = function(u) -.prony.lmsd(u, r, C)[3],
+  uMax <- optimize(f = function(u) -.prony_lmsd(u, r, C)[3],
                    interval = uScale)$min
   # effective subdiffusion and diffusivity coefficients
-  if(!rouse.alpha) alpha <- NULL
-  aD <- .subdiff.fit(seq(uMin, uMax, len = nPrec), r, C, K, alpha)
+  if(est_alpha) alpha <- NULL
+  aD <- .subdiff_fit(seq(uMin, uMax, len = nPrec), r, C, K, alpha)
   c(tmin = exp(uMin), tmax = exp(uMax), aD)
 }
 
 # initialize the search interval for subdiffusive timescale
 # start with smallest/largest timescale of force memory,
 # decrease/increase limits by 10x until 1st der of log-log msd > .99
-.init.uScale <- function(alpha, tau, K, r, C) {
+.init_uScale <- function(alpha, tau, K, r, C) {
   uScale <- log(tau * c(1, K)^(1/alpha)) # quick approximation
   #tScale <- tau * c(1, K)^(1/alpha) # quick approximation
   # expand interval until der. of loglog msd ~ 1
-  lmsdp <- c(.prony.lmsd(uScale[1], r, C)[2],
-             .prony.lmsd(uScale[2], r, C)[2])
+  lmsdp <- c(.prony_lmsd(uScale[1], r, C)[2],
+             .prony_lmsd(uScale[2], r, C)[2])
   lg10 <- log(10)
   for(ii in 1:100) {
     cutoff <- lmsdp < .99
     if(any(cutoff)) {
       if(cutoff[1]) {
         uScale[1] <- uScale[1] - lg10
-        lmsdp[1] <- .prony.lmsd(uScale[1], r, C)[2]
+        lmsdp[1] <- .prony_lmsd(uScale[1], r, C)[2]
       }
       if(cutoff[2]) {
         uScale[2] <- uScale[2] + lg10
-        lmsdp[2] <- .prony.lmsd(uScale[2], r, C)[2]
+        lmsdp[2] <- .prony_lmsd(uScale[2], r, C)[2]
       }
     } else break
   }
@@ -71,7 +71,7 @@ rouse.sub <- function(alpha, tau, K, rouse.alpha = FALSE, ...) {
 
 # log-log prony-msd and its derivatives.
 # u: log-time, a scalar.
-.prony.lmsd <- function(u, r, C) {
+.prony_lmsd <- function(u, r, C) {
   K <- length(C)
   t <- exp(u)
   if(K > 1) {
@@ -103,8 +103,8 @@ rouse.sub <- function(alpha, tau, K, rouse.alpha = FALSE, ...) {
 
 # effective subdiffusion and diffusivity constants
 # only estimates alpha if it is NULL
-.subdiff.fit <- function(useq, r, C, K, alpha = NULL) {
-  msd <- prony.msd(exp(useq), r = r, C = C)*K
+.subdiff_fit <- function(useq, r, C, K, alpha = NULL) {
+  msd <- prony_msd(exp(useq), r = r, C = C)*K
   yy <- log(msd)
   xx <- useq
   ybar <- mean(yy)
