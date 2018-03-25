@@ -106,9 +106,9 @@ gof_plot <- function(Xt, dT, theta, type = c("qq", "hist"), main) {
       zz <- c(Z)
     }
     if(type == "hist") {
-      .hist_plot(zz, xlab = xlab[ii], main = main[ii], lgd = lgd)
+      hist_plot(zz, xlab = xlab[ii], main = main[ii], lgd = lgd)
     } else if(type == "qq") {
-      .qq_plot(zz, main = main[ii], lgd = lgd)
+      qq_plot(zz, main = main[ii], lgd = lgd)
     }
   }
   # outer margin
@@ -116,16 +116,16 @@ gof_plot <- function(Xt, dT, theta, type = c("qq", "hist"), main) {
 }
 
 # helper function for histogram
-.hist_plot <- function(Z, xlab, main, lgd) {
+hist_plot <- function(Z, xlab, main = "", lgd) {
   hist(Z, breaks = 25, freq = FALSE, main = main,
        xlab = "", ylab = "")
   curve(dnorm, add = TRUE, col = "red")
   title(xlab = xlab, ylab = "Density", line = 2.5)
-  legend("topright", legend = parse(text = lgd))
+  if(!missing(lgd)) legend("topright", legend = parse(text = lgd))
 }
 
 # helper function for qq plot
-.qq_plot <- function(Z, main, lgd) {
+qq_plot <- function(Z, main = "", lgd) {
   qq <- qqnorm(Z, plot.it = FALSE)
   plot(0, type = "n", xlim = range(qq$x), ylim = range(qq$y),
        xlab = "", ylab = "", main = main)
@@ -133,7 +133,7 @@ gof_plot <- function(Xt, dT, theta, type = c("qq", "hist"), main) {
   points(qq$x, qq$y, pch = 16, cex = .5)
   title(xlab = "Theoretical Quantiles",
         ylab = "Sample Quantiles", line = 2.5)
-  legend("bottomright", legend = parse(text = lgd))
+  if(!missing(lgd)) legend("bottomright", legend = parse(text = lgd))
 }
 
 #--- msd reconstruction --------------------------------------------------------
