@@ -26,6 +26,21 @@ fds_fit <- function(dX, dT, type = "naive", Tz, ds, var_calc = TRUE) {
   fbm_fit(dX, dT*ds, Tz, var_calc)
 }
 
+downSample <- function(Yt, ds, pos = 1) {
+  if(pos > ds) {
+    stop("position index must be smaller than downsample rate.")
+  }
+  if(ds == 1) {
+    Yt
+  } else {
+    N <- nrow(Yt)
+    N.ds <- floor(N/ds)
+    Yt.ds <- Yt[seq(from = pos, by = ds, length.out = N.ds), ]
+    Yt.ds
+  }
+}
+
+
 .ds.comp <- function(Xt, dT, Tz, ds, var_calc) {
   # memory allocation
   N <- nrow(Xt)

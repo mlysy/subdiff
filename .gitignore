@@ -6,5 +6,3 @@
 *.dll
 *.pdf
 vignettes/.build.timestamp
-src/RcppExports.cpp
-R/RcppExports.R
