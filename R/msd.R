@@ -1,17 +1,22 @@
-#' @title Mean Square Displacement
-#' @param Xt trajectory
-#' @param dT interobservation time, required when computing slope \code{alpha}
-#' @param nlag order of MSD of interested, default 20
-#' @param msd.only logical, return both computed msd and slope of msd when TRUE
-#' @return vector of length \code{nlag}
+#' Sample estimate of mean squared displacement.
+#'
+#' @param Xt Vector or matrix of trajectories (each one is a column).
+#' @param nlag Number of msd lags to calculate.
+#' @param dT Optional interobservation time.  If supplied, estimates subdiffusion parameters \code{alpha, D} by regressing MSD on log-log scale.
+#' @return Sample MSD vector of length \code{nlag}, or list with elements \code{msd}, \code{alpha}, \code{D}.
 #' @export
-msd <- function(Xt, dT, nlag = 30, msd.only = TRUE) {
-  N <- length(Xt)
+msd_fit <- function(Xt, nlag, dT = NULL) {
+  Xt <- as.matrix(Xt)
+  N <- nrow(Xt)
+  if(missing(nlag)) nlag <- floor(10 * (log10(N) - log10(ncol(Xt))))
+  nlag <- min(nlag, N-1)
+  # output
   ans <- rep(NA, nlag)
   for(ii in 1:nlag) {
-    ans[ii] <- mean(diff(Xt, lag = ii)^2)
+    ans[ii] <- mean(apply(Xt, 2, diff, lag = ii)^2)
   }
-  if(!msd.only) {
+  if(!is.null(dT)) {
+    # log-log regression estimate
     yy <-  log(ans)
     xx <- log(1:nlag * dT)
     ybar <- mean(yy)
