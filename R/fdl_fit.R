@@ -103,7 +103,9 @@ fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1 <- fdyn_acf(alpha, tau, dT, N)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.prof(suff)
+    nlp <- -lmn.prof(suff)
+    # penalty on tau
+    nlp + log1pe(theta[2]) + log1pe(-theta[2])
   }
   # likelihood on transformed scale
   negloglik <- function(theta) {
@@ -114,7 +116,9 @@ fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1 <- fdyn_acf(alpha, tau, dT, N)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    nlp <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    # penalty on tau
+    nlp + log1pe(theta[2]) + log1pe(-theta[2])
   }
   # calculate MLE
   fit <- optim(fn = negll.prof, par = c(0,0.1), ...)
@@ -157,7 +161,9 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.prof(suff)
+    nlp <- -lmn.prof(suff)
+    # penalty on sigma2
+    nlp - theta[3]
   }
   # likelihood on transformed scale
   negloglik <- function(theta) {
@@ -169,7 +175,9 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    nlp <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    # penalty on sigma2
+    nlp - theta[3]
   }
   # calculate MLE
   fit <- optim(fn = ll.prof, par = c(0, 0.1),
