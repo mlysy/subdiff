@@ -2,9 +2,12 @@
 % Please edit documentation in R/fma_fit.R
 \name{fma_fit}
 \alias{fma_fit}
+\alias{fma_trunc}
 \title{Fit the fractional MA(1) model.}
 \usage{
 fma_fit(dX, dT, nlag, Tz, var_calc = TRUE, ...)
+
+fma_trunc(dX, dT, rho)
 }
 \arguments{
 \item{dX}{one or two-column matrix of trajectory increments.}

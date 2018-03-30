@@ -4,6 +4,7 @@
 \alias{fdl_fit}
 \alias{fdy_fit}
 \alias{flo_fit}
+\alias{fdy_trunc}
 \title{Fit the fractional dynamic localization error model.}
 \usage{
 fdl_fit(dX, dT, Tz, var_calc = TRUE, theta0, ...)
@@ -11,6 +12,8 @@ fdl_fit(dX, dT, Tz, var_calc = TRUE, theta0, ...)
 fdy_fit(dX, dT, Tz, var_calc = TRUE, ...)
 
 flo_fit(dX, dT, Tz, var_calc = TRUE, ...)
+
+fdy_trunc(dX, dT, tau)
 }
 \arguments{
 \item{dX}{one or two-column matrix of trajectory increments.}
