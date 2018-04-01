@@ -8,10 +8,11 @@ rmax <- function(dX) {
 }
 
 # z-score of max increment instead
-zmax <- function(dX) {
+zmax <- function(dX, log = FALSE) {
   ## mu <- apply(dX, 2, median)
   mu <- colMeans(dX)
   D <- sqrt(colSums((t(dX) - mu)^2)) # increment sizes
+  if(log) D <- log(D)
   (max(D) - mean(D))/sd(D)
 }
 
