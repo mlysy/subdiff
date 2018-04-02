@@ -26,14 +26,16 @@ msd_fit <- function(Xt, nlag, demean = TRUE, dT = NULL, msd) {
     nlag <- length(msd)
   }
   if(!is.null(dT)) {
+    ww <- 1/(1:nlag)
+    ww <- ww/sum(ww)
     # log-log regression estimate
     yy <-  log(msd)
     xx <- log(1:nlag * dT)
-    ybar <- mean(yy)
-    xbar <- mean(xx)
+    ybar <- sum(ww * yy)
+    xbar <- sum(ww * xx)
     yy <- yy - ybar
     xx <- xx - xbar
-    alpha <- mean(yy * xx) / mean(xx^2)
+    alpha <- sum(ww * yy * xx) / sum(ww * xx^2)
     D <- exp(ybar - alpha * xbar)
     msd <- list(msd = msd, alpha = alpha, D = D)
   }
