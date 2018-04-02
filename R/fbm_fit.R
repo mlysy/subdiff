@@ -14,11 +14,11 @@
 fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
   # memory allocation
   N <- nrow(dX)
-  q <- ncol(dX)
-  nq <- if(q == 1) 1 else 3
-  ntheta <- 1+q+nq
+  qq <- ncol(dX)
+  nq <- if(qq == 1) 1 else 3
+  ntheta <- 1+qq+nq
   theta_hat <- rep(NA, ntheta)
-  theta_names <- c("gamma", paste0("mu", 1:q), paste0("lambda", 1:nq))
+  theta_names <- c("gamma", paste0("mu", 1:qq), paste0("lambda", 1:nq))
   if(missing(Tz)) Tz <- Toeplitz(n = N)
   # profile likelihood on regular scale
   ll.prof <- function(theta) {
@@ -30,8 +30,8 @@ fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
   # likelihood on transformed scale
   loglik <- function(theta) {
     alpha <- itrans_alpha(theta[1])
-    mu <- theta[1+1:q]
-    Sigma <- itrans_Sigma(theta[1+q+1:nq]) # default: log(D)
+    mu <- theta[1+1:qq]
+    Sigma <- itrans_Sigma(theta[1+qq+1:nq]) # default: log(D)
     Tz$setAcf(fbm_acf(alpha, dT, N))
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
     lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
@@ -42,8 +42,8 @@ fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
   Tz$setAcf(fbm_acf(theta_hat[1], dT, N)) # profiled parameters
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
   theta_hat[1] <- trans_alpha(theta_hat[1]) # normalized scale
-  theta_hat[1+1:q] <- suff$Beta
-  theta_hat[1+q+1:nq] <- trans_Sigma(suff$S/suff$n)
+  theta_hat[1+1:qq] <- suff$Beta
+  theta_hat[1+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   names(theta_hat) <- theta_names
   ans <- theta_hat # no-copy unless ans is modified
   if(var_calc) {

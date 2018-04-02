@@ -1,5 +1,5 @@
 #' fBM inference using composite downsampling
-#' 
+#'
 #' @param dX one or two-column matrix of trajectory increments.
 #' @param dT Interobservation time.
 #' @param type type of downsampling method, "naive" means using basic downsampling method, "comp"
@@ -13,8 +13,8 @@
 #' @export
 fds_fit <- function(dX, dT, type = "naive", Tz, ds, var_calc = TRUE) {
   Xt <- apply(rbind(0, dX), 2, cumsum)
-  switch(type, 
-         naive = .ds.naive(Xt, dT, Tz, ds, var_calc), 
+  switch(type,
+         naive = .ds.naive(Xt, dT, Tz, ds, var_calc),
          comp = .ds.comp(Xt, dT, Tz, ds, var_calc))
 }
 
@@ -22,7 +22,7 @@ fds_fit <- function(dX, dT, type = "naive", Tz, ds, var_calc = TRUE) {
   # downsampling
   Xt <- downSample(Xt, ds)
   dX <- apply(Xt, 2, diff)
-  
+
   fbm_fit(dX, dT*ds, Tz, var_calc)
 }
 
@@ -44,12 +44,12 @@ downSample <- function(Yt, ds, pos = 1) {
 .ds.comp <- function(Xt, dT, Tz, ds, var_calc) {
   # memory allocation
   N <- nrow(Xt)
-  q <- ncol(Xt)
+  qq <- ncol(Xt)
   N_ds <- floor(N/ds) - 1
-  nq <- if(q == 1) 1 else 3
-  ntheta <- 1+q+nq
+  nq <- if(qq == 1) 1 else 3
+  ntheta <- 1+qq+nq
   theta_hat <- rep(NA, ntheta)
-  theta_names <- c("gamma", paste0("mu", 1:q), paste0("lambda", 1:nq))
+  theta_names <- c("gamma", paste0("mu", 1:qq), paste0("lambda", 1:nq))
   if(missing(Tz)) Tz <- Toeplitz(n = N_ds)
   # profile likelihood on transformed scale
   ll.prof <- function(theta) {
@@ -60,8 +60,8 @@ downSample <- function(Yt, ds, pos = 1) {
   # likelihood on transformed scale
   loglik <- function(theta) {
     alpha <- itrans_alpha(theta[1])
-    mu <- theta[1+1:q]
-    Sigma <- itrans_Sigma(theta[1+q+1:nq]) # default: log(D)
+    mu <- theta[1+1:qq]
+    Sigma <- itrans_Sigma(theta[1+qq+1:nq]) # default: log(D)
     Tz$setAcf(fbm_acf(alpha, dT*ds, N_ds))
     composite.full(Y = Xt, X = dT, Beta = mu, Sigma = Sigma, acf = Tz, ds = ds)
   }
@@ -70,8 +70,8 @@ downSample <- function(Yt, ds, pos = 1) {
   theta_hat[1] <- fit$maximum # profiled parameters
   Tz$setAcf(fbm_acf(itrans_alpha(theta_hat[1]), dT*ds, N_ds))
   suff <- composite.suff(Y = Xt, X = dT, acf = Tz, ds = ds)
-  theta_hat[1+1:q] <- suff$Beta
-  theta_hat[1+q+1:nq] <- trans_Sigma(suff$S/suff$n.ds/ds)
+  theta_hat[1+1:qq] <- suff$Beta
+  theta_hat[1+qq+1:nq] <- trans_Sigma(suff$S/suff$n.ds/ds)
   names(theta_hat) <- theta_names
   ans <- theta_hat # no-copy unless ans is modified
   if(var_calc) {

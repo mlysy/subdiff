@@ -16,12 +16,13 @@
 fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   # memory allocation
   N <- nrow(dX)
-  q <- ncol(dX)
-  nq <- if(q == 1) 1 else 3
+  qq <- ncol(dX)
+  nq <- if(qq == 1) 1 else 3
   if(missing(nlag)) nlag <- 1
-  ntheta <- 1+nlag+q+nq
+  ntheta <- 1+nlag+qq+nq
   theta_hat <- rep(NA, ntheta)
-  theta_names <- c("gamma", paste0("eta", 1:nlag), paste0("mu", 1:q), paste0("lambda", 1:nq))
+  theta_names <- c("gamma", paste0("eta", 1:nlag), paste0("mu", 1:qq),
+                   paste0("lambda", 1:nq))
   if(missing(Tz)) Tz <- Toeplitz(n = N)
   # profile likelihood on transformed scale
   negll.prof <- function(theta) {
@@ -35,8 +36,8 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   negloglik <- function(theta) {
     alpha <- itrans_alpha(theta[1])
     rho <- itrans_rho(theta[1+1:nlag])
-    mu <- theta[1+nlag+1:q]
-    Sigma <- itrans_Sigma(theta[1+nlag+q+1:nq]) # default: log(D)
+    mu <- theta[1+nlag+1:qq]
+    Sigma <- itrans_Sigma(theta[1+nlag+qq+1:nq]) # default: log(D)
     Tz$setAcf(fma_acf(alpha, rho, dT, N))
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
     -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
@@ -47,8 +48,8 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   theta_hat[1+0:nlag] <- fit$par # profiled parameters
   Tz$setAcf(fma_acf(itrans_alpha(theta_hat[1]), itrans_rho(theta_hat[1+1:nlag]), dT, N))
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-  theta_hat[1+nlag+1:q] <- suff$Beta
-  theta_hat[1+nlag+q+1:nq] <- trans_Sigma(suff$S/suff$n)
+  theta_hat[1+nlag+1:qq] <- suff$Beta
+  theta_hat[1+nlag+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   names(theta_hat) <- theta_names
   ans <- theta_hat # no-copy unless ans is modified
   if(var_calc) {
@@ -68,7 +69,7 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
 fma_trunc <- function(dX, dT, rho) {
   # memory allocation
   N <- nrow(dX)
-  q <- ncol(dX)
+  qq <- ncol(dX)
   theta_hat <- rep(NA, 1)
   theta_names <- c("gamma")
   Tz <- Toeplitz(n = N)

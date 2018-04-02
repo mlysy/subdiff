@@ -22,11 +22,11 @@
 fdl_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
   # memory allocation
   N <- nrow(dX)
-  q <- ncol(dX)
-  nq <- if(q == 1) 1 else 3
-  ntheta <- 3+q+nq
+  qq <- ncol(dX)
+  nq <- if(qq == 1) 1 else 3
+  ntheta <- 3+qq+nq
   theta_hat <- rep(NA, ntheta)
-  theta_names <- c("gamma", "eta1", "eta2", paste0("mu", 1:q),
+  theta_names <- c("gamma", "eta1", "eta2", paste0("mu", 1:qq),
                    paste0("lambda", 1:nq))
   if(missing(Tz)) Tz <- Toeplitz(n = N)
   # profile likelihood on transformed scale
@@ -47,8 +47,8 @@ fdl_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
     alpha <- itrans_alpha(theta[1])
     tau <- itrans_tau(theta[2])
     sigma2 <- exp(2*theta[3])
-    mu <- theta[3+1:q]
-    Sigma <- itrans_Sigma(theta[3+q+1:nq]) # default: log(D)
+    mu <- theta[3+1:qq]
+    Sigma <- itrans_Sigma(theta[3+qq+1:nq]) # default: log(D)
     acf1 <- fdyn_acf(alpha, tau, dT, N) # + sigma2 * c(2, -1, rep(0, N-2))
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
@@ -70,8 +70,8 @@ fdl_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
   acf1[1:2] <- acf1[1:2] + exp(2*theta_hat[3]) * c(2, -1)
   Tz$setAcf(acf1)
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-  theta_hat[3+1:q] <- suff$Beta
-  theta_hat[3+q+1:nq] <- trans_Sigma(suff$S/suff$n)
+  theta_hat[3+1:qq] <- suff$Beta
+  theta_hat[3+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   names(theta_hat) <- theta_names
   ans <- theta_hat # no-copy unless ans is modified
   if(var_calc) {
@@ -90,11 +90,11 @@ fdl_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
 fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   # memory allocation
   N <- nrow(dX)
-  q <- ncol(dX)
-  nq <- if(q == 1) 1 else 3
-  ntheta <- 2+q+nq
+  qq <- ncol(dX)
+  nq <- if(qq == 1) 1 else 3
+  ntheta <- 2+qq+nq
   theta_hat <- rep(NA, ntheta)
-  theta_names <- c("gamma", "eta", paste0("mu", 1:q), paste0("lambda", 1:nq))
+  theta_names <- c("gamma", "eta", paste0("mu", 1:qq), paste0("lambda", 1:nq))
   if(missing(Tz)) Tz <- Toeplitz(n = N)
   # profile likelihood on transformed scale
   negll.prof <- function(theta) {
@@ -111,8 +111,8 @@ fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   negloglik <- function(theta) {
     alpha <- itrans_alpha(theta[1])
     tau <- itrans_tau(theta[2])
-    mu <- theta[2+1:q]
-    Sigma <- itrans_Sigma(theta[2+q+1:nq]) # default: log(D)
+    mu <- theta[2+1:qq]
+    Sigma <- itrans_Sigma(theta[2+qq+1:nq]) # default: log(D)
     acf1 <- fdyn_acf(alpha, tau, dT, N)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
@@ -127,8 +127,8 @@ fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   acf1 <- fdyn_acf(itrans_alpha(theta_hat[1]), itrans_tau(theta_hat[2]), dT, N)
   Tz$setAcf(acf1)
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-  theta_hat[2+1:q] <- suff$Beta
-  theta_hat[2+q+1:nq] <- trans_Sigma(suff$S/suff$n)
+  theta_hat[2+1:qq] <- suff$Beta
+  theta_hat[2+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   names(theta_hat) <- theta_names
   ans <- theta_hat # no-copy unless ans is modified
   if(var_calc) {
@@ -147,11 +147,11 @@ fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
 flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   # memory allocation
   N <- nrow(dX)
-  q <- ncol(dX)
-  nq <- if(q == 1) 1 else 3
-  ntheta <- 2+q+nq
+  qq <- ncol(dX)
+  nq <- if(qq == 1) 1 else 3
+  ntheta <- 2+qq+nq
   theta_hat <- rep(NA, ntheta)
-  theta_names <- c("gamma", "eta", paste0("mu", 1:q), paste0("lambda", 1:nq))
+  theta_names <- c("gamma", "eta", paste0("mu", 1:qq), paste0("lambda", 1:nq))
   if(missing(Tz)) Tz <- Toeplitz(n = N)
   # profile likelihood on transformed scale
   negll.prof <- function(theta) {
@@ -169,8 +169,8 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   negloglik <- function(theta) {
     alpha <- itrans_alpha(theta[1])
     sigma2 <- exp(2*theta[2])
-    mu <- theta[2+1:q]
-    Sigma <- itrans_Sigma(theta[2+q+1:nq]) # default: log(D)
+    mu <- theta[2+1:qq]
+    Sigma <- itrans_Sigma(theta[2+qq+1:nq]) # default: log(D)
     acf1 <- fbm_acf(alpha, dT, N)
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
@@ -188,8 +188,8 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
   acf1[1:2] <- acf1[1:2] + exp(2*theta_hat[2]) * c(2, -1)
   Tz$setAcf(acf1)
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-  theta_hat[2+1:q] <- suff$Beta
-  theta_hat[2+q+1:nq] <- trans_Sigma(suff$S/suff$n)
+  theta_hat[2+1:qq] <- suff$Beta
+  theta_hat[2+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   names(theta_hat) <- theta_names
   ans <- theta_hat # no-copy unless ans is modified
   if(var_calc) {
@@ -220,7 +220,7 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
 fdy_trunc <- function(dX, dT, tau) {
   # memory allocation
   N <- nrow(dX)
-  q <- ncol(dX)
+  qq <- ncol(dX)
   theta_hat <- rep(NA, 1)
   theta_names <- c("gamma")
   Tz <- Toeplitz(n = N)

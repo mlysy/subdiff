@@ -1,5 +1,5 @@
+#--- solve method for variance matrices ----------------------------------------
 
-# solve method for variance matrices
 # optionally computes log determinant as well
 solveV <- function(V, x, ldV = FALSE) {
   C <- chol(V)
