@@ -68,6 +68,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// SampleMSD
+NumericVector SampleMSD(NumericMatrix X, int nLags);
+RcppExport SEXP _subdiff_SampleMSD(SEXP XSEXP, SEXP nLagsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type nLags(nLagsSEXP);
+    rcpp_result_gen = Rcpp::wrap(SampleMSD(X, nLags));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_subdiff_log1pexp_wrapper", (DL_FUNC) &_subdiff_log1pexp_wrapper, 1},
@@ -75,6 +87,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_subdiff_ma2Resid", (DL_FUNC) &_subdiff_ma2Resid, 3},
     {"_subdiff_ma3Resid", (DL_FUNC) &_subdiff_ma3Resid, 4},
     {"_subdiff_ModePoly", (DL_FUNC) &_subdiff_ModePoly, 3},
+    {"_subdiff_SampleMSD", (DL_FUNC) &_subdiff_SampleMSD, 2},
     {NULL, NULL, 0}
 };
 

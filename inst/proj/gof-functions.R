@@ -181,7 +181,7 @@ msd_ci <- function(msd, npaths = ncol(msd), nboot = 1000) {
   ## n <- ncol(x)
   mu.boot <- replicate(nboot, {
     ind <- sample(ncol(msd), npaths, replace = TRUE)
-    log(rowMeans(msd[,ind], na.rm = TRUE))
+    log(rowMeans(msd[,ind,drop=FALSE], na.rm = TRUE))
   })
   sig <- apply(mu.boot, 1, sd)
   ci <- exp(log(mu) + cbind(L = -2*sig, U = 2*sig))
@@ -205,4 +205,42 @@ fbm_sim <- function(theta, dT, N, Z) {
     ## dX <- t(t(dX %*% C) + mu * dT)
   }
   apply(rbind(0, t(t(dX) + mu * dT)), 2, cumsum)
+}
+
+# msd per-trajectory + various estimates of overall msd
+msd_plot <- function(tseq, ci_list, msd, clrs) {
+  # plot msd
+  multi.plot(tseq, msd, log = "xy",
+             ylim = range(msd, unlist(ci_list), na.rm = TRUE),
+             col = clrs[1])
+  # plot CI's
+  for(ii in 1:(length(clrs)-1)) {
+    multi.plot(tseq, ci_list[[ii]], lty = c(1,2,2), lwd = c(2,1,1),
+               col = clrs[ii+1], add = TRUE)
+  }
+  invisible(NULL)
+}
+
+multi.plot <- function (x, y, xlim, ylim, add = FALSE, axes = TRUE,
+                        log = "", ...) {
+  # plot limits
+  if(missing(x)) x <- 1:nrow(y)
+  if(missing(xlim)) xlim <- range(x, na.rm = TRUE, finite = TRUE)
+  if(missing(ylim)) ylim <- range(y, na.rm = TRUE, finite = TRUE)
+  # new plot
+  if(!add) {
+    plot.new()
+    plot.window(xlim = xlim, ylim = ylim, log = log)
+  }
+  # axes
+  if(axes) {
+    box()
+    axis(side = 1)
+    axis(side = 2)
+  }
+  # content
+  invisible(do.call(mapply, args = c(list(FUN = lines,
+                                          x = as.data.frame(x),
+                                          y = as.data.frame(y)),
+                                     list(...))))
 }

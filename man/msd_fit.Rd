@@ -4,7 +4,7 @@
 \alias{msd_fit}
 \title{Sample estimate of mean squared displacement.}
 \usage{
-msd_fit(Xt, nlag, demean = TRUE, dT = NULL, msd)
+msd_fit(Xt, nlag, demean = TRUE, dT = NULL, logw = FALSE, msd)
 }
 \arguments{
 \item{Xt}{Vector or matrix of trajectories (each one is a column).}
@@ -15,11 +15,24 @@ msd_fit(Xt, nlag, demean = TRUE, dT = NULL, msd)
 
 \item{dT}{Optional interobservation time.  If supplied, estimates subdiffusion parameters \code{(alpha, D)} by regressing MSD over time on log-log scale.}
 
-\item{msd}{Optionally pre-computed sample MSD, in which case it is used for regression estimate of \code{(alpha, D)}.}
+\item{logw}{Logical; whether or not regression should be log-weighted (see Details).}
+
+\item{msd}{Optionally pre-computed sample MSD, in which case it is used for the regression estimate of \code{(alpha, D)}.}
 }
 \value{
 Sample MSD vector of length \code{nlag}, or list with elements \code{msd}, \code{alpha}, \code{D}.
 }
 \description{
 Sample estimate of mean squared displacement.
+}
+\details{
+When \code{dT} is supplied, a power-law fit to the empirical MSD is calculated by performing the linear regression
+\preformatted{
+log(msd) ~ log(D) + alpha * log(time).
+}
+From a curve fitting perspective, we seek to estimate the "best" power-law describing the MSD, i.e., if MSD(t) is the true MSD at time t, then the best power law minimizes
+\preformatted{
+integral_0^Inf | log MSD(t) - log(D) - alpha * log(t) |^2 w(t) dt,
+}
+where \code{w(t) > 0} is a weight function.  The default value of \code{logw = FALSE} uses \code{w(t) = 1}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting \code{logw = TRUE} uses uniform weighting on the log-scale, which corresponds to \code{w(t) = 1/t}.
 }

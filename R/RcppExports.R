@@ -21,3 +21,7 @@ ma3_resid <- function(Xt, rho1, rho2, rho3) {
     .Call(`_subdiff_ModePoly`, roots, nIter, tol)
 }
 
+.SampleMSD <- function(X, nLags) {
+    .Call(`_subdiff_SampleMSD`, X, nLags)
+}
+
