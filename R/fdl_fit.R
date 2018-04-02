@@ -103,7 +103,9 @@ fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1 <- fdyn_acf(alpha, tau, dT, N)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.prof(suff)
+    nlp <- -lmn.prof(suff)
+    # penalty on tau
+    nlp + log1pe(theta[2]) + log1pe(-theta[2])
   }
   # likelihood on transformed scale
   negloglik <- function(theta) {
@@ -114,7 +116,9 @@ fdy_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1 <- fdyn_acf(alpha, tau, dT, N)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    nlp <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    # penalty on tau
+    nlp + log1pe(theta[2]) + log1pe(-theta[2])
   }
   # calculate MLE
   fit <- optim(fn = negll.prof, par = c(0,0.1), ...)
@@ -157,7 +161,9 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.prof(suff)
+    nlp <- -lmn.prof(suff)
+    # penalty on sigma2
+    nlp - theta[3]
   }
   # likelihood on transformed scale
   negloglik <- function(theta) {
@@ -169,7 +175,9 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
     suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-    -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    nlp <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
+    # penalty on sigma2
+    nlp - theta[3]
   }
   # calculate MLE
   fit <- optim(fn = ll.prof, par = c(0, 0.1),
@@ -205,3 +213,32 @@ flo_fit <- function(dX, dT, Tz, var_calc = TRUE, ...) {
 # p = ilogit(eta) = 1/(1+exp(eta))
 # 1-p = exp(eta)/(1+exp(eta)) * exp(-eta)/exp(-eta) = 1/(exp(-eta)+1)
 # => pen(eta) = log(1) - log(1+exp(eta)) + log(1) - log(1+exp(-eta))
+
+#' @rdname fdl_fit
+#' @export
+# truncted estimation function for fdy
+fdy_trunc <- function(dX, dT, tau) {
+  # memory allocation
+  N <- nrow(dX)
+  q <- ncol(dX)
+  theta_hat <- rep(NA, 1)
+  theta_names <- c("gamma")
+  Tz <- Toeplitz(n = N)
+  # profile likelihood on regular scale
+  ll.prof <- function(theta) {
+    alpha <- itrans_alpha(theta)
+    Tz$setAcf(fdyn_acf(alpha, tau, dT, N))
+    suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
+    lmn.prof(suff)
+  }
+  # calculate MLE
+  theta_hat <- optimize(f = ll.prof,
+                        interval = c(-5.3, -0.02), maximum = TRUE)$maximum
+  names(theta_hat) <- theta_names
+  # variance estimate
+  V_hat <- hessian(ll.prof, x = theta_hat)
+  V_hat <- subdiff:::solveV(-V_hat)
+  colnames(V_hat) <- theta_names
+  rownames(V_hat) <- theta_names
+  list(coef = theta_hat, vcov = V_hat)
+}

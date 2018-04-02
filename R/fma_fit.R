@@ -61,3 +61,32 @@ fma_fit <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   }
   ans
 }
+
+
+#' @rdname fma_fit
+#' @export
+fma_trunc <- function(dX, dT, rho) {
+  # memory allocation
+  N <- nrow(dX)
+  q <- ncol(dX)
+  theta_hat <- rep(NA, 1)
+  theta_names <- c("gamma")
+  Tz <- Toeplitz(n = N)
+  # profile likelihood on regular scale
+  ll.prof <- function(theta) {
+    alpha <- itrans_alpha(theta)
+    Tz$setAcf(fma_acf(alpha, rho, dT, N))
+    suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
+    lmn.prof(suff)
+  }
+  # calculate MLE
+  theta_hat <- optimize(f = ll.prof,
+                        interval = c(-5.3, -0.02), maximum = TRUE)$maximum
+  names(theta_hat) <- theta_names
+  # variance estimate
+  V_hat <- hessian(ll.prof, x = theta_hat)
+  V_hat <- subdiff:::solveV(-V_hat)
+  colnames(V_hat) <- theta_names
+  rownames(V_hat) <- theta_names
+  list(coef = theta_hat, vcov = V_hat)
+}
