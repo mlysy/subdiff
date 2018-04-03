@@ -65,12 +65,12 @@ fds_resid <- function(theta, dX, dT, type = "naive", ds, full = TRUE) {
   mu <- theta[1+1:q]
   Sigma <- itrans_Sigma(theta[1+q+1:nq])
   if(type == "naive") {
-    Xt_ds <- downSample(Xt, ds)
+    Xt_ds <- .down_sample(Xt, ds)
     dX_ds <- apply(Xt_ds, 2, diff)
     ans <- lsc_resid(dX_ds, ds*dT, mu, fbm_acf(alpha, ds*dT, N_ds), Sigma)
     if(full) {
      for(ii in 2:ds) {
-       Xt_ds <- downSample(Xt, ds, pos = ii)
+       Xt_ds <- .down_sample(Xt, ds, pos = ii)
        dX_ds <- apply(Xt_ds, 2, diff)
        theta2 <- fbm_fit(dX_ds, dT*ds, var_calc = FALSE)
        alpha2 <- itrans_alpha(theta2[1]) # parameters
@@ -78,7 +78,7 @@ fds_resid <- function(theta, dX, dT, type = "naive", ds, full = TRUE) {
        Sigma2 <- itrans_Sigma(theta2[1+q+1:nq])
        ans2 <- lsc_resid(dX_ds, ds*dT, mu2, fbm_acf(alpha2, ds*dT, N_ds), Sigma2)
        ans <- rbind(ans, ans2)
-     } 
+     }
     }
   } else {
     dX <- apply(Xt, 2, diff)
