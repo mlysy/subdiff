@@ -11,18 +11,15 @@
 #' @details We assume that time series dX follows MN(Beta * dT, V_fBM(alpha, dT), Sigma),
 #' thus downsampled dY_ds follows MN(Beta * ds * dT, V_fBM(alpha, dT*ds), Sigma).
 #' @export
-fds_fit <- function(dX, dT, type = "naive", Tz, ds, var_calc = TRUE) {
-  Xt <- apply(rbind(0, dX), 2, cumsum)
-  switch(type, 
-         naive = .ds.naive(Xt, dT, Tz, ds, var_calc), 
-         comp = .ds.comp(Xt, dT, Tz, ds, var_calc))
+fds_fit <- function(dX, dT, ds, var_calc = TRUE, Tz) {
+  Xt <- apply(dX, 2, cumsum)
+  .ds.naive(Xt, dT, Tz, ds, var_calc)
 }
 
 .ds.naive <- function(Xt, dT, Tz, ds, var_calc) {
   # downsampling
   Xt <- downSample(Xt, ds)
   dX <- apply(Xt, 2, diff)
-  
   fbm_fit(dX, dT*ds, Tz, var_calc)
 }
 
@@ -36,7 +33,7 @@ downSample <- function(Yt, ds, pos = 1) {
     N <- nrow(Yt)
     N.ds <- floor(N/ds)
     Yt.ds <- Yt[seq(from = pos, by = ds, length.out = N.ds), ]
-    Yt.ds
+    as.matrix(Yt.ds)
   }
 }
 

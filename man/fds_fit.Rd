@@ -4,19 +4,19 @@
 \alias{fds_fit}
 \title{fBM inference using composite downsampling}
 \usage{
-fds_fit(dX, dT, type = "naive", Tz, ds, var_calc = TRUE)
+fds_fit(dX, dT, ds, var_calc = TRUE, Tz)
 }
 \arguments{
 \item{dX}{one or two-column matrix of trajectory increments.}
 
 \item{dT}{Interobservation time.}
 
-\item{type}{type of downsampling method, "naive" means using basic downsampling method, "comp"
-means using composite downsampling method}
+\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+\item{type}{type of downsampling method, "naive" means using basic downsampling method, "comp"
+means using composite downsampling method}
 
 \item{...}{Additional \code{control} arguments to \code{stats::optim}.}
 }
