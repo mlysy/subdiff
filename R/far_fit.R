@@ -1,12 +1,12 @@
 #' Fit the fractional AR(1) model.
 #'
-#' @param dX one or two-column matrix of trajectory increments.
-#' @param dT Interobservation time.
-#' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
+#' @template args-dX
+#' @template args-dT
+#' @template args-Tz
+#' @template args-var_calc
 #' @param theta0 Length-2 vector of initial values for \code{(alpha, rho)}.  Default value is \code{(1, 0)}.
-#' @param ... Additional arguments to \code{\link[stats]{optim}}.
-#' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+#' @template args-dots_optim
+#' @template ret-cov_vcov
 #' @details The fractional AR(1) model has the form
 #' \deqn{
 #' \Delta X_n = (1-\rho) \Delta Z_n + \rho \Delta X_{n-1},

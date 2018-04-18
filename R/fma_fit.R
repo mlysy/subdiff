@@ -1,12 +1,12 @@
 #' Fit the fractional MA(1) model.
 #'
-#' @param dX one or two-column matrix of trajectory increments.
-#' @param dT Interobservation time.
-#' @param nlag Maximum number of lags for the fMA model.
-#' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
-#' @param ... Additional arguments to \code{stats::optim}.
-#' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+#' @template args-dX
+#' @template args-dT
+#' @param nlag Number of lags (see Details).
+#' @template args-Tz
+#' @template args-var_calc
+#' @template args-dots_optim
+#' @template ret-cov_vcov
 #' @details The fractional MA(1) model has the form
 #' \deqn{
 #' \Delta X_n = (1-\rho) \Delta Z_n + \rho \Delta Z_{n-1},
@@ -86,7 +86,7 @@ fma_trunc <- function(dX, dT, rho) {
   names(theta_hat) <- theta_names
   # variance estimate
   V_hat <- hessian(ll.prof, x = theta_hat)
-  V_hat <- subdiff:::solveV(-V_hat)
+  V_hat <- solveV(-V_hat)
   colnames(V_hat) <- theta_names
   rownames(V_hat) <- theta_names
   list(coef = theta_hat, vcov = V_hat)

@@ -7,7 +7,7 @@
 far_fit(dX, dT, Tz, var_calc = TRUE, theta0, ...)
 }
 \arguments{
-\item{dX}{one or two-column matrix of trajectory increments.}
+\item{dX}{One or two-column matrix of increments.}
 
 \item{dT}{Interobservation time.}
 

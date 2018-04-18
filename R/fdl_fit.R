@@ -1,20 +1,18 @@
-#' Fit the fractional dynamic localization error model.
+#' Fit the fBM model with dynamic and localization errors.
 #'
 #' @name fdl_fit
-#' @param dX one or two-column matrix of trajectory increments.
-#' @param dT Interobservation time.
-#' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
+#' @template args-dX
+#' @template args-dT
+#' @template args-Tz
+#' @template args-var_calc
 #' @param theta0 Length-3 vector of initial values for \code{(alpha, tau, sigma)}.  Default value is \code{(1, .1, .1)}.
-#' @param ... Additional arguments to \code{\link[stats]{optim}}.
-#' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
-#' @details The fractional AR(1) model has the form
+#' @template args-dots_optim
+#' @template ret-cov_vcov
+#' @details The fBM + dynamic and localization error (fdl) model has the form
 #' \deqn{
 #' X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
 #' }
-#' where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed
-#' scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and
-#' \code{\link{trans_Sigma}}.
+#' where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
 #'
 #' The functions \code{fdy_fit} and \code{flo_fit} fit pure dynamic error and pur localization error models, respectively.
 #' @note To improve convergence, currently a small penalty term is employed to keep \code{sigma} away from 0 and \code{tau} away from 0 or 1.  Namely the penalty is \code{pen(sigma, tau) = log(sigma) + logit(tau)}.  However, this penalty is not accounted for in the variance calculation...sandwich estimator?
