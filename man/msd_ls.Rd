@@ -4,12 +4,12 @@
 \alias{msd_ls}
 \title{Least-squares power-law fit to sample mean square displacement curves.}
 \usage{
-msd_ls(msd, dT, pooled = TRUE, logw = TRUE)
+msd_ls(msd, tseq, pooled = TRUE, logw = TRUE)
 }
 \arguments{
 \item{msd}{Vector or matrix of sample MSDs, each column corresponding to a different trajectory.}
 
-\item{dT}{Scalar time increment between MSD observations (see Details).}
+\item{tseq}{Vector of time points at which the MSDs are recorded (see Details).}
 
 \item{pooled}{Logical; whether to calculate separate regressions for each MSD or pool all of them together.}
 
@@ -24,7 +24,7 @@ Least-squares power-law fit to sample mean square displacement curves.
 \details{
 A power-law fit to the empirical MSD is calculated by performing the linear regression
 \preformatted{
-log(msd) ~ log(D) + alpha * log(time).
+log(msd) ~ log(D) + alpha * log(tseq).
 }
 From a curve fitting perspective, we seek to estimate the "best" power-law describing the MSD, i.e., if MSD(t) is the true MSD at time t, then the best power law minimizes
 \preformatted{
@@ -32,5 +32,5 @@ integral_0^Inf | log MSD(t) - log(D) - alpha * log(t) |^2 w(t) dt,
 }
 where \code{w(t) > 0} is a weight function.  The default value of \code{logw = FALSE} uses \code{w(t) = 1}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting \code{logw = TRUE} uses uniform weighting on the log-scale, which corresponds to \code{w(t) = 1/t}.
 
-While the MSDs provided to the \code{msd} argument must all share a common time increment \code{dT}, they can have different lengths, in which case missing time points in the \code{msd} matrix should be indicated by \code{NA}.
+For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by \code{NA} in the \code{msd} matrix.
 }
