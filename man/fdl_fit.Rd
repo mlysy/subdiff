@@ -2,24 +2,25 @@
 % Please edit documentation in R/fdl_fit.R
 \name{fdl_fit}
 \alias{fdl_fit}
-\alias{fdy_fit}
-\alias{flo_fit}
 \title{Fit the fractional dynamic localization error model.}
 \usage{
-fdl_fit(dX, dT, Tz, var_calc = TRUE, theta0, ...)
-
-fdy_fit(dX, dT, Tz, var_calc = TRUE, ...)
-
-flo_fit(dX, dT, Tz, var_calc = TRUE, ...)
+fdl_fit(dX, dT, tau, sigma2, Tz, var_calc = TRUE, penalty = TRUE, theta0,
+  ...)
 }
 \arguments{
 \item{dX}{one or two-column matrix of trajectory increments.}
 
 \item{dT}{Interobservation time.}
 
+\item{tau}{Plug-in coefficient, requires estimation if missing,}
+
+\item{sigma2}{Plug-in coefficient, requires estimation if missing,}
+
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+
+\item{penalty}{logic, employ a small penalty on \code{(tau, sigma2)} when \code{TRUE}}
 
 \item{theta0}{Length-3 vector of initial values for \code{(alpha, tau, sigma)}.  Default value is \code{(1, .1, .1)}.}
 
@@ -39,9 +40,7 @@ X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
 where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed
 scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and
 \code{\link{trans_Sigma}}.
-
-The functions \code{fdy_fit} and \code{flo_fit} fit pure dynamic error and pur localization error models, respectively.
-}
-\note{
-To improve convergence, currently a small penalty term is employed to keep \code{sigma} away from 0 and \code{tau} away from 0 or 1.  Namely the penalty is \code{pen(sigma, tau) = log(sigma) + logit(tau)}.  However, this penalty is not accounted for in the variance calculation...sandwich estimator?
+When put \code{tau} = 0, this model becomes fractional localization error model.
+When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
+When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
 }
