@@ -10,17 +10,17 @@ fma_fit(dX, dT, nlag, Tz, var_calc = TRUE, ...)
 fma_trunc(dX, dT, rho)
 }
 \arguments{
-\item{dX}{one or two-column matrix of trajectory increments.}
+\item{dX}{One or two-column matrix of increments.}
 
 \item{dT}{Interobservation time.}
 
-\item{nlag}{Maximum number of lags for the fMA model.}
+\item{nlag}{Number of lags (see Details).}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 
-\item{...}{Additional arguments to \code{stats::optim}.}
+\item{...}{Additional arguments to \code{\link[stats]{optim}}.}
 }
 \value{
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).

@@ -1,10 +1,10 @@
 #' Fit the fBM model.
 #'
-#' @param dX One or two-column matrix of increments.
-#' @param dT Interobservation time.
-#' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
-#' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+#' @template args-dX
+#' @template args-dT
+#' @template args-Tz
+#' @template args-var_calc
+#' @template ret-cov_vcov
 #' @details The fBM model is of the form
 #' \deqn{
 #' X_t = \mu t + \Sigma^{1/2} Z_t,

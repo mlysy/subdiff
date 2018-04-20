@@ -2,12 +2,12 @@
 % Please edit documentation in R/fds_fit.R
 \name{fds_fit}
 \alias{fds_fit}
-\title{fBM inference using composite downsampling}
+\title{Fit fBM model with composite-likelihood downsampling.}
 \usage{
 fds_fit(dX, dT, ds, var_calc = TRUE, Tz)
 }
 \arguments{
-\item{dX}{one or two-column matrix of trajectory increments.}
+\item{dX}{One or two-column matrix of increments.}
 
 \item{dT}{Interobservation time.}
 
@@ -15,18 +15,16 @@ fds_fit(dX, dT, ds, var_calc = TRUE, Tz)
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
-\item{type}{type of downsampling method, "naive" means using basic downsampling method, "comp"
-means using composite downsampling method}
+\item{type}{type of downsampling method, "naive" means using basic downsampling method, "comp" means using composite likelihood (see Details).}
 
-\item{...}{Additional \code{control} arguments to \code{stats::optim}.}
+\item{...}{Additional arguments to \code{\link[stats]{optim}}.}
 }
 \value{
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 }
 \description{
-fBM inference using composite downsampling
+Fit fBM model with composite-likelihood downsampling.
 }
 \details{
-We assume that time series dX follows MN(Beta * dT, V_fBM(alpha, dT), Sigma),
-thus downsampled dY_ds follows MN(Beta * ds * dT, V_fBM(alpha, dT*ds), Sigma).
+We assume that time series dX follows MN(Beta * dT, V_fBM(alpha, dT), Sigma), thus downsampled dY_ds follows MN(Beta * ds * dT, V_fBM(alpha, dT*ds), Sigma).
 }

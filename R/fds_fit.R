@@ -1,15 +1,13 @@
-#' fBM inference using composite downsampling
+#' Fit fBM model with composite-likelihood downsampling.
 #'
-#' @param dX one or two-column matrix of trajectory increments.
-#' @param dT Interobservation time.
-#' @param type type of downsampling method, "naive" means using basic downsampling method, "comp"
-#' means using composite downsampling method
-#' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
-#' @param ... Additional \code{control} arguments to \code{stats::optim}.
-#' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
-#' @details We assume that time series dX follows MN(Beta * dT, V_fBM(alpha, dT), Sigma),
-#' thus downsampled dY_ds follows MN(Beta * ds * dT, V_fBM(alpha, dT*ds), Sigma).
+#' @template args-dX
+#' @template args-dT
+#' @param type type of downsampling method, "naive" means using basic downsampling method, "comp" means using composite likelihood (see Details).
+#' @template args-Tz
+#' @template args-var_calc
+#' @template args-dots_optim
+#' @template ret-cov_vcov
+#' @details We assume that time series dX follows MN(Beta * dT, V_fBM(alpha, dT), Sigma), thus downsampled dY_ds follows MN(Beta * ds * dT, V_fBM(alpha, dT*ds), Sigma).
 #' @export
 fds_fit <- function(dX, dT, ds, var_calc = TRUE, Tz) {
   Xt <- apply(dX, 2, cumsum)

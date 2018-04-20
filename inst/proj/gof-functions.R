@@ -1,3 +1,6 @@
+
+source(system.file("proj", "plot-functions.R", package = "subdiff"))
+
 #--- max-jump tests ------------------------------------------------------------
 
 # ratio of maximum to median increment
@@ -116,26 +119,6 @@ gof_plot <- function(Xt, dT, theta, type = c("qq", "hist"), main) {
   mtext(Main, side = 3, outer = TRUE, cex = 1, font = 2, line = .5)
 }
 
-# helper function for histogram
-hist_plot <- function(Z, xlab, main = "", lgd) {
-  hist(Z, breaks = 25, freq = FALSE, main = main,
-       xlab = "", ylab = "")
-  curve(dnorm, add = TRUE, col = "red")
-  title(xlab = xlab, ylab = "Density", line = 2.5)
-  if(!missing(lgd)) legend("topright", legend = parse(text = lgd))
-}
-
-# helper function for qq plot
-qq_plot <- function(Z, main = "", lgd) {
-  qq <- qqnorm(Z, plot.it = FALSE)
-  plot(0, type = "n", xlim = range(qq$x), ylim = range(qq$y),
-       xlab = "", ylab = "", main = main)
-  abline(a = 0, b = 1, lty = 2, col = "blue")
-  points(qq$x, qq$y, pch = 16, cex = .5)
-  title(xlab = "Theoretical Quantiles",
-        ylab = "Sample Quantiles", line = 2.5)
-  if(!missing(lgd)) legend("bottomright", legend = parse(text = lgd))
-}
 
 #--- msd reconstruction --------------------------------------------------------
 
@@ -188,6 +171,30 @@ msd_ci <- function(msd, npaths = ncol(msd), nboot = 1000) {
   cbind(est = mu, ci)
 }
 
+get_theta <- function(pathid, stats) {
+  theta <- pstats$coef
+  setNames(nm = c("alpha", "logD"),
+           object = c(itrans_alpha(theta["gamma"]), theta["lambda1"]))
+}
+
+# distance between empirical and theoretical msd
+# each column is a realization.
+# msd_theo can be a vector or matrix, in which case average is first taken
+# at each time point.
+msd_dist <- function(msd, alpha, logD, dT, msd_theo,
+                     logw = TRUE, bytime = FALSE) {
+  nlag <- nrow(msd)
+  ww <- if(logw) 1/(1:nlag) else rep(1, nlag)
+  ww <- ww/sum(ww)
+  if(missing(msd_theo)) {
+    msd_theo <- logD + alpha * log((1:nlag-1)*dT)
+  } else {
+    msd_theo <- log(rowSums(msd_theo))
+  }
+  mdist <- ww * (log(msd) - msd_theo)^2
+  if(bytime) rowSums(mdist) else sum(mdist)
+}
+
 # simulate data from fbm model
 fbm_sim <- function(theta, dT, N, Z) {
   alpha <- itrans_alpha(theta[1])
@@ -210,37 +217,14 @@ fbm_sim <- function(theta, dT, N, Z) {
 # msd per-trajectory + various estimates of overall msd
 msd_plot <- function(tseq, ci_list, msd, clrs) {
   # plot msd
-  multi.plot(tseq, msd, log = "xy",
+  .multi_plot(tseq, msd, log = "xy",
              ylim = range(msd, unlist(ci_list), na.rm = TRUE),
              col = clrs[1])
   # plot CI's
   for(ii in 1:(length(clrs)-1)) {
-    multi.plot(tseq, ci_list[[ii]], lty = c(1,2,2), lwd = c(2,1,1),
+    .multi_plot(tseq, ci_list[[ii]], lty = c(1,2,2), lwd = c(2,1,1),
                col = clrs[ii+1], add = TRUE)
   }
   invisible(NULL)
 }
 
-multi.plot <- function (x, y, xlim, ylim, add = FALSE, axes = TRUE,
-                        log = "", ...) {
-  # plot limits
-  if(missing(x)) x <- 1:nrow(y)
-  if(missing(xlim)) xlim <- range(x, na.rm = TRUE, finite = TRUE)
-  if(missing(ylim)) ylim <- range(y, na.rm = TRUE, finite = TRUE)
-  # new plot
-  if(!add) {
-    plot.new()
-    plot.window(xlim = xlim, ylim = ylim, log = log)
-  }
-  # axes
-  if(axes) {
-    box()
-    axis(side = 1)
-    axis(side = 2)
-  }
-  # content
-  invisible(do.call(mapply, args = c(list(FUN = lines,
-                                          x = as.data.frame(x),
-                                          y = as.data.frame(y)),
-                                     list(...))))
-}
