@@ -1,10 +1,25 @@
 # functions for msd calculations
 
+source(system.file("proj", "plot-functions.R", package = "subdiff"))
+
+#-------------------------------------------------------------------------------
+
+# maximum relative error to ground truth
+# msd0: vector
+# msd: vector or matrix
+max_re <- function(msd0, msd) {
+  max(exp(abs(log(msd0/msd))))
+  ## max(abs(1-msd/msd0))
+}
+
+# mu_hat is a vector of point estimates
+# mu_boot is the bootstrap sample (each column is one draw)
+# calculates the basic bootstrap
 boot_ci <- function(mu_hat, mu_boot, conf = .95) {
   conf <- (1-conf)/2
   ci <- apply(2*mu_hat - mu_boot, 1, quantile, probs = c(conf, 1-conf))
   rownames(ci) <- c("L", "U")
-  cbind(est = mu_hat, ci)
+  cbind(est = mu_hat, t(ci))
 }
 
 # msd est + ci from empirical MSDs.
@@ -22,17 +37,32 @@ emp_msdCI <- function(msd, nboot = 1000) {
   ## cbind(est = mu, t(ci))
 }
 
-# point + bootstrap estimate of aD = (alpha, D) by ls method
-ls_boot <- function(msd, tseq, logw = FALSE, nboot = 1000) {
+# msd est + ci by ls method
+ls_msdCI <- function(msd, tfit, tseq, logw = FALSE, nboot = 1000) {
   npaths <- ncol(msd)
   # point estimate
-  aD_hat <- msd_ls(msd = msd, tseq = tseq, pooled = TRUE, logw = logw)
+  aD_hat <- msd_ls(msd = msd, tseq = tfit, pooled = TRUE, logw = logw)
   # bootstrap
   aD_boot <- replicate(nboot, {
     msd_ls(msd = msd[,sample(npaths, replace = TRUE)],
-           tseq = tseq, pooled = TRUE, logw = logw)
+           tseq = tfit, pooled = TRUE, logw = logw)
   })
-  list(aD_hat = aD_hat, aD_boot = t(aD_boot))
+  # confidence interval
+  aD_msdCI(aD_hat, t(aD_boot), tseq)
+  ## list(aD_hat = aD_hat, aD_boot = t(aD_boot))
+}
+
+fbm_msdCI <- function(alpha, D, tseq, nboot = 1000) {
+  npaths <- length(alpha)
+  logD <- log(D)
+  aD_hat <- c(alpha = mean(alpha), D = exp(mean(logD)))
+  # bootstrap
+  aD_boot <- replicate(nboot, {
+    bind <- sample(npaths, npaths, replace = TRUE)
+    c(alpha = mean(alpha[bind]), D = exp(mean(logD[bind])))
+  })
+  # confidence interval
+  aD_msdCI(aD_hat, t(aD_boot), tseq)
 }
 
 # msd est + ci based on point and bootstap aD = (alpha, D) pairs
@@ -42,7 +72,7 @@ aD_msdCI <- function(aD_hat, aD_boot, tseq) {
     theta[2] + theta[1] * log(tseq)
   })
   mu_hat <-  log(aD_hat[2]) + aD_hat[1] * log(tseq)
-  boot_ci(mu_hat, mu_boot)
+  exp(boot_ci(mu_hat, mu_boot))
 }
 
 #--- msd_plots -----------------------------------------------------------------
@@ -90,13 +120,17 @@ msd_dist <- function(msd, alpha, logD, dT, msd_theo,
 }
 
 # msd per-trajectory + various estimates of overall msd
-msd_plot <- function(tseq, ci_list, msd, clrs) {
+msd_plot <- function(tseq, ci_list, msd, clrs, xlim, ord) {
   # plot msd
-  .multi_plot(tseq, msd, log = "xy",
-             ylim = range(msd, unlist(ci_list), na.rm = TRUE),
-             col = clrs[1])
+  if(missing(xlim)) xlim <- range(tseq)
+  tind <- (tseq <= xlim[2]) & (tseq >= xlim[1]) # corresponding time points
+  ylim <- range(do.call(cbind, c(list(msd = msd), ci_list))[tind,],
+                na.rm = TRUE)
+  .multi_plot(tseq, msd, log = "xy", xlim, ylim = ylim, col = clrs[1])
   # plot CI's
-  for(ii in 1:(length(clrs)-1)) {
+  nci <- length(ci_list)
+  if(missing(ord)) ord <- 1:nci
+  for(ii in ord) {
     .multi_plot(tseq, ci_list[[ii]], lty = c(1,2,2), lwd = c(2,1,1),
                col = clrs[ii+1], add = TRUE)
   }

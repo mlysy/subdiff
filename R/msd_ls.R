@@ -21,7 +21,7 @@ msd_ls <- function(msd, tseq, pooled = TRUE, logw = TRUE) {
   yy <- log(as.matrix(msd))
   npaths <- ncol(yy)
   ntimes <- length(tseq)
-  if(nrow(msd) != ntimes) stop("msd and tseq have inconsistent dimensions.")
+  if(nrow(yy) != ntimes) stop("msd and tseq have inconsistent dimensions.")
   xx <- log(tseq) # covariate
   # regression weights
   ww <- if(logw) 1/tseq else rep(1, length(tseq))
