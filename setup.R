@@ -2,7 +2,7 @@
 
 # for recompiling package
 # first quit R, then setwd() to where setup.R is found. then:
-pkg.path <- getwd()
+pkg.path <- "D:/GitHub/SubDiff"
 
 # regenerates Rcpp interface (i.e., RcppExports)
 Rcpp::compileAttributes(pkgdir = pkg.path)
@@ -11,10 +11,11 @@ devtools::install(pkg = pkg.path, args = "--clean") # installs the package
 devtools::build(pkg = pkg.path) # builds a tar.gz file
 
 # check
+setwd("D:/GitHub")
 devtools::check("SubDiff")
 
 # restart R before testing changes
-testthat::test_package("SubDiff")
+testthat::test_package("subdiff", reporter = "progress")
 
 # cran check
 
