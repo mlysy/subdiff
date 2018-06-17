@@ -1,7 +1,7 @@
 Package: subdiff
 Type: Package
 Title: Inference for Subdiffusive Particle Tracking
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Date: 2017-07-27
 Author: Yun Ling [aut], Martin Lysy [aut,cre]
 Maintainer: Martin Lysy <mlysy@uwaterloo.ca>

@@ -119,8 +119,26 @@ gof_plot <- function(Xt, dT, theta, type = c("qq", "hist"), main) {
   mtext(Main, side = 3, outer = TRUE, cex = 1, font = 2, line = .5)
 }
 
+#-------------------------------------------------------------------------------
 
-#--- msd reconstruction --------------------------------------------------------
+# simulate data from fbm model using cholesky method
+fbm_sim <- function(theta, dT, N, Z) {
+  alpha <- itrans_alpha(theta[1])
+  mu <- theta[2:3]
+  Sigma <- itrans_Sigma(theta[4:6])
+  acf <- fbm_acf(alpha, dT, N-1)
+  if(missing(Z)) {
+    dX <- rSnorm(2, acf) %*% chol(Sigma)
+  } else {
+    if(any(dim(Z) != c(N-1, 2))) stop("Z has wrong dimensions.")
+    dX <- cholZX(Z = Z, acf = acf)
+    ed <- eigen(Sigma)
+    C <- t(ed$vec) * sqrt(ed$val)
+    dX <- dX %*% C
+    ## dX <- t(t(dX %*% C) + mu * dT)
+  }
+  apply(rbind(0, t(t(dX) + mu * dT)), 2, cumsum)
+}
 
 #' fBM path reconstruction.
 #'
@@ -150,81 +168,5 @@ fbm_recon <- function(theta, dX, dT, Z) {
   ed <- eigen(itrans_Sigma(lambda = theta[1+qq + 1:nq]))
   C <- t(ed$vec) * sqrt(ed$val)
   t(t(Zr %*% C) + theta[1+1:qq] * dT)
-}
-
-#--- msd_plots -----------------------------------------------------------------
-
-# extract path with given id
-get_path <- function(pathid, paths, names = c("X", "Y")) {
-  as.matrix(paths[paths$pathID == pathid, names])
-}
-msd_ci <- function(msd, npaths = ncol(msd), nboot = 1000) {
-  mu <- rowMeans(msd, na.rm = TRUE)
-  # delta method for ci on lambda = log(mu)
-  ## n <- ncol(x)
-  mu.boot <- replicate(nboot, {
-    ind <- sample(ncol(msd), npaths, replace = TRUE)
-    log(rowMeans(msd[,ind,drop=FALSE], na.rm = TRUE))
-  })
-  sig <- apply(mu.boot, 1, sd)
-  ci <- exp(log(mu) + cbind(L = -2*sig, U = 2*sig))
-  cbind(est = mu, ci)
-}
-
-get_theta <- function(pathid, stats) {
-  theta <- pstats$coef
-  setNames(nm = c("alpha", "logD"),
-           object = c(itrans_alpha(theta["gamma"]), theta["lambda1"]))
-}
-
-# distance between empirical and theoretical msd
-# each column is a realization.
-# msd_theo can be a vector or matrix, in which case average is first taken
-# at each time point.
-msd_dist <- function(msd, alpha, logD, dT, msd_theo,
-                     logw = TRUE, bytime = FALSE) {
-  nlag <- nrow(msd)
-  ww <- if(logw) 1/(1:nlag) else rep(1, nlag)
-  ww <- ww/sum(ww)
-  if(missing(msd_theo)) {
-    msd_theo <- logD + alpha * log((1:nlag-1)*dT)
-  } else {
-    msd_theo <- log(rowSums(msd_theo))
-  }
-  mdist <- ww * (log(msd) - msd_theo)^2
-  if(bytime) rowSums(mdist) else sum(mdist)
-}
-
-# simulate data from fbm model
-fbm_sim <- function(theta, dT, N, Z) {
-  alpha <- itrans_alpha(theta[1])
-  mu <- theta[2:3]
-  Sigma <- itrans_Sigma(theta[4:6])
-  acf <- fbm_acf(alpha, dT, N-1)
-  if(missing(Z)) {
-    dX <- rSnorm(2, acf) %*% chol(Sigma)
-  } else {
-    if(any(dim(Z) != c(N-1, 2))) stop("Z has wrong dimensions.")
-    dX <- cholZX(Z = Z, acf = acf)
-    ed <- eigen(Sigma)
-    C <- t(ed$vec) * sqrt(ed$val)
-    dX <- dX %*% C
-    ## dX <- t(t(dX %*% C) + mu * dT)
-  }
-  apply(rbind(0, t(t(dX) + mu * dT)), 2, cumsum)
-}
-
-# msd per-trajectory + various estimates of overall msd
-msd_plot <- function(tseq, ci_list, msd, clrs) {
-  # plot msd
-  .multi_plot(tseq, msd, log = "xy",
-             ylim = range(msd, unlist(ci_list), na.rm = TRUE),
-             col = clrs[1])
-  # plot CI's
-  for(ii in 1:(length(clrs)-1)) {
-    .multi_plot(tseq, ci_list[[ii]], lty = c(1,2,2), lwd = c(2,1,1),
-               col = clrs[ii+1], add = TRUE)
-  }
-  invisible(NULL)
 }
 
