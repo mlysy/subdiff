@@ -58,7 +58,7 @@ fdylo_fit <- function(dX, dT, Tz, var_calc, penalty, theta0, ...) {
     nlp <- -lmn.prof(suff)
     if(penalty) {
       # penalty on tau, sigma
-      nlp <- nlp + subdiff:::log1pe(theta[2]) + subdiff:::log1pe(-theta[2]) - theta[3]
+      nlp <- nlp + log1pe(theta[2]) + log1pe(-theta[2]) - theta[3]
     }
     nlp
   }
@@ -76,7 +76,7 @@ fdylo_fit <- function(dX, dT, Tz, var_calc, penalty, theta0, ...) {
     nlp <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
     if(penalty) {
       # penalty on tau, sigma
-      nlp <- nlp + subdiff:::log1pe(theta[2]) + subdiff:::log1pe(-theta[2]) - theta[3]
+      nlp <- nlp + log1pe(theta[2]) + log1pe(-theta[2]) - theta[3]
     }
     nlp
   }
@@ -128,7 +128,7 @@ fdy_fit <- function(dX, dT, sigma2, Tz, var_calc, penalty, theta0, ...) {
     nlp <- -lmn.prof(suff)
     if(penalty) {
       # penalty on tau
-      nlp <- nlp + subdiff:::log1pe(theta[2]) + subdiff:::log1pe(-theta[2])
+      nlp <- nlp + log1pe(theta[2]) + log1pe(-theta[2])
     }
     nlp
   }
@@ -145,7 +145,7 @@ fdy_fit <- function(dX, dT, sigma2, Tz, var_calc, penalty, theta0, ...) {
     nlp <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
     if(penalty) {
       # penalty on tau
-      nlp <- nlp + subdiff:::log1pe(theta[2]) + subdiff:::log1pe(-theta[2])
+      nlp <- nlp + log1pe(theta[2]) + log1pe(-theta[2])
     }
     nlp
   }
