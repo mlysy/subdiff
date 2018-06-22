@@ -27,7 +27,7 @@ time_window <- function(msd, tseq, error = 0.05) {
 
 
 .t_search <- function(msd, tseq, error) {
-  N <- length(ltseq)
+  N <- length(tseq)
   for(jj in 2:N-1) {
     msd1 <- msd[jj:N]
     tseq1 <- tseq[jj:N]
@@ -37,5 +37,5 @@ time_window <- function(msd, tseq, error = 0.05) {
     error1 <- max(abs(sline - lmsd1) / lmsd1)
     if(error1 < error) break
   }
-  c(exp(ltseq[jj]), theta)
+  c(tseq[jj], theta)
 }
