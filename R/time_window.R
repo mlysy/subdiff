@@ -8,7 +8,7 @@
 #' Time window is determined by two parameters \code{tmin} and \code{tmax}. 
 #' In current version we simply assume that \code{tmax} is always out-of-observation and equals the end of experimental time scale, and focus on the search of \code{tmin}.
 #' @export
-time_window <- function(msd, tseq, error = 0.05, tmax = FALSE) {
+time_window <- function(msd, tseq, error = 0.05, tmax = FALSE, log = FALSE) {
   yy <- as.matrix(msd)
   npaths <- ncol(yy)
   ntimes <- length(tseq)
@@ -26,7 +26,7 @@ time_window <- function(msd, tseq, error = 0.05, tmax = FALSE) {
     rownames(Theta) <- c("tmin", "tmax", "alpha", "D")
     for(ii in 1:npaths) {
       ind <- !is.na(yy[,ii])
-      qq <- .twin_search(yy[ind,ii], xx[ind], error)
+      qq <- .twin_search(yy[ind,ii], xx[ind], error, log)
       Theta[,ii] <- qq
     }
     
@@ -51,7 +51,7 @@ time_window <- function(msd, tseq, error = 0.05, tmax = FALSE) {
   c(tseq[jj], theta)
 }
 
-.twin_search <- function(msd, tseq, error) {
+.twin_search <- function(msd, tseq, error, log) {
   N <- length(tseq)
   stg <- matrix(NA, N, 4)
   for(tmax in N:2) {
@@ -70,7 +70,11 @@ time_window <- function(msd, tseq, error = 0.05, tmax = FALSE) {
       }
     }
   }
-  dstn <- stg[,2] - stg[,1]
+  if(log) {
+    dstn <- log(stg[,2]) - log(stg[,1])
+  } else {
+    dstn <- stg[,2] - stg[,1]
+  }
   # check whether it is full of NA
   if(prod(is.na(dstn))) {
     ans <- rep(NA, 4)
