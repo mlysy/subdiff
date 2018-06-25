@@ -8,17 +8,28 @@
 #' Time window is determined by two parameters \code{tmin} and \code{tmax}. 
 #' In current version we simply assume that \code{tmax} is always out-of-observation and equals the end of experimental time scale, and focus on the search of \code{tmin}.
 #' @export
-time_window <- function(msd, tseq, error = 0.05) {
+time_window <- function(msd, tseq, error = 0.05, tmax = FALSE) {
   yy <- as.matrix(msd)
   npaths <- ncol(yy)
   ntimes <- length(tseq)
   if(nrow(yy) != ntimes) stop("msd and tseq have inconsistent dimensions.")
   xx <- tseq # covariate
-  Theta <- matrix(NA, 3, npaths)
-  rownames(Theta) <- c("tmin", "alpha", "D")
-  for(ii in 1:npaths) {
-    ind <- !is.na(yy[,ii])
-    Theta[,ii] <- .t_search(yy[ind,ii], xx[ind], error)
+  if(!tmax) {
+    Theta <- matrix(NA, 3, npaths)
+    rownames(Theta) <- c("tmin", "alpha", "D")
+    for(ii in 1:npaths) {
+      ind <- !is.na(yy[,ii])
+      Theta[,ii] <- .tmin_search(yy[ind,ii], xx[ind], error)
+    }
+  } else {
+    Theta <- matrix(NA, 4, npaths)
+    rownames(Theta) <- c("tmin", "tmax", "alpha", "D")
+    for(ii in 1:npaths) {
+      ind <- !is.na(yy[,ii])
+      qq <- .twin_search(yy[ind,ii], xx[ind], error)
+      Theta[,ii] <- qq
+    }
+    
   }
   if(npaths == 1) Theta <- Theta[,1]
   Theta
@@ -26,7 +37,7 @@ time_window <- function(msd, tseq, error = 0.05) {
 
 
 
-.t_search <- function(msd, tseq, error) {
+.tmin_search <- function(msd, tseq, error) {
   N <- length(tseq)
   for(jj in 2:N-1) {
     msd1 <- msd[jj:N]
@@ -39,3 +50,41 @@ time_window <- function(msd, tseq, error = 0.05) {
   }
   c(tseq[jj], theta)
 }
+
+.twin_search <- function(msd, tseq, error) {
+  N <- length(tseq)
+  stg <- matrix(NA, N, 4)
+  for(tmax in N:2) {
+    for(jj in 2:tmax-1) {
+      msd1 <- msd[jj:tmax]
+      tseq1 <- tseq[jj:tmax]
+      theta <- msd_ls(msd1, tseq1)
+      sline <- log(theta[2]) + theta[1] * log(tseq1)
+      lmsd1 <- log(msd1)
+      error1 <- max(abs(sline - lmsd1) / lmsd1)
+      if(error1 < error) {
+        stg[tmax,] <- c(tseq[jj], tseq[tmax], theta)
+        break
+      } else if(jj == tmax-1) {
+        stg[tmax,] <- rep(NA, 4)
+      }
+    }
+  }
+  dstn <- stg[,2] - stg[,1]
+  # check whether it is full of NA
+  if(prod(is.na(dstn))) {
+    ans <- rep(NA, 4)
+  } else {
+    # if there are multiple timewindow of same length
+    # we choose the first
+    index <-(1:N)[dstn == max(dstn, na.rm = T)]
+    index <- index[!is.na(index)]
+    if(length(index) > 1) {
+      ans <- stg[index[1],]
+    } else {
+      ans <- stg[index,]
+    }
+  }
+  ans
+}
+
