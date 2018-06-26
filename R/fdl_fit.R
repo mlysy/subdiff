@@ -156,6 +156,7 @@ fdy_fit <- function(dX, dT, sigma2, Tz, var_calc, penalty, theta0, ...) {
   if(fit$convergence != 0) stop("optim did not converge.")
   theta_hat[1:2] <- fit$par # profiled parameters
   acf1 <- fdyn_acf(itrans_alpha(theta_hat[1]), itrans_tau(theta_hat[2]), dT, N)
+  acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
   Tz$setAcf(acf1)
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
   theta_hat[2+1:qq] <- suff$Beta
@@ -193,7 +194,7 @@ flo_fit <- function(dX, dT, tau, Tz, var_calc, penalty, theta0, ...) {
     nlp <- -lmn.prof(suff)
     if(penalty) {
       # penalty on sigma
-      nlp <- nlp - theta[3]
+      nlp <- nlp - theta[2]
     }
     nlp
   }
@@ -210,18 +211,17 @@ flo_fit <- function(dX, dT, tau, Tz, var_calc, penalty, theta0, ...) {
     nlp <- -lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
     if(penalty) {
       # penalty on sigma
-      nlp <- nlp - theta[3]
+      nlp <- nlp - theta[2]
     }
     nlp
   }
   # calculate MLE
   if(missing(theta0)) theta0 <- c(1, .1)
-  tpar <- c(trans_alpha(theta0[1]), log(theta0[3]))
-  fit <- optim(fn = negll.prof, par = c(0,.1),
-               control = list(fnscale = -1, ...))
+  tpar <- c(trans_alpha(theta0[1]), log(theta0[2]))
+  fit <- optim(fn = negll.prof, par = tpar, ...)
   if(fit$convergence != 0) stop("optim did not converge.")
   theta_hat[1:2] <- fit$par # profiled parameters
-  acf1 <- fbm_acf(itrans_alpha(theta_hat[1]), dT, N)
+  acf1 <- fdyn_acf(itrans_alpha(theta_hat[1]), tau, dT, N)
   acf1[1:2] <- acf1[1:2] + exp(2*theta_hat[2]) * c(2, -1)
   Tz$setAcf(acf1)
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
@@ -251,7 +251,7 @@ f_fit <- function(dX, dT, tau, sigma2, Tz, var_calc) {
   if(missing(Tz)) Tz <- Toeplitz(n = N)
   # profile likelihood on regular scale
   ll.prof <- function(theta) {
-    alpha <- theta
+    alpha <- itrans_alpha(theta[1])
     acf1 <- fdyn_acf(alpha, tau, dT, N)
     acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
     Tz$setAcf(acf1)
@@ -271,10 +271,11 @@ f_fit <- function(dX, dT, tau, sigma2, Tz, var_calc) {
   }
   # calculate MLE
   theta_hat[1] <- optimize(f = ll.prof,
-                           interval = c(.01, 1.99), maximum = TRUE)$maximum
-  Tz$setAcf(fbm_acf(theta_hat[1], dT, N)) # profiled parameters
+                           interval = c(-10, 10), maximum = TRUE)$maximum
+  acf1 <- fdyn_acf(itrans_alpha(theta_hat[1]), tau, dT, N) # profiled parameters
+  acf1[1:2] <- acf1[1:2] + sigma2 * c(2, -1)
+  Tz$setAcf(acf1)
   suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
-  theta_hat[1] <- trans_alpha(theta_hat[1]) # normalized scale
   theta_hat[1+1:qq] <- suff$Beta
   theta_hat[1+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   names(theta_hat) <- theta_names

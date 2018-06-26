@@ -4,7 +4,7 @@
 \alias{time_window}
 \title{Search for time window in sample mean square displacement curves.}
 \usage{
-time_window(msd, tseq, error = 0.05, tmax = FALSE)
+time_window(msd, tseq, error = 0.05, tmax = FALSE, log = FALSE)
 }
 \arguments{
 \item{msd}{Vector or matrix of sample MSDs, each column corresponding to a different trajectory.}
