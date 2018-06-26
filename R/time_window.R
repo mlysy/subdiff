@@ -2,11 +2,11 @@
 #' 
 #' @param msd Vector or matrix of sample MSDs, each column corresponding to a different trajectory.
 #' @param tseq Vector of time points at which the MSDs are recorded (see Details).
-#' @param error Relative allowance for difference between msd and linear fit
-#' @return A 3-row matrix of \code{tmin}, \code{alpha} and \code{D} values
+#' @param error Relative tolerence for difference between msd and linear fit
+#' @param tmax Logic, end of experiment time N*dT is used as tmax if \code{FALSE}
+#' @param log Logic, length of time window is defined as (tmax - tmin) when \code{FALSE}, and defined as (log(tmax) - log(tmin)) when \code{TRUE}
+#' @return Matrix of \code{tmin}, \code{alpha} and \code{D} values, includes column \code{tmax} if tmax is \code{TRUE}
 #' @details Time window is defined as the longest successive time period whose linear fitted msd is within a certain tolerence.
-#' Time window is determined by two parameters \code{tmin} and \code{tmax}. 
-#' In current version we simply assume that \code{tmax} is always out-of-observation and equals the end of experimental time scale, and focus on the search of \code{tmin}.
 #' @export
 time_window <- function(msd, tseq, error = 0.05, tmax = FALSE, log = FALSE) {
   yy <- as.matrix(msd)

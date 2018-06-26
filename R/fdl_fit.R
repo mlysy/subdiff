@@ -1,23 +1,21 @@
-#' Fit the fractional dynamic localization error model.
+#' Fit the FBM model with dynamic and localization errors.
 #'
 #' @name fdl_fit
-#' @param dX one or two-column matrix of trajectory increments.
-#' @param dT Interobservation time.
+#' @template args-dX one or two-column matrix of trajectory increments.
+#' @template args-dT Interobservation time.
 #' @param tau Plug-in coefficient, requires estimation if missing,
 #' @param sigma2 Plug-in coefficient, requires estimation if missing,
-#' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
+#' @template args-Tz Optional Toeplitz matrix for intermediate calculations.
+#' @template args-var_calc If \code{TRUE}, also estimate variance matrix.
 #' @param penalty logic, employ a small penalty on \code{(tau, sigma2)} when \code{TRUE}
 #' @param theta0 Length-3 vector of initial values for \code{(alpha, tau, sigma)}.  Default value is \code{(1, .1, .1)}.
-#' @param ... Additional arguments to \code{\link[stats]{optim}}.
-#' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
-#' @details The fractional AR(1) model has the form
+#' @template args-dots_optim Additional arguments to \code{\link[stats]{optim}}.
+#' @template ret-cov_vcov Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+#' @details The fBM + dynamic and localization error (fdl) model has the form
 #' \deqn{
 #' X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
 #' }
-#' where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed
-#' scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and
-#' \code{\link{trans_Sigma}}.
+#' where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
 #' When put \code{tau} = 0, this model becomes fractional localization error model.
 #' When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
 #' When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
@@ -25,18 +23,18 @@
 #' @export
 fdl_fit <- function(dX, dT, tau, sigma2, Tz, var_calc = TRUE, penalty = TRUE, theta0, ...) {
   if(missing(tau) & missing(sigma2)) {
-    ans <- fdylo_fit(dX, dT, Tz, var_calc, penalty, theta0, ...)
+    ans <- .fdylo_fit(dX, dT, Tz, var_calc, penalty, theta0, ...)
   } else if(missing(tau)) {
-    ans <- fdy_fit(dX, dT, sigma2, Tz, var_calc, penalty, ...)
+    ans <- .fdy_fit(dX, dT, sigma2, Tz, var_calc, penalty, ...)
   } else if(missing(sigma2)) {
-    ans <- flo_fit(dX, dT, tau, Tz, var_calc, penalty, ...)
+    ans <- .flo_fit(dX, dT, tau, Tz, var_calc, penalty, ...)
   } else {
-    ans <- f_fit(dX, dT, tau, sigma2, Tz, var_calc)
+    ans <- .f_fit(dX, dT, tau, sigma2, Tz, var_calc)
   }
   ans
 }
 
-fdylo_fit <- function(dX, dT, Tz, var_calc, penalty, theta0, ...) {
+.fdylo_fit <- function(dX, dT, Tz, var_calc, penalty, theta0, ...) {
   # memory allocation
   N <- nrow(dX)
   qq <- ncol(dX)
@@ -108,7 +106,7 @@ fdylo_fit <- function(dX, dT, Tz, var_calc, penalty, theta0, ...) {
   ans
 }
 
-fdy_fit <- function(dX, dT, sigma2, Tz, var_calc, penalty, theta0, ...) {
+.fdy_fit <- function(dX, dT, sigma2, Tz, var_calc, penalty, theta0, ...) {
   # memory allocation
   N <- nrow(dX)
   qq <- ncol(dX)
@@ -174,7 +172,7 @@ fdy_fit <- function(dX, dT, sigma2, Tz, var_calc, penalty, theta0, ...) {
   ans
 }
 
-flo_fit <- function(dX, dT, tau, Tz, var_calc, penalty, theta0, ...) {
+.flo_fit <- function(dX, dT, tau, Tz, var_calc, penalty, theta0, ...) {
   # memory allocation
   N <- nrow(dX)
   qq <- ncol(dX)
@@ -240,7 +238,7 @@ flo_fit <- function(dX, dT, tau, Tz, var_calc, penalty, theta0, ...) {
   ans
 }
 
-f_fit <- function(dX, dT, tau, sigma2, Tz, var_calc) {
+.f_fit <- function(dX, dT, tau, sigma2, Tz, var_calc) {
   # memory allocation
   N <- nrow(dX)
   qq <- ncol(dX)
