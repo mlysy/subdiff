@@ -54,8 +54,8 @@ msd_mat2 <- matrix(NA, N, 1)
 for(jj in 1:1) {
   msd_mat2[,jj] <- rouse_msd(tseq, alpha, tau[jj], K)
 }
-theta <- time_window(msd_mat2, tseq, error = 0.03, tmax = TRUE, log = TRUE)
-theta2 <- time_window(msd_mat2, tseq, error = 0.03, tmax = TRUE)
+theta <- msd_subdiff(msd_mat2, tseq, rel_tol = 0.03, tmax = TRUE, log = TRUE)
+theta2 <- msd_subdiff(msd_mat2, tseq, rel_tol = 0.03, tmax = TRUE)
 
 par(mfrow = c(1,1), mar = c(3,3,2,0)+.1, mgp = c(1.5,0.5,0), oma=c(0,0,1,0))
 

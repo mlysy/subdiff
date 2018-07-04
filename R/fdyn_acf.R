@@ -12,13 +12,17 @@
 #' fdyn.msd(alpha = 0.8, tau = 1/600, t = (1:200) * 1/60)
 #' @export
 fdyn_acf <- function(alpha, tau, dT, N) {
-  vec <- .g_func2(alpha, tau, dT, N)
-  if(N == 1) {
-    acf <- 2 * vec[2] - 2 * vec[1]
+  if(!tau) {
+    acf1 <- fbm_acf(alpha, dT, N)
   } else {
-    acf <- vec[1:N + 1] + c(vec[2], vec[1:(N - 1)]) - 2 * vec[1:N]  
+    vec <- .g_func2(alpha, tau, dT, N)
+    if(N == 1) {
+      acf1 <- 2 * vec[2] - 2 * vec[1]
+    } else {
+      acf1 <- vec[1:N + 1] + c(vec[2], vec[1:(N - 1)]) - 2 * vec[1:N]  
+    }
   }
-  acf
+  acf1
 }
 
 .g_func2 <- function(alpha, tau, dT, N) {
@@ -28,11 +32,3 @@ fdyn_acf <- function(alpha, tau, dT, N) {
   ans * (tau * dT)^alpha / (alpha+1) / alpha2 / 2
 }
 
-# 
-# fdyn_acf4 <- function(alpha, tau, dT, N) {
-#   msd <- rep(NA, N)
-#   for(ii in 1:N) {
-#     msd[ii] <- g_func(alpha, tau, dT, ii)
-#   }
-#   msd2acf(msd)
-# }

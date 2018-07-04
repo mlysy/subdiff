@@ -89,32 +89,60 @@ fds_resid <- function(theta, dX, dT, type = "naive", ds, full = TRUE) {
 
 #' @rdname subdiff-resid
 #' @export
-fdl_resid <- function(theta, dX, dT, type = "dynamic localization") {
+fdl_resid <- function(theta, dX, dT, tau, sigma2) {
   q <- ncol(dX) # problem dimensions
   N <- nrow(dX)
   nq <- if(q == 1) 1 else 3
-  if(type == "dynamic localization") {
+  if(missing(tau) & missing(sigma2)) {
     alpha <- itrans_alpha(theta[1]) # parameters
     tau <- itrans_tau(theta[2])
     sigma2 <- exp(2*theta[3])
     mu <- theta[3+1:q]
     Sigma <- itrans_Sigma(theta[q+3+1:nq])
-    acf1 <- fdyn_acf(alpha, tau, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
-    res <- lsc_resid(dX, dT, mu, acf1, Sigma)
-  } else if(type == "dynamic") {
+  } else if(missing(sigma2)) {
+    alpha <- itrans_alpha(theta[1]) # parameters
+    sigma2 <- exp(2*theta[2])
+    mu <- theta[2+1:q]
+    Sigma <- itrans_Sigma(theta[q+2+1:nq])
+  } else if(missing(tau)) {
     alpha <- itrans_alpha(theta[1]) # parameters
     tau <- itrans_tau(theta[2])
     mu <- theta[2+1:q]
     Sigma <- itrans_Sigma(theta[q+2+1:nq])
-    acf1 <- fdyn_acf(alpha, tau, dT, N)
-    res <- lsc_resid(dX, dT, mu, acf1, Sigma)
-  } else if(type == "localization") {
-    alpha <- itrans_alpha(theta[1]) # parameters
-    sigma2 <- theta[2]^2
-    mu <- theta[2+1:q]
-    Sigma <- itrans_Sigma(theta[q+2+1:nq])
-    acf1 <- fbm_acf(alpha, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
-    res <- lsc_resid(dX, dT, mu, acf1, Sigma)
   }
+  acf1 <- fdyn_acf(alpha, tau, dT, N)
+  acf1[1:2] <- acf1[1:2] + sigma2 * c(2, 1)
+  res <- lsc_resid(dX, dT, mu, acf1, Sigma)
   res
 }
+
+# fdl_resid <- function(theta, dX, dT, type = c("fdl", "fdy", "flo")) {
+#   q <- ncol(dX) # problem dimensions
+#   N <- nrow(dX)
+#   nq <- if(q == 1) 1 else 3
+#   type <- match.arg(type)
+#   if(type == "fdl") {
+#     alpha <- itrans_alpha(theta[1]) # parameters
+#     tau <- itrans_tau(theta[2])
+#     sigma2 <- exp(2*theta[3])
+#     mu <- theta[3+1:q]
+#     Sigma <- itrans_Sigma(theta[q+3+1:nq])
+#     acf1 <- fdyn_acf(alpha, tau, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
+#     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
+#   } else if(type == "fdy") {
+#     alpha <- itrans_alpha(theta[1]) # parameters
+#     tau <- itrans_tau(theta[2])
+#     mu <- theta[2+1:q]
+#     Sigma <- itrans_Sigma(theta[q+2+1:nq])
+#     acf1 <- fdyn_acf(alpha, tau, dT, N)
+#     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
+#   } else if(type == "flo") {
+#     alpha <- itrans_alpha(theta[1]) # parameters
+#     sigma2 <- theta[2]^2
+#     mu <- theta[2+1:q]
+#     Sigma <- itrans_Sigma(theta[q+2+1:nq])
+#     acf1 <- fbm_acf(alpha, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
+#     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
+#   }
+#   res
+# }

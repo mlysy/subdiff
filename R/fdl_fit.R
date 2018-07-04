@@ -1,16 +1,16 @@
-#' Fit the FBM model with dynamic and localization errors.
+#' Fit the fBM model with dynamic and localization errors.
 #'
 #' @name fdl_fit
-#' @template args-dX one or two-column matrix of trajectory increments.
-#' @template args-dT Interobservation time.
-#' @param tau Plug-in coefficient, requires estimation if missing,
-#' @param sigma2 Plug-in coefficient, requires estimation if missing,
-#' @template args-Tz Optional Toeplitz matrix for intermediate calculations.
-#' @template args-var_calc If \code{TRUE}, also estimate variance matrix.
+#' @template args-dX
+#' @template args-dT
+#' @param tau Scalar between 0 and 1, indicating the percentage of time for which the camera shutter is open in the dynamic error model.  Estimated if missing. See Details.
+#' @param sigma2 Magnitude of localization error.  Estimated if missing. See Details.
+#' @template args-Tz
+#' @template args-var_calc
 #' @param penalty logic, employ a small penalty on \code{(tau, sigma2)} when \code{TRUE}
 #' @param theta0 Length-3 vector of initial values for \code{(alpha, tau, sigma)}.  Default value is \code{(1, .1, .1)}.
-#' @template args-dots_optim Additional arguments to \code{\link[stats]{optim}}.
-#' @template ret-cov_vcov Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+#' @template args-dots_optim 
+#' @template ret-cov_vcov 
 #' @details The fBM + dynamic and localization error (fdl) model has the form
 #' \deqn{
 #' X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
