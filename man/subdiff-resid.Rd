@@ -17,7 +17,7 @@ far_resid(theta, dX, dT)
 
 fds_resid(theta, dX, dT, type = "naive", ds, full = TRUE)
 
-fdl_resid(theta, dX, dT, type = "dynamic localization")
+fdl_resid(theta, dX, dT, tau, sigma2)
 }
 \arguments{
 \item{theta}{Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).}

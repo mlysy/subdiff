@@ -9,7 +9,7 @@ loglik <- function(theta, dX, dT, Tz) {
   nd <- ncol(dX)
   nq <- getq(nd)
   alpha <- itrans_alpha(theta[1])
-  rho <- itrans_rho(theta[2])
+  rho <- theta[2]
   mu <- theta[2+1:nd]
   Sigma <- itrans_Sigma(theta[2+nd+1:nq]) # default: log(D)
   Tz$setAcf(fma_acf(alpha, rho, dT, N))
@@ -48,7 +48,7 @@ loglik1 <- function(theta, dX, dT, alpha, Tz) {
   N <- nrow(dX)
   nd <- ncol(dX)
   nq <- getq(nd)
-  rho <- itrans_rho(theta[1])
+  rho <- theta[1]
   mu <- theta[1+1:nd]
   Sigma <- itrans_Sigma(theta[1+nd+1:nq]) # default: log(D)
   Tz$setAcf(fma_acf(alpha, rho, dT, N))

@@ -2,12 +2,9 @@
 % Please edit documentation in R/fma_fit.R
 \name{fma_fit}
 \alias{fma_fit}
-\alias{fma_trunc}
 \title{Fit the fractional MA(1) model.}
 \usage{
-fma_fit(dX, dT, nlag, Tz, var_calc = TRUE, ...)
-
-fma_trunc(dX, dT, rho)
+fma_fit(dX, dT, nlag, Tz, alpha, var_calc = TRUE, ...)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments.}
@@ -17,6 +14,8 @@ fma_trunc(dX, dT, rho)
 \item{nlag}{Number of lags (see Details).}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
+
+\item{alpha}{Subdiffusion parameter, optional.}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 

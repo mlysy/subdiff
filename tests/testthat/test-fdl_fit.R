@@ -24,7 +24,7 @@ loglik <- function(theta, dX, dT, Tz, penalty) {
   ll
 }
 
-ntest <- 20
+ntest <- 10
 test_that("MLE is at the mode of the projection plots, dynamic and localization.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
@@ -75,7 +75,7 @@ loglik1 <- function(theta, sigma2, dX, dT, Tz, penalty) {
   ll
 }
 
-ntest <- 20
+ntest <- 10
 test_that("MLE is at the mode of the projection plots, dynamic.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
@@ -125,7 +125,7 @@ loglik2 <- function(theta, tau, dX, dT, Tz, penalty) {
   ll
 }
 
-ntest <- 20
+ntest <- 10
 test_that("MLE is at the mode of the projection plots, localization.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
@@ -171,7 +171,7 @@ loglik3 <- function(theta, tau, sigma2, dX, dT, Tz) {
   ll
 }
 
-ntest <- 20
+ntest <- 10
 test_that("MLE is at the mode of the projection plots.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")

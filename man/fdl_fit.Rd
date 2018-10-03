@@ -2,19 +2,19 @@
 % Please edit documentation in R/fdl_fit.R
 \name{fdl_fit}
 \alias{fdl_fit}
-\title{Fit the fractional dynamic localization error model.}
+\title{Fit the fBM model with dynamic and localization errors.}
 \usage{
 fdl_fit(dX, dT, tau, sigma2, Tz, var_calc = TRUE, penalty = TRUE, theta0,
   ...)
 }
 \arguments{
-\item{dX}{one or two-column matrix of trajectory increments.}
+\item{dX}{One or two-column matrix of increments.}
 
 \item{dT}{Interobservation time.}
 
-\item{tau}{Plug-in coefficient, requires estimation if missing,}
+\item{tau}{Scalar between 0 and 1, indicating the percentage of time for which the camera shutter is open in the dynamic error model.  Estimated if missing. See Details.}
 
-\item{sigma2}{Plug-in coefficient, requires estimation if missing,}
+\item{sigma2}{Magnitude of localization error.  Estimated if missing. See Details.}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
@@ -30,16 +30,14 @@ fdl_fit(dX, dT, tau, sigma2, Tz, var_calc = TRUE, penalty = TRUE, theta0,
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 }
 \description{
-Fit the fractional dynamic localization error model.
+Fit the fBM model with dynamic and localization errors.
 }
 \details{
-The fractional AR(1) model has the form
+The fBM + dynamic and localization error (fdl) model has the form
 \deqn{
 X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
 }
-where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed
-scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and
-\code{\link{trans_Sigma}}.
+where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
 When put \code{tau} = 0, this model becomes fractional localization error model.
 When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
 When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
