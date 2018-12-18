@@ -11,12 +11,19 @@
 fma_acf <- function(alpha, rho, dT, N) {
   nlag <- length(rho)
   acf1 <- fbm_acf(alpha, dT, N+nlag)  
-  acf2 <- rep(NA, N)
   if(nlag == 1) {
+    acf2 <- rep(NA, N)
     rho1 <- 1 - rho
     acf2[1] <- (rho1^2 +rho^2) * acf1[1] + 2*rho*rho1*acf1[2]
-    acf2[-1] <- (rho1^2 +rho^2) * acf1[-c(1,N+1)] + rho*rho1*(acf1[-c(N,N+1)]+acf1[-c(1,2)])  
+    acf2[-1] <- (rho1^2 +rho^2) * acf1[-c(1,N+1)] + 
+      rho*rho1*(acf1[-c(N,N+1)]+acf1[-c(1,2)])  
+  } else if(nlag == 2) {
+    rho1 <- c(1-sum(rho), rho)
+    acf2 <- sum(rho1^2)*acf1[1:N] + 
+      (rho1[1]*rho1[2]+rho1[2]*rho1[3])*(acf1[c(2,2:N-1)]+acf1[1:N+1]) + 
+      (rho1[1]*rho1[3])*(acf1[c(3,2,3:N-2)]+acf1[1:N+2])
   } else {
+    acf2 <- rep(NA, N)
     for(ii in 1:N) {
       acf2[ii] <- poly_func(rho, ii-1, acf1)
     }

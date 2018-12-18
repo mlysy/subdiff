@@ -4,8 +4,8 @@
 \alias{fdl_fit}
 \title{Fit the fBM model with dynamic and localization errors.}
 \usage{
-fdl_fit(dX, dT, tau, sigma2, Tz, var_calc = TRUE, penalty = TRUE,
-  theta0, ...)
+fdl_fit(dX, dT, tau, sigma2, Tz, var_calc = TRUE, penalty = TRUE, theta0,
+  ...)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments.}

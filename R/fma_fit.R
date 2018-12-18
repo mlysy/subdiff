@@ -1,4 +1,4 @@
-#' Fit the fractional MA(1) model.
+#' Fit the fractional Moving-average model.
 #'
 #' @template args-dX
 #' @template args-dT
@@ -8,9 +8,9 @@
 #' @template args-var_calc
 #' @template args-dots_optim
 #' @template ret-cov_vcov
-#' @details The fractional MA(1) model has the form
+#' @details The fractional Moving-average model has the form
 #' \deqn{
-#' \Delta X_n = (1-\rho) \Delta Z_n + \rho \Delta Z_{n-1},
+#' \Delta X_n = (1-\sum_{i=1}^p \rho_i) \Delta Z_n + \sum_{i=1}^p \rho_{i} \Delta Z_{n-i},
 #' }
 #' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
 #' @export
@@ -57,7 +57,6 @@ fma_fit <- function(dX, dT, nlag, Tz, alpha, var_calc = TRUE, ...) {
     ans <- theta_hat # no-copy unless ans is modified
   }
   else {
-    
     # memory allocation
     ntheta <- nlag+qq+nq
     theta_hat <- rep(NA, ntheta)
