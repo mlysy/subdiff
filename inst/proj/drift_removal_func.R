@@ -39,7 +39,7 @@ movie.drift <- function(paths, movie_ID, movie_info) {
   # extract the x-axis and y-axis increments
   # only for movies with more than 5 paths
   ll <- length(index)
-  if(ll > 5) {
+  if(ll > 4) {
     dX <- dY <- matrix(NA, N-1, ll)
     incr_drift <- matrix(NA, N-1, 2)
     for(kk in 1:ll) {
