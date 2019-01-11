@@ -28,14 +28,15 @@ fbm_resid <- function(theta, dX, dT) {
 
 #' @rdname subdiff-resid
 #' @export
-fma_resid <- function(theta, dX, dT) {
+fma_resid <- function(theta, dX, dT, nlag) {
   q <- ncol(dX) # problem dimensions
   N <- nrow(dX)
   nq <- if(q == 1) 1 else 3
+  if(missing(nlag)) nlag <- 1
   alpha <- itrans_alpha(theta[1]) # parameters
-  rho <- itrans_rho(theta[2])
-  mu <- theta[2+1:q]
-  Sigma <- itrans_Sigma(theta[q+2+1:nq])
+  rho <- theta[1+1:nlag]
+  mu <- theta[1+nlag+1:q]
+  Sigma <- itrans_Sigma(theta[q+1+nlag+1:nq])
   lsc_resid(dX, dT, mu, fma_acf(alpha, rho, dT, N), Sigma)
 }
 

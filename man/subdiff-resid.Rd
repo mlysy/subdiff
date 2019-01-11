@@ -11,7 +11,7 @@
 \usage{
 fbm_resid(theta, dX, dT)
 
-fma_resid(theta, dX, dT)
+fma_resid(theta, dX, dT, nlag)
 
 far_resid(theta, dX, dT)
 
