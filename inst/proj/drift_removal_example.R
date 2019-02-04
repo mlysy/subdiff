@@ -6,8 +6,10 @@ source(system.file("proj", "drift_removal_func.R", package = "subdiff"))
 filePath <- "D:/Dropbox/gpsi/JOR/5MD PEO and sucrose dec 12 2018"
 samples <- dir(file.path(filePath, "rds files"))
 
+# for one movie -----------------------------------------------------------
+
 # for example we are interested in PEO5MD 0p6
-dataID <- 9
+dataID <- 4
 paths <- readRDS(file.path(filePath, "rds files",samples[dataID]))
 
 # movie information and filter
@@ -22,11 +24,8 @@ rownames(movie_count) <- c("Movie ID", "# of good paths")
 # show the movie IDs and number of good paths for each ID
 movie_count
 
-
-# for one movie -----------------------------------------------------------
-
 # extract the movie-wise drift for movie 8
-movieID <- 8
+movieID <- 1
 movie_drift <- movie.drift(paths, movieID, movie_info)
 drift <- apply(movie_drift$drift, 2, cumsum)
 Xt <- apply(movie_drift$incr_x, 2, cumsum)
@@ -99,6 +98,22 @@ apply(est0, 2, median)
 
 # for whole data -----------------------------------------------------------
 
+# for example we are interested in PEO5MD 0p6
+dataID <- 4
+paths <- readRDS(file.path(filePath, "rds files",samples[dataID]))
+
+# movie information and filter
+movie_info <- movie.info(paths)
+movie_seq <- sort(unique(movie_info$info))
+movie_count <- rep(NA, length(movie_seq))
+for(ii in 1:length(movie_seq)) {
+  movie_count[ii] <- sum(movie_info$info == movie_seq[ii])
+}
+movie_count <- rbind(movie_seq, movie_count)
+rownames(movie_count) <- c("Movie ID", "# of good paths")
+# show the movie IDs and number of good paths for each ID
+movie_count
+
 # find all movies with at least 5 good paths
 movie_seq <- (movie_count[1,])[movie_count[2,]>4]
 
@@ -115,7 +130,7 @@ for(movieID in movie_seq) {
   # decide using est0 or est1 by checking the value of R^2
   # is 0.2 a proper value?
   movie_R2 <- movie.R2(movie_drift)
-  if(median(movie_R2) < 0.2) {
+  if(median(movie_R2) < 0.1) {
     est_new <- rbind(est_new, est0)
   } else {
     est_new <- rbind(est_new, est1)
@@ -140,5 +155,84 @@ legend("topleft", legend = c("original", "de-trend"), pch = c(19,15),
        bty = "n", cex = 0.6)
 
 # data-wise estimation
-apply(est_new, 2, mean)
+apply(est_new, 2, median)
 
+
+# for all data ------------------------------------------------------------
+
+stg_old <- stg_new <- matrix(NA, 13, 2)
+lbls <- rep(NA, 13)
+
+for(dataID in 3:15) {
+  print(dataID)
+  paths <- readRDS(file.path(filePath, "rds files",samples[dataID]))
+  
+  # movie information and filter
+  movie_info <- movie.info(paths)
+  movie_seq <- sort(unique(movie_info$info))
+  movie_count <- rep(NA, length(movie_seq))
+  for(ii in 1:length(movie_seq)) {
+    movie_count[ii] <- sum(movie_info$info == movie_seq[ii])
+  }
+  movie_count <- rbind(movie_seq, movie_count)
+  rownames(movie_count) <- c("Movie ID", "# of good paths")
+
+  movie_seq <- (movie_count[1,])[movie_count[2,]>4]
+  
+  # compute estimation results for all movies
+  est_old <- est_new <- numeric()
+  for(movieID in movie_seq) {
+    # progress bar
+    movie_drift <- movie.drift(paths, movieID, movie_info)
+    
+    est0 <- movie.est(paths, movieID, movie_info, movie_drift, NL.method = FALSE)
+    est1 <- movie.est(paths, movieID, movie_info, movie_drift)
+    
+    # decide using est0 or est1 by checking the value of R^2
+
+    movie_R2 <- movie.R2(movie_drift)
+    if(median(movie_R2) < 0.13) {
+      est_new <- rbind(est_new, est0)
+    } else {
+      est_new <- rbind(est_new, est1)
+    }
+    est_old <- rbind(est_old, est0)
+  }
+  
+  # data-wise estimation
+  if(is.vector(est_old)) {
+    stg_old[dataID-2,] <- median(est_old)
+    stg_new[dataID-2,] <- median(est_new)
+  } else {
+    stg_old[dataID-2,] <- apply(est_old, 2, median)
+    stg_new[dataID-2,] <- apply(est_new, 2, median)
+  }
+  lbl <- strsplit(samples[dataID], '5MD')[[1]][2]
+  lbl <- strsplit(lbl, 'pct')[[1]][1]
+  
+  lbls[dataID-2] <- lbl
+}
+
+xrng <- range(stg_new[,2], stg_old[,2], na.rm = T)
+yrng <- range(stg_new[,1], stg_old[,1], na.rm = T)
+
+clrs <- rainbow(nrow(stg_new))
+plot(x = 1, type = "n", xlim = xrng, ylim = yrng, xlab = "D", ylab = "alpha", 
+     main = "estimated alpha and D, movie-wise de-trended",log = "x")
+points(x = stg_new[,2], y = stg_new[,1], col = clrs, pch = 15, cex = 1.3)
+legend("topleft", legend = lbls, pch = 15, col = clrs,
+       bty = "n", cex = 0.9)
+
+
+plot(x = 1, type = "n", xlim = xrng, ylim = yrng, xlab = "D", ylab = "alpha", 
+     main = "change in estimation, movie-wise de-trend",log = "x")
+points(x = stg_old[,2], y = stg_old[,1], col = clrs, pch = 19, cex = 0.8)
+points(x = stg_new[,2], y = stg_new[,1], col = clrs, pch = 15, cex = 1.3)
+segments(x0 = stg_new[,2], x1 = stg_old[,2],
+         y0 = stg_new[,1], y1 = stg_old[,1],
+         lty = 2,
+         col = rgb(t(col2rgb(clrs)), alpha = 100, maxColorValue = 255))
+legend("topleft", legend = lbls, pch = 15, col = clrs,
+       bty = "n", cex = 0.9)
+legend("topright", legend = c("original", "de-trend"), pch = c(19,15), 
+       bty = "n", cex = 0.9)

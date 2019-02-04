@@ -10,5 +10,5 @@ License: GPL 3
 Imports: Rcpp (>= 0.12.12), numDeriv
 Depends: LMN, SuperGauss
 LinkingTo: Rcpp
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Suggests: testthat, optimCheck

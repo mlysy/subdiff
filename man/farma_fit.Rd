@@ -2,9 +2,9 @@
 % Please edit documentation in R/farma_fit.R
 \name{farma_fit}
 \alias{farma_fit}
-\title{Fit the fractional ARMA(1,1) model.}
+\title{Fit the fractional Moving-average model.}
 \usage{
-farma_fit(dX, dT, Tz, alpha, var_calc = TRUE, ...)
+farma_fit(dX, dT, order, Tz, var_calc = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments.}
@@ -13,9 +13,11 @@ farma_fit(dX, dT, Tz, alpha, var_calc = TRUE, ...)
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
-\item{alpha}{Subdiffusion parameter, optional.}
-
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+
+\item{nlag}{Number of lags (see Details).}
+
+\item{alpha}{Subdiffusion parameter, optional.}
 
 \item{...}{Additional arguments to \code{\link[stats]{optim}}.}
 }
@@ -23,12 +25,12 @@ farma_fit(dX, dT, Tz, alpha, var_calc = TRUE, ...)
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 }
 \description{
-Fit the fractional ARMA(1,1) model.
+Fit the fractional Moving-average model.
 }
 \details{
-The fractional ARMA(1,1) model has the form
+The fractional Moving-average model has the form
 \deqn{
-\Delta X_n = \gamma \Delta X_{n-1} + \rho \Delta Z_n + (1-\theta-\rho)  \Delta Z_{n-1},
+\Delta X_n = (1-\sum_{i=1}^p \rho_i) \Delta Z_n + \sum_{i=1}^p \rho_{i} \Delta Z_{n-i},
 }
 where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
 }

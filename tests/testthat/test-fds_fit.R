@@ -5,7 +5,7 @@ source("fit-functions.R")
 
 # fbm downsampling loglikelihood
 loglik <- function(theta, dX, dT, ds, Tz) {
-  Xt <- .down_sample(apply(dX, 2, cumsum), ds)
+  Xt <- dsample(apply(dX, 2, cumsum), ds)
   dX <- apply(Xt, 2, diff)
   N <- nrow(dX)
   nd <- ncol(dX)

@@ -1,8 +1,8 @@
 
-context("fma_acf")
+context("farma_acf")
 
 ntest <- 60
-test_that("fma_acf formula is correct.", {
+test_that("farma_acf formula is correct.", {
   replicate(ntest, {
     # parameters
     N <- sample(10:20, 1)
@@ -11,7 +11,7 @@ test_that("fma_acf formula is correct.", {
     nlag <- sample(1:3, 1)
     rho <- runif(nlag, -1, 1)
     # simplified formula
-    acf1 <- fma_acf(alpha, rho, dT, N)
+    acf1 <- farma_acf(alpha, 0, rho, dT, N)
     # long formula
     Tz <- Toeplitz(acf = fbm_acf(alpha, dT, N+nlag))
     J <- diag(c(rep(1 - sum(rho), N+nlag)))

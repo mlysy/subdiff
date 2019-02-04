@@ -4,16 +4,16 @@
 \alias{fds_fit}
 \title{Fit fBM model with composite-likelihood downsampling.}
 \usage{
-fds_fit(dX, dT, ds, var_calc = TRUE, Tz)
+fds_fit(dX, dT, ds, method = c("naive", "comp"), Tz, var_calc = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments.}
 
 \item{dT}{Interobservation time.}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
-
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
+
+\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 
 \item{type}{type of downsampling method, "naive" means using basic downsampling method, "comp" means using composite likelihood (see Details).}
 
