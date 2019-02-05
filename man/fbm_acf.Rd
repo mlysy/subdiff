@@ -16,6 +16,3 @@ fbm_acf(alpha, dT, N)
 \value{
 vector of length N.
 }
-\description{
-Acf function for the increment of fBM process.
-}

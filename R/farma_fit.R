@@ -1,4 +1,4 @@
-#' Fit the fractional Moving-average model.
+#' Fit the fractional Autoregressive Moving-average model.
 #'
 #' @template args-dX
 #' @template args-dT
@@ -28,7 +28,7 @@ farma_fit <- function(dX, dT, order, Tz, var_calc = TRUE) {
                      paste0("lambda", 1:nq))
     # acf function on transformed scale
     acf_func <- function(theta) {
-      farma_acf(itrans_alpha(theta[1]), theta[2], theta[2+1:order[2]], dT, N)
+      farma_acf(itrans_alpha(theta[1]), itrans_rho(theta[2]), itrans_rho(theta[2+1:order[2]]), dT, N)
     }
   } else {
     # order = c(0,q): ma
@@ -36,7 +36,7 @@ farma_fit <- function(dX, dT, order, Tz, var_calc = TRUE) {
                      paste0("lambda", 1:nq))
     # acf function on transformed scale
     acf_func <- function(theta) {
-      farma_acf(itrans_alpha(theta[1]), 0, theta[1+1:order[2]], dT, N)
+      farma_acf(itrans_alpha(theta[1]), 0, itrans_rho(theta[1+1:order[2]]), dT, N)
     }
   }
   

@@ -24,5 +24,5 @@ Vector of length N
 ACF of the Autoregressive Moving Average Model with fBM Noise
 }
 \details{
-\code{Yt = theta Yt-1 + rho Xt + ...}, where \code{Xt} is fBM process with parameter \code{alpha}.
+\code{Yt = theta Yt-1 + rho0 Xt + ...}, where \code{Xt} is fBM process with parameter \code{alpha}.
 }

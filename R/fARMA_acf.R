@@ -7,17 +7,16 @@
 #' @param N TBD
 #' @return Vector of length N
 #' @details
-#' \code{Yt = theta Yt-1 + rho Xt + ...}, where \code{Xt} is fBM process with parameter \code{alpha}.
+#' \code{Yt = theta Yt-1 + rho0 Xt + ...}, where \code{Xt} is fBM process with parameter \code{alpha}.
 #' @export
 farma_acf <- function(alpha, theta, rho, dT, N, m = 30) {
-  acf1 <- ma_acf(alpha, c(1-theta-sum(rho), rho), dT, N+m+1)
+  acf1 <- fma_acf(alpha, c(1-theta-sum(rho), rho), dT, N+m+1)
   acf2 <- ar1_acf(acf1, theta, N, m)
   acf2
 }
 
-
-# ACF of unrestricted fma(q)
-ma_acf <- function(alpha, rho, dT, N) {
+# ACF of unparametrized moving-average model with fBM noises.
+fma_acf <- function(alpha, rho, dT, N) {
   nlag <- length(rho)
   acf1 <- fbm_acf(alpha, dT, N+nlag)  
   if(nlag == 2) {
