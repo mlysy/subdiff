@@ -30,9 +30,7 @@ floc_fit <- function(dX, dT, Tz, var_calc = TRUE) {
                    paste0("lambda", 1:nq))
   # acf function on transformed scale
   acf_func <- function(theta) {
-    acf1 <- fdyn_acf(itrans_alpha(theta[1]), itrans_tau(theta[2]), dT, N)
-    acf1[1:2] <- acf1[1:2] + exp(2*theta[3]) * c(2,-1)
-    acf1
+    floc_acf(itrans_alpha(theta[1]), itrans_tau(theta[2]), exp(2*theta[3]), dT, N)
   }
   
   # estimation
