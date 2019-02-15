@@ -1,6 +1,6 @@
 #' Fit the fBM model with dynamic and static errors.
 #'
-#' @name fdl_fit
+#' @name floc_fit
 #' @template args-dX
 #' @template args-dT
 #' @param tau Scalar between 0 and 1, indicating the percentage of time for which the camera shutter is open in the dynamic error model.  Estimated if missing. See Details.

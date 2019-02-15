@@ -4,7 +4,7 @@
 \alias{fma_fit}
 \title{Fit the fractional Moving-average model.}
 \usage{
-fma_fit(dX, dT, order, Tz, var_calc = TRUE)
+fma_fit(dX, dT, Tz, var_calc = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments.}
