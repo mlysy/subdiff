@@ -2,25 +2,10 @@
 % Please edit documentation in R/farma_acf.R
 \name{fma_acf}
 \alias{fma_acf}
-\title{ACF of the Moving Average Model with fBM Noise}
+\title{ACF of unparametrized moving-average model with fBM noises.}
 \usage{
 fma_acf(alpha, rho, dT, N)
 }
-\arguments{
-\item{alpha}{TBD}
-
-\item{rho}{parameter of MA model}
-
-\item{dT}{TBD}
-
-\item{N}{TBD}
-}
-\value{
-Vector of length N
-}
 \description{
-ACF of the Moving Average Model with fBM Noise
-}
-\details{
-\code{Yt = rho0 Xt + rho1 Xt-1 + ...}, where \code{Xt} is fBM process with parameter \code{alpha}.
+ACF of unparametrized moving-average model with fBM noises.
 }

@@ -15,7 +15,8 @@ farma_acf <- function(alpha, theta, rho, dT, N, m = 30) {
   acf2
 }
 
-# ACF of unparametrized moving-average model with fBM noises.
+#' ACF of unparametrized moving-average model with fBM noises.
+#' @export
 fma_acf <- function(alpha, rho, dT, N) {
   nlag <- length(rho)
   acf1 <- fbm_acf(alpha, dT, N+nlag)  

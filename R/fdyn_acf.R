@@ -26,6 +26,7 @@ fdyn_acf <- function(alpha, tau, dT, N) {
 }
 
 #' ACF of fBM process with localization errors
+#' @export
 floc_acf <- function(alpha, tau, sigma2, dT, N) {
   acf1 <- fdyn_acf(alpha, tau, dT, N)
   acf1[1:2] <- acf1[1:2] + sigma2*c(2,-1)
