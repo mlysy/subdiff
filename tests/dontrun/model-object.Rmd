@@ -1,0 +1,55 @@
+---
+title: "Implementation of Gaussian CSI/LS model objects"
+output: html_document
+---
+
+## Test case: fBM model
+
+For simplicity just do this as a basic `S3` object.  So the model is a list with elements:
+
+- `theta_names`: A character vector of parameter names, excluding the generic LS parameters `mu` (or `beta`?) and `Sigma`.
+- `acf`: A function with arguments at least including `N` and `dT`, and those in `theta_names`.  Other non-optimized parameters can also be specified, e.g., "number of components".
+- `theta_trans` and `theta_itrans`: transformation back and forth from parameter list.  The first takes named arguments in `theta_names`, the second takes a single vector `theta` and returns a list.  This takes care of parameter restrictions, since on the transformed scale everything is unrestricted.  This only needs to be done for parameters, not nuisance parameters.
+- `penalty`: An optional penalty function for the likelihood with named arguments `theta_names`.  
+
+This is a good start for now.  So for example:
+
+```{r, fbm_ex, eval = FALSE}
+fbm_theta <- "alpha"
+fbm_acf <- function(alpha, N, dT) {...}
+fbm_trans <- function(alpha) logit(alpha, min = 0, max = 2)
+fbm_itrans <- function(theta) list(alpha = ilogit(theta, min = 0, max = 2))
+
+fbm_model <- list(theta_names = fbm_theta,
+                  acf = fbm_acf,
+                  theta_trans = fbm_trans,
+                  theta_itrans = fbm_itrans)
+class(fbm_model) <- "csi_model"
+```
+
+For now, let's try re-implementing the existing functions as follows:
+
+```{r, fbm_fit, eval = FALSE}
+fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
+  # problem dimensions
+  N <- nrow(dX)
+  qq <- ncol(dX)
+  nq <- .get_nq(qq) # rewrite this function in anticipation of qq > 2
+  csi_fit(model = fbm_model,
+          dX = dX, dT = dT, Tz = Tz, # data arguments
+          penalty = FALSE, # don't penalize (error if penalize when no penalty defined)
+          var_calc = var_calc)
+}
+```
+
+`fbm_model` will eventually be placed in package, but for now it can just be a loose object.
+
+## Next steps
+
+- Add `fma_model` and `farma_model`.  The former is interesting because it contains parameters `p` and `q` which should not be optimized.  In other words, we might have
+
+```{r, csi_fit, eval = FALSE}
+#' @param ... Additional arguments passed to \code{model$acf}.
+#' @param penalty Either a logical, in which case \code{penalty = TRUE} uses the default penalty function, or a function with arguments in \code{model$theta_names}.
+csi_fit <- function(model, dX, dT, Tz, var_calc, penalty, ...)
+```
