@@ -17,131 +17,76 @@
 #' @rdname subdiff-resid
 #' @export
 fbm_resid <- function(theta, dX, dT) {
-  q <- ncol(dX) # problem dimensions
+  qq <- ncol(dX) # problem dimensions
   N <- nrow(dX)
-  nq <- if(q == 1) 1 else 3
+  nq <- if(qq == 1) 1 else 3
   alpha <- itrans_alpha(theta[1]) # parameters
-  mu <- theta[1+1:q]
-  Sigma <- itrans_Sigma(theta[q+1+1:nq])
+  mu <- theta[1+1:qq]
+  Sigma <- itrans_Sigma(theta[qq+1+1:nq])
   lsc_resid(dX, dT, mu, fbm_acf(alpha, dT, N), Sigma)
 }
 
 #' @rdname subdiff-resid
 #' @export
-fma_resid <- function(theta, dX, dT, nlag) {
-  q <- ncol(dX) # problem dimensions
+farma_resid <- function(theta, dX, dT, order) {
+  qq <- ncol(dX) # problem dimensions
   N <- nrow(dX)
-  nq <- if(q == 1) 1 else 3
-  if(missing(nlag)) nlag <- 1
+  nq <- if(qq == 1) 1 else 3
+  p <- order[1] # ARMA order
+  q <- order[2]
   alpha <- itrans_alpha(theta[1]) # parameters
-  rho <- theta[1+1:nlag]
-  mu <- theta[1+nlag+1:q]
-  Sigma <- itrans_Sigma(theta[q+1+nlag+1:nq])
-  lsc_resid(dX, dT, mu, fma_acf(alpha, rho, dT, N), Sigma)
-}
-
-#' @rdname subdiff-resid
-#' @export
-far_resid <- function(theta, dX, dT) {
-  q <- ncol(dX) # problem dimensions
-  N <- nrow(dX)
-  nq <- if(q == 1) 1 else 3
-  alpha <- itrans_alpha(theta[1]) # parameters
-  rho <- itrans_rho(theta[2])
-  mu <- theta[2+1:q]
-  Sigma <- itrans_Sigma(theta[q+2+1:nq])
-  dY <- ar_resid(dX, rho)
-  lsc_resid(dY, dT, mu, fbm_acf(alpha, dT, N), Sigma)
-}
-
-#' @rdname subdiff-resid
-#' @export
-fds_resid <- function(theta, dX, dT, type = "naive", ds, full = TRUE) {
-  Xt <- apply(rbind(0, dX), 2, cumsum) # recover Xt
-  q <- ncol(Xt) # problem dimensions
-  N <- nrow(Xt)
-  N_ds <- floor(N/ds) - 1
-  nq <- if(q == 1) 1 else 3
-  alpha <- itrans_alpha(theta[1]) # parameters
-  mu <- theta[1+1:q]
-  Sigma <- itrans_Sigma(theta[1+q+1:nq])
-  if(type == "naive") {
-    Xt_ds <- .down_sample(Xt, ds)
-    dX_ds <- apply(Xt_ds, 2, diff)
-    ans <- lsc_resid(dX_ds, ds*dT, mu, fbm_acf(alpha, ds*dT, N_ds), Sigma)
-    if(full) {
-     for(ii in 2:ds) {
-       Xt_ds <- .down_sample(Xt, ds, pos = ii)
-       dX_ds <- apply(Xt_ds, 2, diff)
-       theta2 <- fbm_fit(dX_ds, dT*ds, var_calc = FALSE)
-       alpha2 <- itrans_alpha(theta2[1]) # parameters
-       mu2 <- theta2[1+1:q]
-       Sigma2 <- itrans_Sigma(theta2[1+q+1:nq])
-       ans2 <- lsc_resid(dX_ds, ds*dT, mu2, fbm_acf(alpha2, ds*dT, N_ds), Sigma2)
-       ans <- rbind(ans, ans2)
-     }
-    }
+  if(p) {
+    phi <- theta[1+1:p]
   } else {
-    dX <- apply(Xt, 2, diff)
-    ans <- lsc_resid(dX, dT, mu, fbm_acf(alpha, dT, N-1), Sigma)
+    phi <- 0
   }
-  ans
+  rho <- theta[1+p+1:q]
+  mu <- theta[1+p+q+1:qq]
+  Sigma <- itrans_Sigma(theta[qq+1+p+q+1:nq])
+  lsc_resid(dX, dT, mu, farma_acf(alpha, phi, rho, dT, N), Sigma)
 }
 
 #' @rdname subdiff-resid
 #' @export
-fdl_resid <- function(theta, dX, dT, tau, sigma2) {
-  q <- ncol(dX) # problem dimensions
+floc_resid <- function(theta, dX, dT) {
+  qq <- ncol(dX) # problem dimensions
   N <- nrow(dX)
-  nq <- if(q == 1) 1 else 3
-  if(missing(tau) & missing(sigma2)) {
-    alpha <- itrans_alpha(theta[1]) # parameters
-    tau <- itrans_tau(theta[2])
-    sigma2 <- exp(2*theta[3])
-    mu <- theta[3+1:q]
-    Sigma <- itrans_Sigma(theta[q+3+1:nq])
-  } else if(missing(sigma2)) {
-    alpha <- itrans_alpha(theta[1]) # parameters
-    sigma2 <- exp(2*theta[2])
-    mu <- theta[2+1:q]
-    Sigma <- itrans_Sigma(theta[q+2+1:nq])
-  } else if(missing(tau)) {
-    alpha <- itrans_alpha(theta[1]) # parameters
-    tau <- itrans_tau(theta[2])
-    mu <- theta[2+1:q]
-    Sigma <- itrans_Sigma(theta[q+2+1:nq])
-  }
-  acf1 <- fdyn_acf(alpha, tau, dT, N)
-  acf1[1:2] <- acf1[1:2] + sigma2 * c(2, 1)
+  nq <- if(qq == 1) 1 else 3
+  alpha <- itrans_alpha(theta[1]) # parameters
+  tau <- itrans_tau(theta[2])
+  sigma2 <- exp(2*theta[3])
+  mu <- theta[3+1:qq]
+  Sigma <- itrans_Sigma(theta[qq+3+1:nq])
+  acf1 <- floc_acf(alpha, tau, sigma2, dT, N)
   res <- lsc_resid(dX, dT, mu, acf1, Sigma)
   res
 }
 
 # fdl_resid <- function(theta, dX, dT, type = c("fdl", "fdy", "flo")) {
-#   q <- ncol(dX) # problem dimensions
+#   qq <- ncol(dX) # problem dimensions
 #   N <- nrow(dX)
-#   nq <- if(q == 1) 1 else 3
+#   nq <- if(qq == 1) 1 else 3
 #   type <- match.arg(type)
 #   if(type == "fdl") {
 #     alpha <- itrans_alpha(theta[1]) # parameters
 #     tau <- itrans_tau(theta[2])
 #     sigma2 <- exp(2*theta[3])
-#     mu <- theta[3+1:q]
-#     Sigma <- itrans_Sigma(theta[q+3+1:nq])
+#     mu <- theta[3+1:qq]
+#     Sigma <- itrans_Sigma(theta[qq+3+1:nq])
 #     acf1 <- fdyn_acf(alpha, tau, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
 #     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
 #   } else if(type == "fdy") {
 #     alpha <- itrans_alpha(theta[1]) # parameters
 #     tau <- itrans_tau(theta[2])
-#     mu <- theta[2+1:q]
-#     Sigma <- itrans_Sigma(theta[q+2+1:nq])
+#     mu <- theta[2+1:qq]
+#     Sigma <- itrans_Sigma(theta[qq+2+1:nq])
 #     acf1 <- fdyn_acf(alpha, tau, dT, N)
 #     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
 #   } else if(type == "flo") {
 #     alpha <- itrans_alpha(theta[1]) # parameters
 #     sigma2 <- theta[2]^2
-#     mu <- theta[2+1:q]
-#     Sigma <- itrans_Sigma(theta[q+2+1:nq])
+#     mu <- theta[2+1:qq]
+#     Sigma <- itrans_Sigma(theta[qq+2+1:nq])
 #     acf1 <- fbm_acf(alpha, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
 #     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
 #   }

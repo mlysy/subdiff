@@ -1,6 +1,6 @@
 ---
 title: "Implementation of Gaussian CSI/LS model objects"
-output: html_document
+output: pdf_document
 ---
 
 ## Test case: fBM model

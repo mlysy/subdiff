@@ -22,3 +22,14 @@ log1pexp <- function(x) {
   if(any(ind)) y[ind] <- x[ind]
   y
 }
+
+
+# inverse logit function
+ilogit <- function(x, min = 0, max = 1) {
+  1/(1+exp(-x)) * (max - min) + min
+}
+
+logit <- function(x, min = 0, max = 1) {
+  x <- (x - min) / (max - min)
+  log(x) - log(1-x)
+}

@@ -3,21 +3,15 @@
 \name{subdiff-resid}
 \alias{subdiff-resid}
 \alias{fbm_resid}
-\alias{fma_resid}
-\alias{far_resid}
-\alias{fds_resid}
-\alias{fdl_resid}
+\alias{farma_resid}
+\alias{floc_resid}
 \title{Model-based residual calculations.}
 \usage{
 fbm_resid(theta, dX, dT)
 
-fma_resid(theta, dX, dT, nlag)
+farma_resid(theta, dX, dT, order)
 
-far_resid(theta, dX, dT)
-
-fds_resid(theta, dX, dT, type = "naive", ds, full = TRUE)
-
-fdl_resid(theta, dX, dT, tau, sigma2)
+floc_resid(theta, dX, dT)
 }
 \arguments{
 \item{theta}{Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).}

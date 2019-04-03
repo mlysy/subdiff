@@ -9,19 +9,18 @@ lsc_fwd <- function(Z, dT, mu, acf, Sigma) {
   t(t(dX) + mu * dT)
 }
 
-racf <- function(N, dT, type = c("fbm", "fdl", "fma")) {
+racf <- function(N, dT, type = c("fbm", "floc", "farma")) {
   alpha <- runif(1)
   type <- match.arg(type)
   if(type == "fbm") {
     acf1 <- fbm_acf(alpha, dT, N)
-  } else if(type == "fdl") {
+  } else if(type == "floc") {
     tau <- runif(1)
     sig <- rexp(1)
-    acf1 <- fdyn_acf(alpha, tau, dT, N)
-    acf1[1:2] <- acf1[1:2] + sig^2 * c(2,-1)
-  } else if(type == "fma") {
-    rho <- runif(1,-1,1)
-    acf1 <- fma_acf(alpha, rho, dT, N)
+    acf1 <- floc_acf(alpha, tau, sig^2, dT, N)
+  } else if(type == "farma") {
+    phi <- rho <- runif(1,-1,1)
+    acf1 <- farma_acf(alpha, phi, rho, dT, N)
   } else stop("Invalid acf type.")
   acf1
 }
@@ -35,7 +34,7 @@ test_that("Z == lsc_resid(dX = lsc_fwd(Z))", {
     dT <- runif(1)
     N <- sample(1000:2000,1)
     Z1 <- matrix(rnorm(N*nd),N,nd)
-    acf1 <- racf(N, dT, "fdl")
+    acf1 <- racf(N, dT, "floc")
     dX <- lsc_fwd(Z1, dT, mu, acf1, Sigma)
     Z2 <- lsc_resid(dX, dT, mu, acf1, Sigma)
     expect_equal(max(abs(Z1-Z2)), 0)

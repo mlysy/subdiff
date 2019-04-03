@@ -1,55 +1,30 @@
-#' Fit the fractional Autoregressive Moving-average model.
+#' Fit the ARMA(p,q) filter with fBM residuals. 
 #'
+#' @name farma_fit
 #' @template args-dX
 #' @template args-dT
-#' @param nlag Number of lags (see Details).
-#' @param alpha Subdiffusion parameter, optional.
+#' @param order A specification of the ARMA filter: the two integer components (p, q) are the AR order and the MA order.
 #' @template args-Tz
 #' @template args-var_calc
-#' @template args-dots_optim
 #' @template ret-cov_vcov
-#' @details The fractional Moving-average model has the form
+#' 
+#' @details The ARMA(p,q) filter is of the form
 #' \deqn{
-#' \Delta X_n = (1-\sum_{i=1}^p \rho_i) \Delta Z_n + \sum_{i=1}^p \rho_{i} \Delta Z_{n-i},
+#' Y_t = \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \rho_j X_{t-j}, \rho_0 = 1-\sum_{i=1}^p \phi_i-\sum_{j=1}^q \rho_j,
 #' }
-#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+#' where residuals \eqn{X_t} follows the fBM model:
+#' \deqn{
+#' X_t = \mu t + \Sigma^{1/2} Z_t,
+#' }
+#' where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes.
+#' 
+#' @example example/parameters.R
+#' @examples 
+#' fits <- farma_fit(dX, dT, order = c(1,1), Tz, var_calc = TRUE) # fitting ARMA(1,1) filter
+#' 
 #' @export
 farma_fit <- function(dX, dT, order, Tz, var_calc = TRUE) {
-  # memory allocation
-  N <- nrow(dX)
-  qq <- ncol(dX)
-  nq <- if(qq == 1) 1 else 3
-  if(missing(Tz)) Tz <- Toeplitz(n = N)
-  
-  if(order[1]) {
-    # order = c(p,q): arma
-    theta_names <- c("alpha", paste0("theta", 1:order[1]), 
-                     paste0("rho", 1:order[2]), paste0("mu", 1:qq),
-                     paste0("lambda", 1:nq))
-    # acf function on transformed scale
-    acf_func <- function(theta) {
-      farma_acf(itrans_alpha(theta[1]), itrans_rho(theta[2]), itrans_rho(theta[2+1:order[2]]), dT, N)
-    }
-  } else {
-    # order = c(0,q): ma
-    theta_names <- c("alpha", paste0("rho", 1:order[2]), paste0("mu", 1:qq),
-                     paste0("lambda", 1:nq))
-    # acf function on transformed scale
-    acf_func <- function(theta) {
-      farma_acf(itrans_alpha(theta[1]), 0, itrans_rho(theta[1+1:order[2]]), dT, N)
-    }
-  }
-  
-  # estimation
-  ans <- Tz_fit(1+sum(order), acf_func, dX, dT, Tz, var_calc)
-  
-  # add names
-  if(var_calc) {
-    names(ans$coef) <- colnames(ans$vcov) <- 
-      rownames(ans$vcov) <- theta_names
-  } else {
-    names(ans) <- theta_names
-  }
+  model <- farma_model(order[1], order[2])
+  ans <- csi_fit(model, dX, dT, Tz, var_calc)
   ans
 }
-

@@ -2,20 +2,30 @@
 % Please edit documentation in R/fbm_acf.R
 \name{fbm_acf}
 \alias{fbm_acf}
-\title{Acf function for the increment of fBM process.}
+\title{ACF of the increment of fBM process (fractional Gaussian noise).}
 \usage{
 fbm_acf(alpha, dT, N)
 }
 \arguments{
-\item{alpha}{fBM parameter, range from 0 to 2.}
+\item{alpha}{Parameter of fBM process.}
 
-\item{dT}{interobservation time.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
 
-\item{N}{number of samples.}
+\item{N}{Length of observations.}
 }
 \value{
-vector of length N.
+Vector of auto-covariance of stationary process.
 }
 \description{
-Acf function for the increment of fBM process.
+ACF of the increment of fBM process (fractional Gaussian noise).
+}
+\details{
+The expression of the ACF of fractional Gaussian noise is
+\deqn{
+\frac{1}{2}(|n-1|^\alpha + |n + 1|^\alpha - 2|n|^\alpha) \Delta t^\alpha
+}
+}
+\examples{
+acf1 <- fbm_acf(alpha = 0.8, dT = 1/60, N = 1800)
+
 }

@@ -8,11 +8,11 @@ loglik <- function(theta, dX, dT, Tz) {
   N <- nrow(dX)
   nd <- ncol(dX)
   nq <- getq(nd)
-  alpha <- itrans_alpha(theta[1])
+  alpha <- ilogit(theta[1], min = 0, max = 2)
   mu <- theta[1+1:nd]
   Sigma <- itrans_Sigma(theta[1+nd+1:nq]) # default: log(D)
   Tz$setAcf(fbm_acf(alpha, dT, N))
-  suff <- lmn.suff(Y = dX, X = dT, acf = Tz)
+  suff <- lmn.suff(Y = dX, X = dT, V = Tz, Vtype = "acf")
   lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
 }
 

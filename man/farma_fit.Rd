@@ -2,35 +2,45 @@
 % Please edit documentation in R/farma_fit.R
 \name{farma_fit}
 \alias{farma_fit}
-\title{Fit the fractional Autoregressive Moving-average model.}
+\title{Fit the ARMA(p,q) filter with fBM residuals.}
 \usage{
 farma_fit(dX, dT, order, Tz, var_calc = TRUE)
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments.}
+\item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
+
+\item{order}{A specification of the ARMA filter: the two integer components (p, q) are the AR order and the MA order.}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
-
-\item{nlag}{Number of lags (see Details).}
-
-\item{alpha}{Subdiffusion parameter, optional.}
-
-\item{...}{Additional arguments to \code{\link[stats]{optim}}.}
 }
 \value{
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 }
 \description{
-Fit the fractional Autoregressive Moving-average model.
+Fit the ARMA(p,q) filter with fBM residuals.
 }
 \details{
-The fractional Moving-average model has the form
+The ARMA(p,q) filter is of the form
 \deqn{
-\Delta X_n = (1-\sum_{i=1}^p \rho_i) \Delta Z_n + \sum_{i=1}^p \rho_{i} \Delta Z_{n-i},
+Y_t = \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \rho_j X_{t-j}, \rho_0 = 1-\sum_{i=1}^p \phi_i-\sum_{j=1}^q \rho_j,
 }
-where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+where residuals \eqn{X_t} follows the fBM model:
+\deqn{
+X_t = \mu t + \Sigma^{1/2} Z_t,
+}
+where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes.
+}
+\examples{
+fits <- farma_fit(dX, dT, order = c(1,1), Tz, var_calc = TRUE) # fitting ARMA(1,1) filter
+
+# generating time series
+dT <- 1/60
+N <- 1800
+acf1 <- fbm_acf(0.8, dT, N)
+dX <- rSnorm(n = 2, acf = acf1)
+Tz <- Toeplitz(n = N)
 }

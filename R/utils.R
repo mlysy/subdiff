@@ -14,5 +14,18 @@ solveV <- function(V, x, ldV = FALSE) {
 
 #--- logit and its inverse -----------------------------------------------------
 
-logit <- function(x) log(x) - log(1-x)
-ilogit <- function(x) 1/(1+exp(-x))
+logit <- function(x, min = 0, max = 1) {
+  x <- (x - min) / (max - min)
+  log(x) - log(1-x)
+}
+ilogit <- function(x, min = 0, max = 1) {
+  1/(1+exp(-x)) * (max - min) + min
+}
+
+#--- get problem dimension -----------------------------------------------------
+
+get_nq <- function(qq) {
+  if(qq == 1) ans <- 1
+  if(qq == 2) ans <- 3
+  ans
+}

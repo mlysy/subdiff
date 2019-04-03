@@ -2,38 +2,46 @@
 % Please edit documentation in R/floc_fit.R
 \name{floc_fit}
 \alias{floc_fit}
-\title{Fit the fBM model with dynamic and static errors.}
+\title{Fit the fBM model with Savin & Doyle's Localization Error.}
 \usage{
 floc_fit(dX, dT, Tz, var_calc = TRUE)
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments.}
+\item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
-
-\item{tau}{Scalar between 0 and 1, indicating the percentage of time for which the camera shutter is open in the dynamic error model.  Estimated if missing. See Details.}
-
-\item{sigma2}{Magnitude of static error.  Estimated if missing. See Details.}
-
-\item{penalty}{logic, employ a small penalty on \code{(tau, sigma2)} when \code{TRUE}}
 }
 \value{
 Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 }
 \description{
-Fit the fBM model with dynamic and static errors.
+Fit the fBM model with Savin & Doyle's Localization Error.
 }
 \details{
-The fBM + dynamic and localization error (fdl) model has the form
+The fBM + localization error (fLOC) model has the form
 \deqn{
-X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
-}
-where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+Y_n = 1/\tau \int_0^\tau X_{n+s} ds + \sigma e_{n},
+},
+where \eqn{X_n} is a 1D or 2D fBM process
+\deqn{
+X_t = \mu t + \Sigma^{1/2} Z_t,
+}. 
+where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes.
 When put \code{tau} = 0, this model becomes fractional localization error model.
 When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
 When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
+}
+\examples{
+fits <- floc_fit(dX, dT, Tz, var_calc = TRUE)
+
+# generating time series
+dT <- 1/60
+N <- 1800
+acf1 <- fbm_acf(0.8, dT, N)
+dX <- rSnorm(n = 2, acf = acf1)
+Tz <- Toeplitz(n = N)
 }

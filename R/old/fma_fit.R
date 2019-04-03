@@ -14,23 +14,23 @@
 #' }
 #' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
 #' @export
-fma_fit <- function(dX, dT, order, Tz, var_calc = TRUE) {
+fma_fit <- function(dX, dT, Tz, var_calc = TRUE) {
   # memory allocation
   N <- nrow(dX)
   qq <- ncol(dX)
   nq <- if(qq == 1) 1 else 3
   if(missing(Tz)) Tz <- Toeplitz(n = N)
-  
-  theta_names <- c("alpha", paste0("rho", 1:order), paste0("mu", 1:qq),
+
+  theta_names <- c("alpha", "rho1", paste0("mu", 1:qq),
                    paste0("lambda", 1:nq))
   # acf function on transformed scale
   acf_func <- function(theta) {
-    rho <- itrans_rho(theta[1+1:order])
-    fma_acf(itrans_alpha(theta[1]), c(1-sum(rho), rho), dT, N)
+    rr <- itrans_rho(theta[2])
+    fma_acf(itrans_alpha(theta[1]), c(1-rr,rr), dT, N)
   }
   
   # estimation
-  ans <- Tz_fit(1+order, acf_func, dX, dT, Tz, var_calc)
+  ans <- Tz_fit(2, acf_func, dX, dT, Tz, var_calc)
   
   # add names
   if(var_calc) {

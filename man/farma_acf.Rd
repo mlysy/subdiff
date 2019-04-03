@@ -2,27 +2,38 @@
 % Please edit documentation in R/farma_acf.R
 \name{farma_acf}
 \alias{farma_acf}
-\title{ACF of the Autoregressive Moving Average Model with fBM Noise}
+\title{ACF of the ARMA(p,q) filter with fBM residuals.}
 \usage{
-farma_acf(alpha, theta, rho, dT, N, m = 30)
+farma_acf(alpha, phi, rho, dT, N, m = 30)
 }
 \arguments{
-\item{alpha}{TBD}
+\item{alpha}{Parameter of fBM process.}
 
-\item{theta}{parameter of AR model}
+\item{phi}{Numeric vector of AR coefficients.}
 
-\item{rho}{parameter of MA model}
+\item{rho}{Numeric vector of MA coefficients.}
 
-\item{dT}{TBD}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
 
-\item{N}{TBD}
+\item{N}{Length of observations.}
+
+\item{m}{Number of MA terms used for approximating AR part.}
 }
 \value{
-Vector of length N
+Vector of auto-covariance of stationary process.
 }
 \description{
-ACF of the Autoregressive Moving Average Model with fBM Noise
+ACF of the ARMA(p,q) filter with fBM residuals.
 }
 \details{
-\code{Yt = theta Yt-1 + rho0 Xt + ...}, where \code{Xt} is fBM process with parameter \code{alpha}.
+The ARMA(p,q) filter is of the form
+\deqn{
+Y_t = \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \rho_j X_{t-j}, \rho_0 = 1-\sum_{i=1}^p \phi_i-\sum_{j=1}^q \rho_j,
+}
+where residuals \eqn{X_t} follows the fBM model with parameter \code{alpha}.
+Auto-regressive terms are approximated with \code{m} terms of Moving-average terms.
+}
+\examples{
+acf1 <- farma_acf(alpha = 0.8, phi = 0.1, rho = c(0.1, 0.05), dT = 1/60, N = 1800)
+
 }
