@@ -2,38 +2,39 @@
 % Please edit documentation in R/farma_acf.R
 \name{farma_acf}
 \alias{farma_acf}
-\title{ACF of the ARMA(p,q) filter with fBM residuals.}
+\title{Calculate the autocorrelation function for the farma(p,q) model.}
 \usage{
 farma_acf(alpha, phi, rho, dT, N, m = 30)
 }
 \arguments{
-\item{alpha}{Parameter of fBM process.}
+\item{alpha}{Power law exponent of fBM process. A scalar between 0 and 2.}
 
-\item{phi}{Numeric vector of AR coefficients.}
+\item{phi}{A vector of AR coefficients.}
 
-\item{rho}{Numeric vector of MA coefficients.}
+\item{rho}{A vector of MA coefficients.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
-\item{N}{Length of observations.}
+\item{N}{Length of observations (positive integer).}
 
-\item{m}{Number of MA terms used for approximating AR part.}
+\item{m}{Number of MA coefficients used for approximating AR coefficients (see \strong{Details}).}
 }
 \value{
-Vector of auto-covariance of stationary process.
+A vector of \code{N} autocorrelation values.
 }
 \description{
-ACF of the ARMA(p,q) filter with fBM residuals.
+Compute the autocorrelation of increments of farma(p,q) model (see \strong{Details}).
 }
 \details{
-The ARMA(p,q) filter is of the form
+The farma(p,q) model is of following form:
 \deqn{
 Y_t = \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \rho_j X_{t-j}, \rho_0 = 1-\sum_{i=1}^p \phi_i-\sum_{j=1}^q \rho_j,
+}{
+
 }
 where residuals \eqn{X_t} follows the fBM model with parameter \code{alpha}.
 Auto-regressive terms are approximated with \code{m} terms of Moving-average terms.
 }
 \examples{
 acf1 <- farma_acf(alpha = 0.8, phi = 0.1, rho = c(0.1, 0.05), dT = 1/60, N = 1800)
-
 }

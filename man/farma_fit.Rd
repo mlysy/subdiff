@@ -9,7 +9,7 @@ farma_fit(dX, dT, order, Tz, var_calc = TRUE)
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
 \item{order}{A specification of the ARMA filter: the two integer components (p, q) are the AR order and the MA order.}
 

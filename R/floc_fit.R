@@ -5,8 +5,8 @@
 #' @template args-dT
 #' @template args-Tz
 #' @template args-var_calc
-#' @template ret-cov_vcov 
-#' 
+#' @template ret-cov_vcov
+#'
 #' @details The fBM + localization error (fLOC) model has the form
 #' \deqn{
 #' Y_n = 1/\tau \int_0^\tau X_{n+s} ds + \sigma e_{n},
@@ -14,16 +14,16 @@
 #' where \eqn{X_n} is a 1D or 2D fBM process
 #' \deqn{
 #' X_t = \mu t + \Sigma^{1/2} Z_t,
-#' }. 
+#' }.
 #' where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes.
 #' When put \code{tau} = 0, this model becomes fractional localization error model.
 #' When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
 #' When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
-#' 
-#' @example example/parameters.R
-#' @examples 
+#'
+#' @example examples/parameters.R
+#' @examples
 #' fits <- floc_fit(dX, dT, Tz, var_calc = TRUE)
-#' 
+#'
 #' @export
 floc_fit <- function(dX, dT, Tz, var_calc = TRUE) {
   model <- floc_model()

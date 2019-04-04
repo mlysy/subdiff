@@ -23,7 +23,7 @@ test_that("MLE is at the mode of the projection plots.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
   require(optimCheck)
-  replicate(n = ntest, {
+  for(ii in 1:ntest) {
     # simulate data
     N <- sample(1000:2000, 1)
     dT <- runif(1)
@@ -40,8 +40,11 @@ test_that("MLE is at the mode of the projection plots.", {
                          fun = function(theta) loglik_11(theta, dX, dT, Tz),
                          plot = F, xrng = .1, npts = 20)
     expect_lt(max.xdiff(ocheck), .05)
-  })
+  }
 })
+
+context("fma_fit")
+
 
 # farma(0,1) loglikelihood
 loglik_01 <- function(theta, dX, dT, Tz) {
@@ -62,7 +65,7 @@ test_that("MLE is at the mode of the projection plots.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
   require(optimCheck)
-  replicate(n = ntest, {
+  for(ii in 1:ntest) {
     # simulate data
     N <- sample(1000:2000, 1)
     dT <- runif(1)
@@ -79,6 +82,6 @@ test_that("MLE is at the mode of the projection plots.", {
                          fun = function(theta) loglik_01(theta, dX, dT, Tz),
                          plot = F, xrng = .1, npts = 20)
     expect_lt(max.xdiff(ocheck), .05)
-  })
+  }
 })
 

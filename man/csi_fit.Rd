@@ -11,7 +11,7 @@ csi_fit(model, dX, dT, Tz, var_calc)
 
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 

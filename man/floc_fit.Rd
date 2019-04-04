@@ -9,7 +9,7 @@ floc_fit(dX, dT, Tz, var_calc = TRUE)
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
@@ -29,7 +29,7 @@ Y_n = 1/\tau \int_0^\tau X_{n+s} ds + \sigma e_{n},
 where \eqn{X_n} is a 1D or 2D fBM process
 \deqn{
 X_t = \mu t + \Sigma^{1/2} Z_t,
-}. 
+}.
 where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes.
 When put \code{tau} = 0, this model becomes fractional localization error model.
 When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
