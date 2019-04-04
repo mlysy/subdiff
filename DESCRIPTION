@@ -7,7 +7,7 @@ Author: Yun Ling [aut], Martin Lysy [aut,cre]
 Maintainer: Martin Lysy <mlysy@uwaterloo.ca>
 Description: Tools for implementing various models for particle subdiffusion in biological fluids.  Currently the models are (1) fractional Brownian motion (fBM) and (2) a zero-mass Generalized Langevin Equation (GLE) with sum-of-exponentials memory kernel.
 License: GPL 3
-Imports: Rcpp (>= 0.12.12), numDeriv
+Imports: Rcpp (>= 0.12.12), numDeriv, fftw
 Depends: LMN, SuperGauss
 LinkingTo: Rcpp
 LazyData: true
@@ -18,4 +18,5 @@ Suggests:
     optimCheck,
     knitr,
     rmarkdown
+SystemRequirements: fftw
 VignetteBuilder: knitr
