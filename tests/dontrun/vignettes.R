@@ -1,5 +1,13 @@
 #--- code for vignettes --------------------------------------------------------
 
+require(subdiff)
+
+# semi parametric estimation
+
+
+
+#--- simulate data based on real dataset ---------------------------------------
+
 # first, generate some interesting simulated data.
 # do this by fitting a few real datasets with the GLE model
 
@@ -119,7 +127,7 @@ crouse_sim <- function(ii) {
   # round to instrument resolution
   res <- 0.00703125
   Xt <- round(Xt/res) * res
-  data.frame(id = ii, x = Xt[,1], y = Xt[,2])
+  data.frame(id = ii, t = dT*(0:N), x = Xt[,1], y = Xt[,2])
 }
 
 Xt <- crouse_sim(1)
@@ -141,9 +149,9 @@ hbe_sim %>% as_tibble %>%
 ## write.csv(hbe_sim, file = "hbe_sim.csv", row.names = FALSE)
 ## write.csv(hbe2, file = "hbe2.csv", row.names = FALSE)
 ## hbe <- hbe_sim
-## usethis::use_data(hbe)
+## usethis::use_data(hbe, overwrite = TRUE)
 
-hbe %>% as_tibble %>%
-  group_by(localid) %>%
-  summarize(xdiff = sort(unique(abs(diff(x))))[2],
-            ydiff = sort(unique(abs(diff(y))))[2])
+## hbe %>% as_tibble %>%
+##   group_by(localid) %>%
+##   summarize(xdiff = sort(unique(abs(diff(x))))[2],
+##             ydiff = sort(unique(abs(diff(y))))[2])

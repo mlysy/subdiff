@@ -12,6 +12,7 @@ Depends: LMN, SuperGauss
 LinkingTo: Rcpp
 LazyData: true
 RoxygenNote: 6.1.1
+Encoding: UTF-8
 Suggests: 
     testthat,
     optimCheck,
