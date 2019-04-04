@@ -1,1 +1,1 @@
-#' @param N Length of observations.
+#' @param N Length of observations (positive integer).

@@ -1,16 +1,21 @@
-#' ACF of the ARMA(p,q) filter with fBM residuals. 
+#' Calculate the autocorrelation function for the farma(p,q) model.
 #'
-#' @template args-alpha
-#' @param phi Numeric vector of AR coefficients.
-#' @param rho Numeric vector of MA coefficients.
+#' Compute the autocorrelation of increments of farma(p,q) model (see \strong{Details}).
+#' 
+#' @param alpha Power law exponent of fBM process. A scalar between 0 and 2.
+#' @param phi A vector of AR coefficients.
+#' @param rho A vector of MA coefficients.
 #' @template args-dT
 #' @template args-N
-#' @param m Number of MA terms used for approximating AR part.
+#' @param m Number of MA coefficients used for approximating AR coefficients (see \strong{Details}).
+#' 
 #' @template ret-acf
 #' 
-#' @details The ARMA(p,q) filter is of the form
+#' @details The farma(p,q) model is of following form:
 #' \deqn{
 #' Y_t = \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \rho_j X_{t-j}, \rho_0 = 1-\sum_{i=1}^p \phi_i-\sum_{j=1}^q \rho_j,
+#' }{
+#' 
 #' }
 #' where residuals \eqn{X_t} follows the fBM model with parameter \code{alpha}.
 #' Auto-regressive terms are approximated with \code{m} terms of Moving-average terms.

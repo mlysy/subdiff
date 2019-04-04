@@ -1,1 +1,1 @@
-#' @return Vector of auto-covariance of stationary process.
+#' @return A vector of \code{N} autocorrelation values.
