@@ -10,5 +10,11 @@ License: GPL 3
 Imports: Rcpp (>= 0.12.12), numDeriv
 Depends: LMN, SuperGauss
 LinkingTo: Rcpp
+LazyData: true
 RoxygenNote: 6.1.1
-Suggests: testthat, optimCheck
+Suggests: 
+    testthat,
+    optimCheck,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
