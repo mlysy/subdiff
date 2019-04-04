@@ -13,12 +13,12 @@ floc_acf(alpha, tau, sigma2, dT, N)
 
 \item{sigma2}{Magnitude of static error. See Details.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
-\item{N}{Length of observations.}
+\item{N}{Length of observations (positive integer).}
 }
 \value{
-Vector of auto-covariance of stationary process.
+A vector of \code{N} autocorrelation values.
 }
 \description{
 ACF of fBM + Savin & Doyle's Localization Error.

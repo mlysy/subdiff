@@ -9,7 +9,7 @@ fbm_fit(dX, dT, Tz, var_calc = TRUE)
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
 \item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
 
@@ -29,12 +29,6 @@ X_t = \mu t + \Sigma^{1/2} Z_t,
 where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
 }
 \examples{
-# generating time series
-dT <- 1/6000
-N <- 1800
-acf1 <- fbm_acf(0.8, dT, N)
-dX <- rSnorm(n = 2, acf = acf1)
-Tz <- Toeplitz(n = N)
 # generating time series
 dT <- 1/60
 N <- 1800

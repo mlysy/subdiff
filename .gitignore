@@ -1,3 +1,4 @@
+inst/doc
 *.DS_Store
 *.Rapp.history
 *.Rhistory
@@ -6,3 +7,4 @@
 *.dll
 *.pdf
 vignettes/.build.timestamp
+vignettes/old
