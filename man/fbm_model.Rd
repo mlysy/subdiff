@@ -7,22 +7,24 @@
 fbm_model()
 }
 \value{
-An S3 object of type `csi_class`, consisting of a list wuth elements:
-\itemize{
-\item theta_names: A string vector of parameter names.
-\item acf: ACF function with three arguments: vector of ACF parameters \eqn{\theta}; interobservation time \eqn{\Delta t = 1/fps}; length \eqn{N}.
-\item theta_trans: Transformation function that converts constrained ACF parameter \eqn{\theta} into unrestricted parameters \eqn{\gamma}.
-\item theta_itrans: Inverse Transformation function that converts unrestricted parameters \eqn{\gamma} into constrained ACF parameter \eqn{\theta}.
-\item penalty: Penalty function for unrestricted parameters \eqn{\gamma}.
+An list of class `csi_class` with components:
+\describe{
+\item{theta_names}{A vector of parameter names.}
+\item{acf}{An ACF function with three arguments: vector of parameters; interobservation time \eqn{\Delta t}; length \code{N}.}
+\item{theta_trans}{Transformation function that converts original ACF parameter into unrestricted parameters.}
+\item{theta_itrans}{Inverse Transformation function that converts unrestricted parameters into original ACF parameter.}
+\item{penalty}{Penalty function for unrestricted parameters.}
 }
 }
 \description{
 Constructor of fBM model object.
 }
 \details{
-Constructor function that generates the default S3 class of fBM model.
+Constructor function that generates a list of fBM model for purpose of fitting.
 }
 \examples{
+# generate a fBM model object
 model <- fbm_model()
-
+# we can modify the elements of generated object
+model$theta_names <- "gamma"
 }

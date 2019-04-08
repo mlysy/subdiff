@@ -19,3 +19,14 @@ Sample MSD vector of length \code{nlag}.
 \description{
 Sample estimate of mean squared displacement.
 }
+\examples{
+# generates a 2-d series of fBM.
+alpha <- 0.8
+dT <- 1/60
+N <- 1800
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+Xt <- apply(dX, 2, cumsum)
+# Compute the MSD of Xt
+msd1 <- msd_fit(Xt, nlag = 600)
+}

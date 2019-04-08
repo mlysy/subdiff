@@ -1,12 +1,11 @@
-#' Constructor for fARMA model object.
+#' Constructor for farma model object.
 #' 
-#' @param p Integer of Auto-regressive order.
-#' @param q Integer of Moving-average order.
-#' @details Constructor function that generates the default S3 class of fARMA model.
+#' @param p An integer of Auto-regressive order.
+#' @param q An integer of Moving-average order.
+#' @details Constructor function that generates a list of farma(p,q) model for purpose of fitting.
 #' @template ret-csi_class
 #' 
-#' @examples 
-#' model <- farma_model(1,1)
+#' @example examples/farma_model.R
 #' 
 #' @export
 farma_model <- function(p, q) {

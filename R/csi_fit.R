@@ -1,23 +1,28 @@
-#' Fitting location-scale model for Gaussian CSI process.
+#' Fit the location-scale model for Gaussian CSI process.
 #'
-#' @name csi_fit
-#' @param model An S3 object of type `csi_class` (see \code{\link{fbm_model}}, \code{\link{floc_model}}, \code{\link{farma_model}})
+#' Estimate the coefficients and their covariance for parameters in location-scale model where target data follows Gaussian CSI process (See \strong{Details}).
+#'
+#' @param model An list of class `csi_class` (see \code{\link{fbm_model, floc_model, farma_model}})
 #' @template args-dX
 #' @template args-dT
 #' @template args-Tz
 #' @template args-var_calc
 #' @template ret-cov_vcov
 #'
-#' @details The location-scale model for CSI is of the form
+#' @details The location-scale model is of following form
 #' \deqn{
-#' \Delta X_n = \mu \Delta t + \Sigma^{1/2} \Delta Z_n,
+#' X_n = \mu n \Delta t + \Sigma^{1/2} Z_n
+#' }{
+#' X[n] = \mu n \Delta t + \Sigma^{1/2} Z[n]
 #' }
-#' where \eqn{\Delta Z_n = Z_n - Z_{n-1}} is the increment process of CSI process.
+#' where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process. 
+#' 
+#' In location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{\link{LMN::lmn.prof}}.
 #'
-#' @example examples/parameters.R
-#' @examples
-#' model <- fbm_model() # generating fBM model object
-#' fits <- csi_fit(model, dX, dT, Tz, var_calc = TRUE)
+#' @references Lysy, Martin, et al. "Model comparison and assessment for single particle tracking in biological fluids." Journal of the American Statistical Association 111.516 (2016): 1413-1426.
+#'
+#' @example examples/fit_setup.R
+#' @example examples/csi_fit.R
 #'
 #' @export
 csi_fit <- function(model, dX, dT, Tz, var_calc) {

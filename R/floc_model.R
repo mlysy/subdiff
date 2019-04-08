@@ -1,10 +1,9 @@
 #' Constructor of fLOC model object.
 #' 
-#' @details Constructor function that generates the default S3 class of fLOC model.
+#' @details Constructor function that generates a list of floc model for purpose of fitting.
 #' @template ret-csi_class
 #' 
-#' @examples 
-#' model <- floc_model()
+#' @example examples/floc_model.R
 #' 
 #' @export
 floc_model <- function() {

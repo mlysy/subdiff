@@ -8,6 +8,10 @@ pkg.path <- "D:/GitHub/SubDiff"
 Rcpp::compileAttributes(pkgdir = pkg.path)
 devtools::document(pkg = pkg.path)
 devtools::install(pkg = pkg.path, args = "--clean") # installs the package
+
+# setup the user-manual
+devtools::build_manual(pkg = pkg.path)
+
 devtools::build(pkg = pkg.path) # builds a tar.gz file
 
 # check

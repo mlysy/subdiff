@@ -2,12 +2,12 @@
 % Please edit documentation in R/fbm_acf.R
 \name{fbm_acf}
 \alias{fbm_acf}
-\title{Calculate the autocorrelation function for the fBM model.}
+\title{Calculate the ACF for the fBM model.}
 \usage{
 fbm_acf(alpha, dT, N)
 }
 \arguments{
-\item{alpha}{Power law exponent.  A scalar between 0 and 2.}
+\item{alpha}{Power law exponent. A scalar between 0 and 2.}
 
 \item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
@@ -17,13 +17,23 @@ fbm_acf(alpha, dT, N)
 A vector of \code{N} autocorrelation values.
 }
 \description{
-Compute the autocorrelation of fBM increments of equally-spaced observations (see \strong{Details}).
+Compute the autocovariance of fBM increments of equally-spaced observations (see \strong{Details}).
 }
 \details{
-The autocorrelation of fBM increments at lag \eqn{h} is given by
+The autocovariance of fBM increments at lag \eqn{h} is given by
 \deqn{
-\textrm{acf}(h) = \Delta t^\alpha/2 \times \left(|n+1|^\alpha + |n-1|^\alpha - 2|n|^\alpha\right).
+\textrm{acf}(h) = \Delta t^\alpha/2 \times \left(|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha\right).
 }{
-acf(n) = \Delta t^\alpha/2 * (|n+1|^\alpha + |n-1|^\alpha - 2|n|^\alpha). 
+acf(h) = \Delta t^\alpha/2 * (|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha). 
 }
+
+This function returns the autocovariance function of increments of fBM process.
+}
+\examples{
+# ACF parameters
+alpha <- 0.8
+dT <- 1/60
+N <- 1800
+# ACF of fBM model
+fbm_acf(alpha, dT, N)
 }

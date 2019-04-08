@@ -17,6 +17,11 @@
 #' }
 #' Since in many experiment \code{tmax} is out-of-observation, this function allows to set \code{tmax = tseq[length(tseq)]}, which is the end of experiment. By doing this we only search for \code{tmin}. In addition, the default value of \code{log = FALSE} means the length of time window is defined as \code{tmax - tmin}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting \code{log = TRUE} defines the length of time window as \code{log(tmax) - log(tmin)} and also applies a log-scaled weight in power fitting (more details in \code{msd_ls}).
 #' This function finds the longest time window whose \code{epsilon} is smaller than \code{rel_tol} by applying grid search.
+#' 
+#' @example examples/Xt_setup.R
+#' @example examples/msd_fit.R
+#' @example examples/msd_subdiff.R
+#' 
 #' @export
 msd_subdiff <- function(msd, tseq, rel_tol = 0.05, tmax = FALSE, log = FALSE) {
   ntimes <- length(tseq)

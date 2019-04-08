@@ -1,26 +1,30 @@
-#' Fit the ARMA(p,q) filter with fBM residuals.
+#' Fit the farma model.
+#' 
+#' Fit a farma(p,q) model to a multi-dimensional CSI process (See \strong{Details}).
 #'
-#' @name farma_fit
 #' @template args-dX
 #' @template args-dT
-#' @param order A specification of the ARMA filter: the two integer components (p, q) are the AR order and the MA order.
+#' @param order A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.
 #' @template args-Tz
 #' @template args-var_calc
-#' @template ret-cov_vcov
-#'
-#' @details The ARMA(p,q) filter is of the form
-#' \deqn{
-#' Y_t = \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \rho_j X_{t-j}, \rho_0 = 1-\sum_{i=1}^p \phi_i-\sum_{j=1}^q \rho_j,
+#' @return A vector of estimated parameters on transformed scale (See \code{\link{farma_model}}). If \code{var_calc}, a list with components:
+#' \describe{
+#' \item{coef}{A vector of estimated parameters on transformed scale.}
+#' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
 #' }
-#' where residuals \eqn{X_t} follows the fBM model:
-#' \deqn{
-#' X_t = \mu t + \Sigma^{1/2} Z_t,
-#' }
-#' where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes.
 #'
-#' @example examples/parameters.R
-#' @examples
-#' fits <- farma_fit(dX, dT, order = c(1,1), Tz, var_calc = TRUE) # fitting ARMA(1,1) filter
+#' @details The farma(p,q) model is of following form:
+#' \deqn{
+#' Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
+#' }{
+#' Y[n] = \phi_1 Y[n-1] + ... + \phi_p Y[n-p] + \rho_0 X[n] + ... + \rho_q X[n-q]
+#' }
+#' where \eqn{X_n} is an \code{q = 1,2} dimensional fBM model (See \code{\link{fbm_fit}}).
+#' 
+#' Optimization is done by \code{\link{optimize}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{farma_model}}).
+#'
+#' @example examples/fit_setup.R
+#' @example examples/farma_fit.R
 #'
 #' @export
 farma_fit <- function(dX, dT, order, Tz, var_calc = TRUE) {

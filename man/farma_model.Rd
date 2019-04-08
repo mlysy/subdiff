@@ -2,32 +2,34 @@
 % Please edit documentation in R/farma_model.R
 \name{farma_model}
 \alias{farma_model}
-\title{Constructor for fARMA model object.}
+\title{Constructor for farma model object.}
 \usage{
 farma_model(p, q)
 }
 \arguments{
-\item{p}{Integer of Auto-regressive order.}
+\item{p}{An integer of Auto-regressive order.}
 
-\item{q}{Integer of Moving-average order.}
+\item{q}{An integer of Moving-average order.}
 }
 \value{
-An S3 object of type `csi_class`, consisting of a list wuth elements:
-\itemize{
-\item theta_names: A string vector of parameter names.
-\item acf: ACF function with three arguments: vector of ACF parameters \eqn{\theta}; interobservation time \eqn{\Delta t = 1/fps}; length \eqn{N}.
-\item theta_trans: Transformation function that converts constrained ACF parameter \eqn{\theta} into unrestricted parameters \eqn{\gamma}.
-\item theta_itrans: Inverse Transformation function that converts unrestricted parameters \eqn{\gamma} into constrained ACF parameter \eqn{\theta}.
-\item penalty: Penalty function for unrestricted parameters \eqn{\gamma}.
+An list of class `csi_class` with components:
+\describe{
+\item{theta_names}{A vector of parameter names.}
+\item{acf}{An ACF function with three arguments: vector of parameters; interobservation time \eqn{\Delta t}; length \code{N}.}
+\item{theta_trans}{Transformation function that converts original ACF parameter into unrestricted parameters.}
+\item{theta_itrans}{Inverse Transformation function that converts unrestricted parameters into original ACF parameter.}
+\item{penalty}{Penalty function for unrestricted parameters.}
 }
 }
 \description{
-Constructor for fARMA model object.
+Constructor for farma model object.
 }
 \details{
-Constructor function that generates the default S3 class of fARMA model.
+Constructor function that generates a list of farma(p,q) model for purpose of fitting.
 }
 \examples{
+# generate a farma(1,1) model object
 model <- farma_model(1,1)
-
+# we can modify the elements of generated object
+model$theta_names[1] <- "gamma"
 }

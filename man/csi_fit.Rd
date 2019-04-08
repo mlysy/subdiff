@@ -2,42 +2,56 @@
 % Please edit documentation in R/csi_fit.R
 \name{csi_fit}
 \alias{csi_fit}
-\title{Fitting location-scale model for Gaussian CSI process.}
+\title{Fit the location-scale model for Gaussian CSI process.}
 \usage{
 csi_fit(model, dX, dT, Tz, var_calc)
 }
 \arguments{
-\item{model}{An S3 object of type `csi_class` (see \code{\link{fbm_model}}, \code{\link{floc_model}}, \code{\link{farma_model}})}
+\item{model}{An list of class `csi_class` (see \code{\link{fbm_model, floc_model, farma_model}})}
 
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
 \item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
-\item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
+\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{\link{SuperGauss::Toeplitz}}).}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 }
 \value{
-Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+A vector of estimated parameters on transformed scale (See \code{\link{farma_model}}, \code{\link{fbm_model}}, \code{\link{floc_model}}). If \code{var_calc}, a list with components:
+\describe{
+\item{coef}{A vector of estimated parameters on transformed scale.}
+\item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
+}
 }
 \description{
-Fitting location-scale model for Gaussian CSI process.
+Estimate the coefficients and their covariance for parameters in location-scale model where target data follows Gaussian CSI process (See \strong{Details}).
 }
 \details{
-The location-scale model for CSI is of the form
+The location-scale model is of following form
 \deqn{
-\Delta X_n = \mu \Delta t + \Sigma^{1/2} \Delta Z_n,
+X_n = \mu n \Delta t + \Sigma^{1/2} Z_n
+}{
+X[n] = \mu n \Delta t + \Sigma^{1/2} Z[n]
 }
-where \eqn{\Delta Z_n = Z_n - Z_{n-1}} is the increment process of CSI process.
+where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process. 
+
+In location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{\link{LMN::lmn.prof}}.
 }
 \examples{
-model <- fbm_model() # generating fBM model object
-fits <- csi_fit(model, dX, dT, Tz, var_calc = TRUE)
-
-# generating time series
+# generating 2-d stationary time series
+alpha <- 0.8
 dT <- 1/60
 N <- 1800
-acf1 <- fbm_acf(0.8, dT, N)
-dX <- rSnorm(n = 2, acf = acf1)
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+# Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
+# generate a fBM model object
+model <- fbm_model()
+# fit the fBM model
+csi_fit(model, dX, dT, Tz, var_calc = TRUE)
+}
+\references{
+Lysy, Martin, et al. "Model comparison and assessment for single particle tracking in biological fluids." Journal of the American Statistical Association 111.516 (2016): 1413-1426.
 }

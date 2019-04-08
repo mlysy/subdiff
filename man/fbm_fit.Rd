@@ -11,28 +11,40 @@ fbm_fit(dX, dT, Tz, var_calc = TRUE)
 
 \item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
-\item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
+\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{\link{SuperGauss::Toeplitz}}).}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 }
 \value{
-Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+A vector of estimated parameters on transformed scale (See \code{\link{fbm_model}}). If \code{var_calc}, a list with components:
+\describe{
+\item{coef}{A vector of estimated parameters on transformed scale.}
+\item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
+}
 }
 \description{
-Fit the fBM model.
+Fit a fBM model to a multi-dimensional CSI process.
 }
 \details{
-The fBM model is of the form
+The fBM model is of the form:
 \deqn{
-X_t = \mu t + \Sigma^{1/2} Z_t,
+X_t = \mu t + \Sigma^{1/2} Z_t
+}{
+X[t] = \mu t + \Sigma^{1/2} Z[t],
 }
-where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
+where \eqn{Z[t]} consists of \code{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
+
+Optimization is done by \code{\link{optim}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{fbm_model}}).
 }
 \examples{
-# generating time series
+# generating 2-d stationary time series
+alpha <- 0.8
 dT <- 1/60
 N <- 1800
-acf1 <- fbm_acf(0.8, dT, N)
-dX <- rSnorm(n = 2, acf = acf1)
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+# Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
+# Fit the fBM model
+fbm_fit(dX, dT, Tz, var_calc = TRUE)
 }

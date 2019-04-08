@@ -7,9 +7,9 @@
 lsc_resid(dX, dT, mu, acf, Sigma)
 }
 \arguments{
-\item{dX}{Matrix of increments where each column is a time series.}
+\item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time.}
+\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
 \item{mu}{Vector of linear drift in each direction.}
 
@@ -26,7 +26,25 @@ Residuals of a location-scale stationary increments model.
 \details{
 The residuals are calculated as
 \deqn{
-Z = Toeplitz(acf)^{-1/2} (dX - mu dT) Sigma^{-1/2}
+Z = T^{-1/2} (\Delta X - \mu \Delta T) \Sigma^{-1/2}
+}{
+Z = T^{-1/2} (\Delta X - \mu \Delta T) \Sigma^{-1/2}
 }
-where the "square roots" correspond to the Cholesky decomposition for the Toeplitz row-dependence matrix, and the eigen decomposition for the column-dependence matrix.
+where \eqn{T} is the Toeplitz matrix whose first column is \code{acf}.
+
+The "square roots" correspond to the Cholesky decomposition for the Toeplitz row-dependence matrix, and the eigen decomposition for the column-dependence matrix.
+}
+\examples{
+# generating 2-d stationary time series
+alpha <- 0.8
+dT <- 1/60
+N <- 1800
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+# Toeplitz object for internal computation
+Tz <- Toeplitz(n = N)
+mu <- c(1,2)
+Sigma <- diag(2)
+# compute the residuals
+lsc_resid(dX, dT, mu, acf1, Sigma)
 }

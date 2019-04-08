@@ -1,1 +1,1 @@
-#' @param Tz Optional Toeplitz matrix for intermediate calculations.
+#' @param Tz Optional object of class `Toeplitz` for intermediate calculations (See \code{\link{SuperGauss::Toeplitz}}).

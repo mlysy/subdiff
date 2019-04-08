@@ -16,6 +16,11 @@
 #' where \code{w(t) > 0} is a weight function.  The default value of \code{logw = FALSE} uses \code{w(t) = 1}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting \code{logw = TRUE} uses uniform weighting on the log-scale, which corresponds to \code{w(t) = 1/t}.
 #'
 #' For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by \code{NA} in the \code{msd} matrix.
+#' 
+#' @example examples/Xt_setup.R
+#' @example examples/msd_fit.R
+#' @example examples/msd_ls.R
+#' 
 #' @export
 msd_ls <- function(msd, tseq, pooled = TRUE, logw = TRUE) {
   yy <- log(as.matrix(msd))

@@ -2,7 +2,7 @@
 % Please edit documentation in R/floc_fit.R
 \name{floc_fit}
 \alias{floc_fit}
-\title{Fit the fBM model with Savin & Doyle's Localization Error.}
+\title{Fit the floc model.}
 \usage{
 floc_fit(dX, dT, Tz, var_calc = TRUE)
 }
@@ -11,37 +11,50 @@ floc_fit(dX, dT, Tz, var_calc = TRUE)
 
 \item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
-\item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
+\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{\link{SuperGauss::Toeplitz}}).}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 }
 \value{
-Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+A vector of estimated parameters on transformed scale (See \code{\link{floc_model}}). If \code{var_calc}, a list with components:
+\describe{
+\item{coef}{A vector of estimated parameters on transformed scale.}
+\item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
+}
 }
 \description{
-Fit the fBM model with Savin & Doyle's Localization Error.
+Fit the Savin & Doyle's localization error model with fBM process (See \strong{Details}).
 }
 \details{
-The fBM + localization error (fLOC) model has the form
+The Savin & Doyle's localization error model with fBM process (floc model) has the following form:
 \deqn{
-Y_n = 1/\tau \int_0^\tau X_{n+s} ds + \sigma e_{n},
-},
-where \eqn{X_n} is a 1D or 2D fBM process
-\deqn{
-X_t = \mu t + \Sigma^{1/2} Z_t,
-}.
-where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes.
-When put \code{tau} = 0, this model becomes fractional localization error model.
+Y_n = 1/\tau \int_0^\tau X_{n \Delta t +s} ds + \sigma e_{n}
+}{
+Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t +s} ds + \sigma e[n]
+}
+where \eqn{X_n} is an \code{q = 1,2} dimensional fBM model (See \code{\link{fbm_fit}}).
+
+The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
+\eqn{e_n} is a standard white noise, and this term is called static error.
+
+When put \code{tau} = 0, this model becomes fractional static error model.
 When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
 When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
+
+Optimization is done by \code{\link{optimize}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{floc_model}}).
 }
 \examples{
-fits <- floc_fit(dX, dT, Tz, var_calc = TRUE)
-
-# generating time series
+# generating 2-d stationary time series
+alpha <- 0.8
 dT <- 1/60
 N <- 1800
-acf1 <- fbm_acf(0.8, dT, N)
-dX <- rSnorm(n = 2, acf = acf1)
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+# Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
+# Fit the fLOC model
+floc_fit(dX, dT, Tz, var_calc = TRUE)
+}
+\references{
+Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical journal 88.1 (2005): 623-638.
 }

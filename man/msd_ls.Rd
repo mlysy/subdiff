@@ -34,3 +34,17 @@ where \code{w(t) > 0} is a weight function.  The default value of \code{logw = F
 
 For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by \code{NA} in the \code{msd} matrix.
 }
+\examples{
+# generates a 2-d series of fBM.
+alpha <- 0.8
+dT <- 1/60
+N <- 1800
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+Xt <- apply(dX, 2, cumsum)
+# Compute the MSD of Xt
+msd1 <- msd_fit(Xt, nlag = 600)
+# Least-Square fitting of MSD
+tseq <- 1:N * dT
+msd_ls(msd1, tseq)
+}

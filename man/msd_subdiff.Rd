@@ -35,3 +35,17 @@ epsilon = max((msd[tmin, tmax] - D * tseq[tmin,tmax]^alpha) / msd[tmin, tmax]).
 Since in many experiment \code{tmax} is out-of-observation, this function allows to set \code{tmax = tseq[length(tseq)]}, which is the end of experiment. By doing this we only search for \code{tmin}. In addition, the default value of \code{log = FALSE} means the length of time window is defined as \code{tmax - tmin}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting \code{log = TRUE} defines the length of time window as \code{log(tmax) - log(tmin)} and also applies a log-scaled weight in power fitting (more details in \code{msd_ls}).
 This function finds the longest time window whose \code{epsilon} is smaller than \code{rel_tol} by applying grid search.
 }
+\examples{
+# generates a 2-d series of fBM.
+alpha <- 0.8
+dT <- 1/60
+N <- 1800
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+Xt <- apply(dX, 2, cumsum)
+# Compute the MSD of Xt
+msd1 <- msd_fit(Xt, nlag = 600)
+# Effective subdiffusion time of MSD
+tseq <- 1:N * dT
+msd_subdiff(msd1, tseq)
+}

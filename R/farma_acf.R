@@ -1,8 +1,8 @@
-#' Calculate the autocorrelation function for the farma(p,q) model.
+#' Calculate the ACF for the farma model.
 #'
-#' Compute the autocorrelation of increments of farma(p,q) model (see \strong{Details}).
+#' Compute the autocovariance of increment process of farma(p,q) model (see \strong{Details}).
 #'
-#' @param alpha Power law exponent of fBM process. A scalar between 0 and 2.
+#' @param alpha Power law exponent of the fBM process. A scalar between 0 and 2.
 #' @param phi A vector of AR coefficients.
 #' @param rho A vector of MA coefficients.
 #' @template args-dT
@@ -13,15 +13,19 @@
 #'
 #' @details The farma(p,q) model is of following form:
 #' \deqn{
-#' Y_t = \sum_{i=1}^p \phi_i Y_{t-i} + \sum_{j=0}^q \rho_j X_{t-j}, \rho_0 = 1-\sum_{i=1}^p \phi_i-\sum_{j=1}^q \rho_j,
+#' Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
 #' }{
-#'
+#' Y[n] = \phi_1 Y[n-1] + ... + \phi_p Y[n-p] + \rho_0 X[n] + ... + \rho_q X[n-q]
 #' }
-#' where residuals \eqn{X_t} follows the fBM model with parameter \code{alpha}.
-#' Auto-regressive terms are approximated with \code{m} terms of Moving-average terms.
+#' where residuals \eqn{X[n]} follow the fBM process with parameter \code{alpha} (See \code{\link{fbm_acf}}).
+#' 
+#' This function returns the autocovariance of stationary increment process \eqn{\Delta Y[n] = Y[n] - Y[n-1]}.
+#' 
+#' In this function, the Auto-regressive terms are approximated with \code{m} terms of Moving-average terms. Currently this function only supports AR(1) term.
 #'
-#' @examples
-#' acf1 <- farma_acf(alpha = 0.8, phi = 0.1, rho = c(0.1, 0.05), dT = 1/60, N = 1800)
+#' @example examples/acf_setup.R
+#' @example examples/farma_acf.R
+#' 
 #' @importFrom fftw FFT
 #' @importFrom fftw IFFT
 #'

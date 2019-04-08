@@ -1,19 +1,21 @@
-#' Calculate the autocorrelation function for the fBM model.
+#' Calculate the ACF for the fBM model.
 #' 
-#' Compute the autocorrelation of fBM increments of equally-spaced observations (see \strong{Details}).
+#' Compute the autocovariance of fBM increments of equally-spaced observations (see \strong{Details}).
 #' 
-#' @param alpha Power law exponent.  A scalar between 0 and 2.
+#' @param alpha Power law exponent. A scalar between 0 and 2.
 #' @template args-dT
 #' @template args-N
 #' 
 #' @template ret-acf
 #' 
-#' @details The autocorrelation of fBM increments at lag \eqn{h} is given by
+#' @details The autocovariance of fBM increments at lag \eqn{h} is given by
 #' \deqn{
-#' \textrm{acf}(h) = \Delta t^\alpha/2 \times \left(|n+1|^\alpha + |n-1|^\alpha - 2|n|^\alpha\right).
+#' \textrm{acf}(h) = \Delta t^\alpha/2 \times \left(|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha\right).
 #' }{
-#' acf(n) = \Delta t^\alpha/2 * (|n+1|^\alpha + |n-1|^\alpha - 2|n|^\alpha). 
+#' acf(h) = \Delta t^\alpha/2 * (|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha). 
 #' }
+#'
+#' This function returns the autocovariance function of increments of fBM process.
 #'
 #' @example examples/acf_setup.R
 #' @example examples/fbm_acf.R

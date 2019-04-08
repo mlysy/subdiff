@@ -2,7 +2,7 @@
 % Please edit documentation in R/downsample.R
 \name{downsample}
 \alias{downsample}
-\title{Downsample the observation of time series.}
+\title{Downsample a multi-dimensional time series.}
 \usage{
 downsample(Xt, r, position = 1)
 }
@@ -11,19 +11,25 @@ downsample(Xt, r, position = 1)
 
 \item{r}{Integer of downsampling rate.}
 
-\item{position}{Integer of position index for downsampled series, smaller than or equal to `r`.}
+\item{position}{Integer of position index for downsampled series, smaller than or equal to \code{r}.}
 }
 \value{
 An matrix of downsampled observation.
 }
 \description{
-Downsample the observation of time series.
+Downsample a multi-dimensional time series.
 }
 \details{
-Sample observations from original time series \eqn{X = [X_0, X_2, X_3, ..., X_N]} at constant rate `r`. For given position index `i` finally returns \eqn{X_{ds} = [X_i, X_{i+r}, X_{i+2r}, ...]}.
+Sample observations from original time series \eqn{X = [X_0, X_2, X_3, ..., X_N]} at constant rate \code{r}. For given position index \code{i} finally returns \eqn{X_{ds} = [X_i, X_{i+r}, X_{i+2r}, ...]}.
 }
 \examples{
-Xt <- apply(matrix(rnorm(2000), 2, 1000), 2, cumsum) # generates a 2-d series of Brownian motion.
+# generates a 2-d series of fBM.
+alpha <- 0.8
+dT <- 1/60
+N <- 1800
+acf1 <- fbm_acf(alpha, dT, N)
+dX <- rSnorm(2, acf = acf1)
+Xt <- apply(dX, 2, cumsum)
+# downsample Xt by rate 2.
 Xt_ds2 <- downsmaple(Xt, r = 2)
-
 }

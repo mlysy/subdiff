@@ -1,20 +1,32 @@
-#' ACF of fBM + Savin & Doyle's Localization Error.
+#' Calculate the ACF for the fLOC model.
 #'
-#' @template args-alpha
-#' @param tau Real number ranging between 0 and 1, indicating the percentage of time for which the camera shutter is open in the dynamic error model. See Details.
-#' @param sigma2 Magnitude of static error. See Details.
+#' Compute the autocovariance for the increments of Savin & Doyle's localization model with fBM process (see \strong{Details}).
+#' 
+#' @param alpha Power law exponent of fBM process. A scalar between 0 and 2.
+#' @param tau The ratio between camera shutter open time and interobservation time \code{dT} (see \strong{Details}). A scalar between 0 and 1. 
+#' @param sigma2 The Magnitude of static errors (see \strong{Details}). A positive scalar.
 #' @template args-dT
 #' @template args-N
+#' 
 #' @template ret-acf
 #' 
-#' @details this function returns the ACF of \eqn{\Delta Y_n}, where \eqn{Y_n} follows fLOC model:
+#' @details The Savin & Doyle's localization error model with fBM process (floc model) is of following form:
 #' \deqn{
-#' Y_n = 1/\tau \int_0^\tau X_{n+s} ds + \sigma e_{n},
-#' },
-#' where \eqn{X_n} is an fBM process and \eqn{e_n} is a white noise with variance \code{sigma2}.
+#' Y_n = 1/\tau \int_0^\tau X_{n  \Delta t+s} ds + \sigma e_{n}
+#' }{
+#' Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t+s} ds + \sigma e[n]
+#' }
+#' where \eqn{X_n} is an fBM process. 
 #' 
-#' @examples 
-#' floc_acf(alpha = 0.8, tau = 1/60, sigma2 = 0.01, dT = 1/60, N = 1800)
+#' The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
+#' \eqn{e[n]} is a standard white noise, and this term is called static error.
+#' 
+#' This function returns the autocovariance function of increments of \eqn{Y[n]}.
+#' 
+#' @references Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical journal 88.1 (2005): 623-638.
+#' 
+#' @example examples/acf_setup.R
+#' @example examples/floc_acf.R
 #' 
 #' @export
 floc_acf <- function(alpha, tau, sigma2, dT, N) {

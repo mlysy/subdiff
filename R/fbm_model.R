@@ -1,10 +1,9 @@
 #' Constructor of fBM model object.
 #' 
-#' @details Constructor function that generates the default S3 class of fBM model.
+#' @details Constructor function that generates a list of fBM model for purpose of fitting.
 #' @template ret-csi_class
 #' 
-#' @examples 
-#' model <- fbm_model()
+#' @example examples/fbm_model.R
 #' 
 #' @export
 fbm_model <- function() {
