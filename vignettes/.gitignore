@@ -1,2 +1,4 @@
 *.html
 *.R
+subdiff_cache
+subdiff_files

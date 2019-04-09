@@ -1,1 +1,9 @@
-man-roxygen/*
+^Meta$
+^doc$
+^man-roxygen$
+^TODO\\.md$
+^README\\.md$
+^tests/dontrun$
+^examples$
+^vignettes/subdiff_cache$
+^vignettes/subdiff_files$

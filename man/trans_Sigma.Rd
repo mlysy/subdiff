@@ -3,7 +3,7 @@
 \name{trans_Sigma}
 \alias{trans_Sigma}
 \alias{itrans_Sigma}
-\title{Normalizing transformations for 1D or 2D variance matrices.}
+\title{Unconstraining transformations for 1D or 2D variance matrices.}
 \usage{
 trans_Sigma(Sigma, D_scale = TRUE, rho_scale = FALSE)
 
@@ -22,8 +22,12 @@ itrans_Sigma(lambda, D_scale = TRUE, rho_scale = FALSE)
 Variance matrix on the regular or normalized scale.
 }
 \description{
-Normalizing transformations for 1D or 2D variance matrices.
+Unconstraining transformations for 1D or 2D variance matrices.
 }
 \details{
-The normalized variance matrix in 1D is \code{lambda = .5 * log(Sigma)}.  In 2D, \code{lambda} is a vector of length 3 with last element \code{lambda[3] = logit(rho/2+1/2)}, where \eqn{\rho} is the correlation.  When \code{D_scale = TRUE}, we have \code{lambda[1:2] = (log(D), log(Sigma[1,1]/Sigma[2,2]))}, where \eqn{D = (\Sigma_{11} + \Sigma_{22})/2}.  Otherwise, the normalizing transformation is \code{lambda[1:2] = (log(Sigma[1,1]), log(Sigma[2,2]))}.
+The unconstrained variance matrix is defined as follows:
+\itemize{
+  \item In 1D, it is \code{lambda = .5 * log(Sigma)}.
+  \item In 2D, \code{lambda} is a vector of length 3 with last element \code{lambda[3] = logit(rho/2+1/2)}, where \eqn{\rho = \Sigma_{12}/} is the correlation.  When \code{D_scale = TRUE}, we have \code{lambda[1:2] = (log(D), log(Sigma[1,1]/Sigma[2,2]))}, where \eqn{D = (\Sigma_{11} + \Sigma_{22})/2}.  Otherwise, the unconstraining transformation is \code{lambda[1:2] = (log(Sigma[1,1]), log(Sigma[2,2]))}.
+}
 }
