@@ -8,3 +8,4 @@
 ^vignettes/subdiff_cache$
 ^vignettes/subdiff_files$
 ^subdiff-design\.md$
+^install\.md$
