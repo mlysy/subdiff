@@ -1,14 +1,15 @@
 Package: subdiff
 Type: Package
 Title: Inference for Subdiffusive Particle Tracking
-Version: 0.0.0.9001
-Date: 2017-07-27
-Author: Yun Ling [aut], Martin Lysy [aut,cre]
-Maintainer: Martin Lysy <mlysy@uwaterloo.ca>
-Description: Tools for implementing various models for particle subdiffusion in biological fluids.  Currently the models are (1) fractional Brownian motion (fBM) and (2) a zero-mass Generalized Langevin Equation (GLE) with sum-of-exponentials memory kernel.
-License: GPL 3
-Imports: Rcpp (>= 0.12.12), numDeriv, fftw
-Depends: LMN, SuperGauss
+Version: 0.0.1.9000
+Date: 2019-04-09
+Authors@R: c(person("Yun", "Ling", role = "aut"),
+             person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
+	            role = c("aut", "cre")))
+Description: Tools for implementing various models for particle subdiffusion in biological fluids.
+License: GPL-3
+Depends: R (>= 2.10), LMN, SuperGauss
+Imports: Rcpp (>= 0.12.12), numDeriv, fftw, stats
 LinkingTo: Rcpp
 LazyData: true
 RoxygenNote: 6.1.1
@@ -17,6 +18,8 @@ Suggests:
     testthat,
     optimCheck,
     knitr,
-    rmarkdown
+    rmarkdown,
+    kableExtra,
+    ggplot2
 SystemRequirements: fftw
 VignetteBuilder: knitr

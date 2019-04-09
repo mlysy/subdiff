@@ -13,7 +13,7 @@ farma_fit(dX, dT, order, Tz, var_calc = TRUE)
 
 \item{order}{A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.}
 
-\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{\link{SuperGauss::Toeplitz}}).}
+\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{SuperGauss::Toeplitz}).}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 }
@@ -32,11 +32,11 @@ The farma(p,q) model is of following form:
 \deqn{
 Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
 }{
-Y[n] = \phi_1 Y[n-1] + ... + \phi_p Y[n-p] + \rho_0 X[n] + ... + \rho_q X[n-q]
+Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
 }
 where \eqn{X_n} is an \code{q = 1,2} dimensional fBM model (See \code{\link{fbm_fit}}).
 
-Optimization is done by \code{\link{optimize}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{farma_model}}).
+Optimization is done by \code{stats::optimize}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{farma_model}}).
 }
 \examples{
 # generating 2-d stationary time series

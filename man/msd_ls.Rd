@@ -43,8 +43,9 @@ acf1 <- fbm_acf(alpha, dT, N)
 dX <- rSnorm(2, acf = acf1)
 Xt <- apply(dX, 2, cumsum)
 # Compute the MSD of Xt
-msd1 <- msd_fit(Xt, nlag = 600)
+nlag <- 600
+msd1 <- msd_fit(Xt, nlag = nlag)
 # Least-Square fitting of MSD
-tseq <- 1:N * dT
+tseq <- 1:nlag * dT
 msd_ls(msd1, tseq)
 }

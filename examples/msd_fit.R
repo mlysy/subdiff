@@ -1,2 +1,3 @@
 # Compute the MSD of Xt
-msd1 <- msd_fit(Xt, nlag = 600)
+nlag <- 600
+msd1 <- msd_fit(Xt, nlag = nlag)

@@ -31,5 +31,5 @@ acf1 <- fbm_acf(alpha, dT, N)
 dX <- rSnorm(2, acf = acf1)
 Xt <- apply(dX, 2, cumsum)
 # downsample Xt by rate 2.
-Xt_ds2 <- downsmaple(Xt, r = 2)
+Xt_ds2 <- downsample(Xt, r = 2)
 }

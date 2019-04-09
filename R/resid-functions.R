@@ -5,7 +5,6 @@
 #' @param theta Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).
 #' @param dX One or two-column matrix of increments.
 #' @param dT Interobservation time.
-#' @param type,ds,full Additional arguments specifying for the downsampling estimator (see \code{\link{fds_fit}}).
 #' @return A one or two-column matrix of white noise residuals (see Details).
 #' @details Each of the models provided by the package generates a normal data matrix \eqn{\Delta X} via the linear transformation
 #' \deqn{
@@ -27,6 +26,7 @@ fbm_resid <- function(theta, dX, dT) {
 }
 
 #' @rdname subdiff-resid
+#' @param order Integer vector of length 2 specifying the number of AR and MA terms respectively.
 #' @export
 farma_resid <- function(theta, dX, dT, order) {
   qq <- ncol(dX) # problem dimensions

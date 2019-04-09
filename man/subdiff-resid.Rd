@@ -20,7 +20,7 @@ floc_resid(theta, dX, dT)
 
 \item{dT}{Interobservation time.}
 
-\item{type, ds, full}{Additional arguments specifying for the downsampling estimator (see \code{\link{fds_fit}}).}
+\item{order}{Integer vector of length 2 specifying the number of AR and MA terms respectively.}
 }
 \value{
 A one or two-column matrix of white noise residuals (see Details).

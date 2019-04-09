@@ -7,13 +7,13 @@
 csi_fit(model, dX, dT, Tz, var_calc)
 }
 \arguments{
-\item{model}{An list of class `csi_class` (see \code{\link{fbm_model, floc_model, farma_model}})}
+\item{model}{An list of class \code{csi_class} (see \code{\link{fbm_model}}, \code{\link{floc_model}}, \code{\link{farma_model}}).}
 
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
 \item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
-\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{\link{SuperGauss::Toeplitz}}).}
+\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{SuperGauss::Toeplitz}).}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 }
@@ -34,9 +34,9 @@ X_n = \mu n \Delta t + \Sigma^{1/2} Z_n
 }{
 X[n] = \mu n \Delta t + \Sigma^{1/2} Z[n]
 }
-where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process. 
+where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process.
 
-In location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{\link{LMN::lmn.prof}}.
+In the location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{LMN::lmn.prof}.
 }
 \examples{
 # generating 2-d stationary time series
@@ -53,5 +53,5 @@ model <- fbm_model()
 csi_fit(model, dX, dT, Tz, var_calc = TRUE)
 }
 \references{
-Lysy, Martin, et al. "Model comparison and assessment for single particle tracking in biological fluids." Journal of the American Statistical Association 111.516 (2016): 1413-1426.
+Lysy, M., Pillai, N.S., Hill, D.B., Forest, M.G., Mellnik, J.W.R., Vasquez, P.A., and McKinley, S.A. "Model comparison and assessment for single particle tracking in biological fluids." \emph{Journal of the American Statistical Association} 111.516 (2016): 1413-1426. \url{https://doi.org/10.1080/01621459.2016.1158716}.
 }

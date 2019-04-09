@@ -6,6 +6,9 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
+  #rmarkdown::html_document:
+    #toc: true
+    #toc_depth: 4
     #toc_float: true
     #code_folding: hide
     #keep_md: yes
@@ -107,7 +110,7 @@ In the following sections, we introduce some of the tools provided by **subdiff*
 
 ### `r subsection("Installation", "sec:inst")`
 
-Installation of **subdiff** requires several other package not currently available on CRAN:
+Installation of **subdiff** requires several other packages not currently available on CRAN:
 
 - `r github_link("subdiff")`: The main interface to the toolchain.
 - `r github_link("LMN")`: Dimension reduction for parametric subdiffusion models.  In particular, these methods allow us to estimate linear or quadratic drift for 1-3 dimensional trajectories with zero computational overhead.
@@ -115,7 +118,7 @@ Installation of **subdiff** requires several other package not currently availab
 - `r github_link("SuperGauss")`: Efficient computations for parametric models, i.e., scaling almost linearly in the number of timepoints.
 - `r github_link("optimCheck")`: To run unit tests for optimization routines -- recommended to make sure that **subdiff** has been installed correctly.
 
-Other helpful package, some of which are required to run the code in this tutorial:
+Other helpful packages, some of which are required to run the code in this tutorial:
 
 - `r cran_link("devtools")`: For installing packages that aren't on CRAN.
 - `r cran_link("testthat")`: For running the toolchain unit tests.
@@ -550,6 +553,7 @@ alpha_ci2 <- cbind(L = ilogit(aD_stat$kappa_mle - 1.96 * aD_stat$kappa_se, 0, 2)
 tab <- cbind(aD_stat[,"id"], alpha_ci1, alpha_ci2)
 tab <- signif(tab[1:10,], digits = 3)
 colnames(tab) <- c("Trajectory ID", "Lower", "Upper", "Lower", "Upper")
+require(kableExtra) # for nice HTML tables
 kable(tab) %>%
   kable_styling(bootstrap_options = c("striped", "responsive"), full_width = TRUE) %>%
   add_header_above(c(" " = 1, "Direct Method" = 2, "Delta Method" = 2)) %>%

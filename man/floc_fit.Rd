@@ -11,7 +11,7 @@ floc_fit(dX, dT, Tz, var_calc = TRUE)
 
 \item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
 
-\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{\link{SuperGauss::Toeplitz}}).}
+\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{SuperGauss::Toeplitz}).}
 
 \item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
 }
