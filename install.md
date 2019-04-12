@@ -2,7 +2,7 @@
 title: "Pre-Release Installation Instructions"
 ---
 
-1.  Install the R package [**Rcpp**](http://www.rcpp.org/).  This may require you to set up your R to compile C++ source code.
+1.  Install the R package [**Rcpp**](http://www.rcpp.org/).  This may require you to set up your R to compile C++ source code.  On Windows this is done with [**Rtools**](https://cran.r-project.org/bin/windows/Rtools/), and on OSX with CRAN [**Clang 6.0.0**](https://cran.r-project.org/bin/macosx/tools/) binary.
 
 2.  Install the following packages from CRAN.  You can do this from within [RStudio](https://www.rstudio.com/), or from the command line within an R session as follows:
 

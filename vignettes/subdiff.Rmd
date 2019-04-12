@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
     toc_depth: 4
-  rmarkdown::html_document:
+  html_document:
     toc: true
     toc_depth: 4
     toc_float: true
@@ -136,7 +136,7 @@ To install the development version available only on GitHub, you will have to fi
 
 The remaining packages are only on GitHub and contain C++ code which needs to be compiled from source.  The first step is to make sure your R environment is properly configured to compile C++ source code.  Please see Appendix `r ref_label("app:rcpp")` for instructions on how to do this.  Next, install the `r cran_link("devtools")` package (e.g., as above), then with the packages in the following order:
 ```{r, eval = FALSE}
-pkgs <- file.path("mlysy", c("optimCheck", "mniw", "LMN", "subdiff"))
+pkgs <- paste0("mlysy/", c("optimCheck", "mniw", "LMN", "subdiff"))
 devtools::install_github(repo = pkgs, INSTALL_opts = "--install-tests")
 ```
 
