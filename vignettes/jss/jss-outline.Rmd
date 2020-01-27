@@ -1,0 +1,55 @@
+---
+title: "Outline for Software Paper"
+output:
+  rmarkdown::html_document:
+    theme: readable
+    toc: yes
+    toc_float: true
+---
+
+## Title
+
+**subdiff**: A R Toolchain for Analysis of Subdiffusion in Single-Particle Tracking
+
+## Introduction
+
+- Single-particle tracking: scientific importance
+- Subdiffusion: pervasiveness, importance
+- Challenges:
+
+	- Cost of likelihood evaluations.
+	- Camera errors.
+	- Heterogeneity of fluids.
+
+- **subdiff**: A rich set of tools to analyze particle tracking data.
+
+## Outline
+
+### Preliminaries
+
+- Definition of MSD + estimator
+- Subdiffusion + estimator
+
+### Parametric Modeling
+
+- Location-Scale model
+- fBM model to focus on.
+- Efficient simulation and inference.
+
+### Examples
+
+Not sure yet how to break these into sections, but perhaps we can try to do these as separate sections and combine later.
+
+- Semi-parametric fit (perhaps to HBE data as in tutorial)
+- fBM parameter estimation
+- Camera error models
+- Filtering "bad" trajectories
+- Hierarchical modeling
+- Heterogeneity (?)
+
+## Software Considerations
+
+JSS wants us to discuss the actual design of the software.
+
+- Can talk a bit about superfast algorithm.
+- Model class.

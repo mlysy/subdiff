@@ -1,4 +1,6 @@
-# r setup
+#--- r setup --------------------------------------------------------------
+
+# keep track of labels
 if(!file.exists("internal_labels.rds")) {
   saveRDS(list(labels = NULL), "internal_labels.rds")
 }
@@ -8,6 +10,8 @@ if(!file.exists("internal_labels.rds")) {
 .internal_labels$subsection <- NULL
 .internal_labels$subsubsection <- NULL
 .internal_labels$figure <- NULL
+
+# link to packages
 pkg_link <- function(pkg, link) {
   if(link == "github") {
     link <- paste0("https://github.com/mlysy/", pkg)
@@ -18,15 +22,14 @@ pkg_link <- function(pkg, link) {
 }
 cran_link <- function(pkg) pkg_link(pkg, "cran")
 github_link <- function(pkg) pkg_link(pkg, "github")
-# section/figure/table numbering:
+
+#--- section/figure/table numbering: --------------------------------------
+
 # - counter increments via function
 # - label + reference saved in html_label
+
 # section numbering
 section <- function(x, label) {
-  ## counter <- attr(section, "counter")
-  ## if(is.null(counter)) counter <- 0
-  ## counter <- counter + 1
-  ## attr(section, "counter") <<- counter
   if(!.internal_labels$appendix) {
     counter <- set_counter("section")
     ref <- counter
@@ -37,7 +40,6 @@ section <- function(x, label) {
   set_counter("subsection", 0)
   set_counter("subsubsection", 0)
   if(missing(label)) label <- default_label(x)
-  ## attr(subsection, "counter") <<- 0
   sec_title <- paste0(ref, " ", x, " {#", label, "}")
   set_label(ref = ref, label = label, anchor = label)
   sec_title
@@ -65,11 +67,9 @@ subsubsection <- function(x, label) {
   sec_title
 }
 appendix <- function() .internal_labels$appendix <<- TRUE
-# figure captions
+
+# figure and table captions
 fig_label <- function(x, label) {
-  ## labels <- c(attr(fig_label, "labels"), label)
-  ## n <- length(labels)
-  ## attr(fig_label, "labels") <<- labels
   counter <- set_counter("figure")
   if(missing(label)) label <- default_label(x)
   ref <- counter
@@ -83,6 +83,8 @@ tab_label <- function(x, label) {
   set_label(ref = ref, label = label, anchor = label)
   paste0("<center> ", html_label(label), "Table ", counter, ": ", x, " </center>")
 }
+
+# low level label functions
 html_label <- function(label) {
   paste0('<a name="', label, '"></a>')
 }
@@ -95,7 +97,9 @@ set_label <- function(ref, label, anchor) {
     colnames(labels)[1] <- label
   }
   .internal_labels$labels <<- labels
-  saveRDS(.internal_labels, file = "internal_labels.rds")
+  if(!identical(labels, readRDS("internal_labels.rds")$labels)) {
+    saveRDS(.internal_labels, file = "internal_labels.rds")
+  }
   ## attr(set_label, "labels") <<- c(attr(set_label, "labels"), label = ref)
   invisible(NULL)
 }
@@ -109,6 +113,7 @@ ref_label <- function(label) {
   labels <- .internal_labels$labels
   if(label %in% colnames(labels)) {
     ref <- labels["ref",label]
+    ref <- gsub("([[:digit:]]+[.[:digit:]]*)", "$\\1$", ref)
     anchor <- labels["anchor",label]
   } else {
     ref <- "???"
