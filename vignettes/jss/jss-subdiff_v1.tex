@@ -51,6 +51,7 @@
 \newcommand{\tmax}{t_{\textnormal{max}}}
 \newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}}
 \newcommand{\ctrans}{\bm{g}}
+\newcommand{\correct}[1]{\textbf{[{\color{red}#1}]}}
 % \newcommand{\logit}{\mathrm{logit}}
 \DeclareMathOperator{\logit}{logit}
 \DeclareMathOperator{\ilogit}{ilogit}
@@ -160,7 +161,7 @@ The \pkg{subdiff} package provides a number of utilities for analyzing subdiffus
 \end{equation}
 A widely observed phenomenon is that the MSD of microparticles diffusing in biological fluids has a power-law signature on a given timescale,
 \begin{equation}
-  \msd_{\XX}(t) \sim D t^\alpha, \qquad t \in (\tmin, \tmax).
+  \msd_{\XX}(t) \sim 2D t^\alpha, \qquad t \in (\tmin, \tmax).
   \label{eq:subdiff}
 \end{equation}
 Whereas $\alpha = 1$ corresponds to the MSD of ordinary diffusion observed in Brownian particles, the power law MSD \eqref{eq:subdiff} with $\alpha \in (0,1)$ is referred to as subdiffusion.  
@@ -283,6 +284,8 @@ Outputs:
 \end{itemize}
 
 \subsection{Computational Basis}
+
+\correct{This computational basis is not yet implemented in \pkg{subdiff}!  See tutorial for the current implementation.}
 
 The idea of the computational basis is that the model parameters $\tth = (\mmu, \SSi, \pph)$ are bijectively reparametrized as $\pps = \ctrans(\tth)$, where $\pps$ is a completely unconstrained vector.  A default reparametrization is as follows:
 \begin{itemize}
