@@ -194,6 +194,8 @@ qplot(y = value, data = Psi_mle, # empty plot
 
 #--- confidence intervals ------------------------------------------------------
 
+#--- confidence intervals ------------------------------------------------------
+
 # contents of model_fit object
 # FIXME: write a `show` method?
 # FIXME: standardize the computational basis
@@ -211,7 +213,7 @@ nondim <- function(alpha, logD, d = 1, logDw = log(.46)) {
 Gfun <- function(psi) {
   log10e <- log10(exp(1)) # unit conversion between log_e and log_10
   alpha <- ilogit(psi[1], 0, 2)
-  logD <- psi[2] - log(4)
+  logD <- (psi[2] - log(2))
   logDN <- nondim(alpha, logD)
   onames <- c("alpha", "D", "logD", "DN", "logDN")
   setNames(c(alpha,
@@ -225,49 +227,75 @@ Gfun <- function(psi) {
 # - psi_mle, psi_se
 # - aD_mle, aD_se
 # - aD_cov = cov(alpha, logD)
-aD_stat <- sapply(ids, function(id) {
+idxs<- c(1:(dim(Psi_est)[2])) # ------THIS IS NOT REAL IDS, these are now indices since Psi_est divorces 
+                            #--------estimates from particle IDs
+omega_stat <- sapply(idxs, function(id) {
   # MLE and variance estimator on unconstrained scale (kappa, lambda1)
   ipsi <- c(1,4) # indices of (kappa, lambda1) in psi
   psi_mle <- Psi_est[["coef",id]][ipsi]
   psi_ve <- Psi_est[["vcov",id]][ipsi, ipsi]
   # MLE of aD
-  aD_mle <- Gfun(psi_mle)
+  omega_mle <- Gfun(psi_mle)
   # variance estimate of aD_mle
   # jacobian
   # NOTE: this is the transpose of how it is defined in the vignette
   Jac <- numDeriv::jacobian(func = Gfun, x = psi_mle)
-  aD_ve <- tcrossprod(Jac %*% psi_ve, Jac) # t(Jac) %*% psi_ve %*% Jac
+  omega_ve <- tcrossprod(Jac %*% psi_ve, Jac) # t(Jac) %*% psi_ve %*% Jac
   # standard errors of aD_mle
-  aD_se <- sqrt(diag(aD_ve))
-  # cov(alpha_mle, logD_mle)
-  aD_cov <- aD_ve[1,2]
-  setNames(c(id, psi_mle, sqrt(diag(psi_ve)), aD_mle, aD_se, aD_cov),
+  omega_se <- sqrt(diag(omega_ve)) #sqrt(omega_ve)
+  # cov of (alpha_mle, D_mle), (alpha_mle,logD_mle), (alpha_mle,DN_mle), (alpha_mle,logDN_mle)
+  omega_cov_aD <- omega_ve[2]
+  omega_cov_alogD <- omega_ve[3]
+  omega_cov_aDN <- omega_ve[4]
+  omega_cov_alogDN <- omega_ve[5]
+  omega_cov <-(c(omega_cov_aD,omega_cov_alogD,omega_cov_aDN,omega_cov_alogDN))
+  
+  setNames(c(id, psi_mle, sqrt(diag(psi_ve)), omega_mle, omega_se, omega_cov),
            c("id", "kappa_mle", "lambda1_mle",
              "kappa_se", "lambda1_se",
-             "alpha_mle", "logD_mle",
-             "alpha_se", "logD_se", "aD_cov"))
+             "alpha_mle", "D_mle","logD_mle","DN_mle","logDN_mle",
+             "alpha_se", "D_se","logD_se","DN_se","logDN_se",
+             "omega_cov_aD","omega_cov_alogD","omega_cov_aDN","omega_cov_alogDN"))
 }, simplify = FALSE)
-aD_stat <- as.data.frame(do.call(rbind, aD_stat))
+omega_stat <- as.data.frame(do.call(rbind, omega_stat))
+
+
 
 # calculate confidence intervals for alpha using two methods:
 
-# method 1: normal approximation on alpha_mle
-alpha_ci1 <- cbind(L = aD_stat$alpha_mle - 1.96 * aD_stat$alpha_se,
-                   U = aD_stat$alpha_mle + 1.96 * aD_stat$alpha_se)
-# method 2: normal approximation on kappa_mle
-alpha_ci2 <- cbind(L = ilogit(aD_stat$kappa_mle - 1.96 * aD_stat$kappa_se, 0, 2),
-                   U = ilogit(aD_stat$kappa_mle + 1.96 * aD_stat$kappa_se, 0, 2))
+# method 1: normal approximation on omega_mle
+alpha_ci <- cbind(L = omega_stat$alpha_mle - 1.96 * omega_stat$alpha_se,
+                  U = omega_stat$alpha_mle + 1.96 * omega_stat$alpha_se)
+
+D_ci <- cbind(L = omega_stat$D_mle - 1.96 * omega_stat$D_se,
+              U = omega_stat$D_mle + 1.96 * omega_stat$D_se)
+
+logD_ci <- cbind(L = omega_stat$logD_mle - 1.96 * omega_stat$logD_se,
+                 U = omega_stat$logD_mle + 1.96 * omega_stat$logD_se)
+
+DN_ci <- cbind(L = omega_stat$DN_mle - 1.96 * omega_stat$DN_se,
+               U = omega_stat$DN_mle + 1.96 * omega_stat$DN_se)
+
+logDN_ci <- cbind(L = omega_stat$logDN_mle - 1.96 * omega_stat$logDN_se,
+                  U = omega_stat$logDN_mle + 1.96 * omega_stat$logDN_se)                                      
 
 # compare 2 methods via table
-tab <- cbind(aD_stat[,"id"], alpha_ci1, alpha_ci2)
+tab <- cbind(omega_stat[,"id"], alpha_ci,D_ci,logD_ci,DN_ci,logDN_ci)
 tab <- signif(tab[1:10,], digits = 3)
-colnames(tab) <- c("Trajectory ID", "Lower", "Upper", "Lower", "Upper")
+colnames(tab) <- c("Trajectory ID", "Lower Alpha", "Upper Alpha","Lower D", "Upper D","Lower logD", "Upper logD",
+                   "Lower DN", "Upper DN","Lower logDN", "Upper logDN")
 require(kableExtra) # for nice HTML tables
 kable(tab) %>%
   kable_styling(bootstrap_options = c("striped", "responsive"), full_width = TRUE) %>%
-  add_header_above(c(" " = 1, "Direct Method" = 2, "Delta Method" = 2)) %>%
-  column_spec(1:5, width = "3cm")
+  add_header_above(c(" " = 1, "Direct Method" = 10)) %>%
+  column_spec(1:11, width = "2cm")
 
+
+
+
+
+
+#--- display confidence ellipses -----------------------------------------------
 
 #--- display confidence ellipses -----------------------------------------------
 
@@ -285,29 +313,73 @@ ellipse <- function (mu, V, alpha = 0.95, n = 100) {
         y = rad * sin(alpha + phi) + mu[2])
 }
 
-# calculate confidence ellipses
-aD_ell <- sapply(ids, function(id) {
+# calculate confidence ellipses-- alpha, D
+aD_ell <- sapply(idxs, function(id) {
   # extract aD_mle and aD_ve
-  aD_mle <- as.numeric(get_vars(aD_stat, id = id,
-                                vars = c("alpha_mle", "logD_mle")))
+  aD_mle <- as.numeric(get_vars(omega_stat, id = id,
+                                vars = c("alpha_mle", "D_mle")))
   aD_ve <- matrix(NA, 2, 2)
-  diag(aD_ve) <- as.numeric(get_vars(aD_stat, id = id,
-                                     vars = c("alpha_se", "logD_se")))^2
-  aD_ve[1,2] <- aD_ve[2,1] <- get_vars(aD_stat, id = id, vars = "aD_cov")
+  diag(aD_ve) <- as.numeric(get_vars(omega_stat, id = id,
+                                     vars = c("alpha_se", "D_se")))^2
+  aD_ve[1,2] <- aD_ve[2,1] <- get_vars(omega_stat, id = id, vars = "omega_cov_aD")
+
   # calculate points of 95% confidence ellipse
   ell <- ellipse(mu = aD_mle, V = aD_ve)
-  colnames(ell) <- c("alpha", "logD")
+  colnames(ell) <- c("alpha", "D")
   cbind(id = id, ell)
 }, simplify = FALSE)
 aD_ell <- as.data.frame(do.call(rbind, aD_ell))
 
+
 # plot
 ggplot(data = aD_ell) + # empty plot
+  # confidence ellipses
+  geom_polygon(aes(x = D, y = alpha, group = id,
+                   fill = "ci", alpha = "ci", color = "ci")) +
+  # mles
+  geom_point(data = omega_stat,
+             mapping = aes(x = D_mle, y = alpha_mle, group = id,
+                           color = "mle")) +
+  # custom colors
+  scale_fill_manual(values = c(mle = "black", ci = "red")) +
+  scale_color_manual(values = c(mle = "black", ci = NA)) +
+  scale_alpha_manual(values = c(mle = 0, ci = .2)) +
+  # axis labels
+  scale_x_continuous(name = expression(D)) +
+  scale_y_continuous(name = expression(alpha)) +
+  # remove legend
+  theme(legend.position = "none")
+
+
+
+#######################################################
+
+
+# calculate confidence ellipses-- alpha, logD
+alogD_ell <- sapply(idxs, function(id) {
+  # extract aD_mle and aD_ve
+  alogD_mle <- as.numeric(get_vars(omega_stat, id = id,
+                                vars = c("alpha_mle", "logD_mle")))
+  alogD_ve <- matrix(NA, 2, 2)
+  diag(alogD_ve) <- as.numeric(get_vars(omega_stat, id = id,
+                                     vars = c("alpha_se", "logD_se")))^2
+  alogD_ve[1,2] <- alogD_ve[2,1] <- get_vars(omega_stat, id = id, vars = "omega_cov_alogD")
+  
+  # calculate points of 95% confidence ellipse
+  ell <- ellipse(mu = alogD_mle, V = alogD_ve)
+  colnames(ell) <- c("alpha", "logD")
+  cbind(id = id, ell)
+}, simplify = FALSE)
+alogD_ell <- as.data.frame(do.call(rbind, alogD_ell))
+
+
+# plot
+ggplot(data = alogD_ell) + # empty plot
   # confidence ellipses
   geom_polygon(aes(x = logD, y = alpha, group = id,
                    fill = "ci", alpha = "ci", color = "ci")) +
   # mles
-  geom_point(data = aD_stat,
+  geom_point(data = omega_stat,
              mapping = aes(x = logD_mle, y = alpha_mle, group = id,
                            color = "mle")) +
   # custom colors
@@ -316,6 +388,87 @@ ggplot(data = aD_ell) + # empty plot
   scale_alpha_manual(values = c(mle = 0, ci = .2)) +
   # axis labels
   scale_x_continuous(name = expression(log[10]*(D))) +
+  scale_y_continuous(name = expression(alpha)) +
+  # remove legend
+  theme(legend.position = "none")
+
+
+#######################################################
+
+
+# calculate confidence ellipses-- alpha, DN
+aDN_ell <- sapply(idxs, function(id) {
+  # extract aD_mle and aD_ve
+  aDN_mle <- as.numeric(get_vars(omega_stat, id = id,
+                                   vars = c("alpha_mle", "DN_mle")))
+  aDN_ve <- matrix(NA, 2, 2)
+  diag(aDN_ve) <- as.numeric(get_vars(omega_stat, id = id,
+                                        vars = c("alpha_se", "DN_se")))^2
+  aDN_ve[1,2] <- aDN_ve[2,1] <- get_vars(omega_stat, id = id, vars = "omega_cov_aDN")
+  
+  # calculate points of 95% confidence ellipse
+  ell <- ellipse(mu = aDN_mle, V = aDN_ve)
+  colnames(ell) <- c("alpha", "DN")
+  cbind(id = id, ell)
+}, simplify = FALSE)
+aDN_ell <- as.data.frame(do.call(rbind, aDN_ell))
+
+
+# plot
+ggplot(data = aDN_ell) + # empty plot
+  # confidence ellipses
+  geom_polygon(aes(x = DN, y = alpha, group = id,
+                   fill = "ci", alpha = "ci", color = "ci")) +
+  # mles
+  geom_point(data = omega_stat,
+             mapping = aes(x = DN_mle, y = alpha_mle, group = id,
+                           color = "mle")) +
+  # custom colors
+  scale_fill_manual(values = c(mle = "black", ci = "red")) +
+  scale_color_manual(values = c(mle = "black", ci = NA)) +
+  scale_alpha_manual(values = c(mle = 0, ci = .2)) +
+  # axis labels
+  scale_x_continuous(name = expression(DN)) +
+  scale_y_continuous(name = expression(alpha)) +
+  # remove legend
+  theme(legend.position = "none")
+
+###############################
+
+
+# calculate confidence ellipses-- alpha, logDN
+alogDN_ell <- sapply(idxs, function(id) {
+  # extract aD_mle and aD_ve
+  alogDN_mle <- as.numeric(get_vars(omega_stat, id = id,
+                                 vars = c("alpha_mle", "logDN_mle")))
+  alogDN_ve <- matrix(NA, 2, 2)
+  diag(alogDN_ve) <- as.numeric(get_vars(omega_stat, id = id,
+                                      vars = c("alpha_se", "logDN_se")))^2
+  alogDN_ve[1,2] <- alogDN_ve[2,1] <- get_vars(omega_stat, id = id, vars = "omega_cov_alogDN")
+  
+  # calculate points of 95% confidence ellipse
+  ell <- ellipse(mu = alogDN_mle, V = alogDN_ve)
+  colnames(ell) <- c("alpha", "logDN")
+  cbind(id = id, ell)
+}, simplify = FALSE)
+alogDN_ell <- as.data.frame(do.call(rbind, alogDN_ell))
+
+
+# plot
+ggplot(data = alogDN_ell) + # empty plot
+  # confidence ellipses
+  geom_polygon(aes(x = logDN, y = alpha, group = id,
+                   fill = "ci", alpha = "ci", color = "ci")) +
+  # mles
+  geom_point(data = omega_stat,
+             mapping = aes(x = logDN_mle, y = alpha_mle, group = id,
+                           color = "mle")) +
+  # custom colors
+  scale_fill_manual(values = c(mle = "black", ci = "red")) +
+  scale_color_manual(values = c(mle = "black", ci = NA)) +
+  scale_alpha_manual(values = c(mle = 0, ci = .2)) +
+  # axis labels
+  scale_x_continuous(name = expression(log[10]*(DN)))+
   scale_y_continuous(name = expression(alpha)) +
   # remove legend
   theme(legend.position = "none")
