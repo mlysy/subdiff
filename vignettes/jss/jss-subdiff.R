@@ -227,6 +227,7 @@ Gfun <- function(psi) {
 # - psi_mle, psi_se
 # - aD_mle, aD_se
 # - aD_cov = cov(alpha, logD)
+# add comment
 idxs<- c(1:(dim(Psi_est)[2])) # ------THIS IS NOT REAL IDS, these are now indices since Psi_est divorces 
                             #--------estimates from particle IDs
 omega_stat <- sapply(idxs, function(id) {
