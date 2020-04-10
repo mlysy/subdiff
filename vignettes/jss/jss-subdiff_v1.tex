@@ -250,25 +250,24 @@ Main idea: efficient likelihoods/posteriors for $\tth = (\mmu, \SSi, \pph)$ unde
 \end{equation}
 where $\VV_{\pph} = \toep(\gga_{\pph})$ is a Toeplitz matrix with autocorrelation $\gga_{\pph}$.
 
-% \subsection[modelobject class]{\class{model\_object} class}
+\subsection[modelobject class]{\class{model\_object} class}
 
-% Inputs:
-% \begin{itemize}
-% \item $\dXX$.
-% \item Autocorrelation function \code{acf(phi)} which returns $\gga_{\pph}$ (information about $\dt$ is built in to \code{acf()}).
-% \item Drift function \code{drift(phi)} which returns a vector or matrix of drift functions.
-% \item Both \code{acf} and \code{drift} can be input as vectors or matrices, in which case it is assumed they do not depend on $\pph$.  Can also be scalars as can be specified in the \pkg{LMN} package.
-% \item Optionally, gradient vectors (or matrices or tensors) for \code{acf()} and \code{drift()}.
-% \end{itemize}
+Inputs:
+\begin{itemize}
+\item $\dXX$.
+\item Autocorrelation function \code{acf(phi)} which returns $\gga_{\pph}$ (information about $\dt$ is built in to \code{acf()}).
+\item Drift function \code{drift(phi)} which returns a vector or matrix of drift functions.
+\item Both \code{acf} and \code{drift} can be input as vectors or matrices, in which case it is assumed they do not depend on $\pph$.  Can also be scalars as can be specified in the \pkg{LMN} package.
+\item Optionally, gradient vectors (or matrices or tensors) for \code{acf()} and \code{drift()}.
+\end{itemize}
 
-% Outputs:
-% \begin{itemize}
-% \item Profile likelihood function \code{nlp(phi)}.
-% \item Residual function \code{resid(phi)}.
-% \item Likelihood function \code{loglik(phi, mu, Sigma)}.
-% \item Conditional MLEs \code{mu_hat(phi)} and \code{Sigma_hat(phi)}.
-% \end{itemize}
-% Note: can we implement this with S3 classes?
+Outputs:
+\begin{itemize}
+\item Profile likelihood function \code{nlp(phi)}.
+\item Residual function \code{resid(phi)}.
+\item Likelihood function \code{loglik(phi, mu, Sigma)}.
+\item Conditional MLEs \code{mu_hat(phi)} and \code{Sigma_hat(phi)}.
+\end{itemize}
 
 \subsection[modelfit class]{\class{model\_fit} class}
 
@@ -282,6 +281,10 @@ Outputs:
 \item Residuals (if \code{resid_calc = TRUE}).
 \item Loglikelihood $\ell(\dXX \mid \tth)$ (for AIC and BIC).
 \end{itemize}
+
+\subsection{Implementation}
+
+Ideally, 
 
 \subsection{Computational Basis}
 

@@ -3,16 +3,16 @@ Type: Package
 Title: Inference for Subdiffusive Particle Tracking
 Version: 0.0.1.9000
 Date: 2019-04-09
-Authors@R: c(person("Yun", "Ling", role = "aut"),
-             person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
-	            role = c("aut", "cre")))
+Authors@R: c(person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
+	            role = c("aut", "cre")),
+             person("Yun", "Ling", role = "aut"))
 Description: Tools for implementing various models for particle subdiffusion in biological fluids.
 License: GPL-3
 Depends: R (>= 2.10), LMN, SuperGauss
 Imports: Rcpp (>= 0.12.12), numDeriv, fftw, stats
 LinkingTo: Rcpp
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Encoding: UTF-8
 Suggests: 
     testthat,

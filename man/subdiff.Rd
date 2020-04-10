@@ -3,8 +3,4 @@
 \docType{package}
 \name{subdiff}
 \alias{subdiff}
-\alias{subdiff-package}
 \title{Inference for Subdiffusive Particle Tracking}
-\description{
-Inference for Subdiffusive Particle Tracking
-}

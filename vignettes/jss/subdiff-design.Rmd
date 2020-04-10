@@ -19,13 +19,91 @@ output:
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\logit}{\mathrm{logit}}
 
+# NEW
+
+## `csi_model` Object
+
+**R** API:
+```r
+# model object.  inherits from csi_model
+# optional arguments: acf_grad and drift_grad
+fbm_model <- csi_model(name = "fbm",
+                       trans = function(alpha) logit(alpha, 0, 2),
+                       itrans = function(nu) ilogit(nu, 0, 2),
+                       acf = function(alpha, dt, n) fbm_acf(alpha, dt, n),
+                       drift = "linear")
+
+# construction: method 1
+fbm_obj <- fbm_model$new(dX = dX)
+
+# method 2: initialize memory first
+fbm_obj <- fbm_model$new(n = 100)
+fbm_obj$set_dX(dX)
+
+# parameter estimation
+fbm_obj$nlp(phi) # negative profile likelihood function
+fbm_obj$nlp_grad(phi) # gradient of this function (if {acf/drift}_grad exist)
+fbm_obj$nll(phi, mu, Sigma) # negative loglikelihood function (args?)
+# conditional MLEs
+fbm_obj$mu_hat(phi)
+fbm_obj$Sigma_hat(phi)
+
+# fitting routine.  Generic version is csi_fit.  Can overwrite this. 
+fbm_obj$fit(...)
+# output is an object with the following members:
+# - est: the parameter estimate in computational basis
+# - var: variance estimate in computational basis
+# - trans(mu, Sigma, phi): parameter tranformation
+# - itrans(psi): inverse transformation.
+
+# for built-in models, would create external method, i.e.,
+fit <- fbm_fit(dX, dt, ...)
+
+coef(fit) # returns parameter estimates
+vcov(fit) # returns the variance estimate
+sigma(fit) # returns standard errors
+
+# get white noise residuals
+resid(fit)
+# equivalent calculation
+csi_resid(fit$dX, mu = fit$get_mu(), Sigma = fit$get_Sigma(), acf = ...)
+
+# simulate data
+simulate(fit) # trajectory with same length/parameters as fitted object
+# trajectory with arbitrary length/parameters
+simulate(fbm_model, n, dt, mu, Sigma, alpha)
+
+
+# Model for David's data: fBM + static error
+
+# define new model
+fstat_model <- csi_model(name = "fstat",
+                         ...)
+
+# simulate data from model
+dX <- simulate(fstat_model, n = 1800, dt = 1/60,
+               mu = c(0,0), Sigma = diag(2),
+               theta = c(alpha = .8, sigma = .2))
+
+# fit model
+fstat <- fstat_model$new(dX = dX, dt = dt)
+fit <- fstat$fit()
+
+# display results
+coef(fit)
+sigma(fit)
+
+```
+
+# OLD
+
 ## `model` object
 
 The models are increments of CSI location-scale models,
 $$
 \XX(t) = (X_1(t), \ldots, X_q(t)) = \mmu \, \FF(t \mid \pph)  + \SSi^{1/2} \ZZ(t),
 $$
-where $FF(t \mid \pph) \in \R^d$ are functions known up to $\pph$, $\mmu_{q\times d}$ is a matrix of "regression coefficients", and $\ZZ(t) \in \R^q$ are iid CSI processes with MSD $\eta(t \mid \pph)$.  Very often, the drift is just linear, i.e., $d = 1$ and $f_1(t) = t$.
+where $\FF(t \mid \pph) \in \R^d$ are functions known up to $\pph$, $\mmu_{q\times d}$ is a matrix of "regression coefficients", and $\ZZ(t) \in \R^q$ are iid CSI processes with MSD $\eta(t \mid \pph)$.  Very often, the drift is just linear, i.e., $d = 1$ and $f_1(t) = t$.
 
 - [x] acf as function of $\pph$.
 - [ ] drift as function of $\pph$.  For the special case $f_1(t) = t$ just leave this empty and model object will know what to do.

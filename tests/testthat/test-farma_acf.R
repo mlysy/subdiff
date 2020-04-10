@@ -13,14 +13,14 @@ test_that("farma_acf formula is correct.", {
     # simplified formula
     acf1 <- farma_acf(alpha, 0, rho, dT, N)
     # long formula
-    Tz <- Toeplitz(acf = fbm_acf(alpha, dT, N+nlag))
+    Tz <- Toeplitz$new(acf = fbm_acf(alpha, dT, N+nlag))
     J <- diag(c(rep(1 - sum(rho), N+nlag)))
     for(jj in 1:nlag) {
-      J[cbind((jj+1):(N+nlag), 1:(N+nlag-jj))] <- rho[jj]  
+      J[cbind((jj+1):(N+nlag), 1:(N+nlag-jj))] <- rho[jj]
     }
     T2 <- crossprod(J, Tz %*% J)[1:N,1:N]
     # check calculation
-    max(abs(toeplitz(acf1) - T2))
+    ## max(abs(toeplitz(acf1) - T2))
     expect_equal(max(abs(toeplitz(acf1) - T2)), 0)
   })
 })

@@ -125,6 +125,14 @@ system.time({
   Xt <- cbind(0, Xt) # add first observations
 })
 
+# Optional: add localization error
+
+Eps <- matrix(rnorm((N+1)*2), N+1, 2) # matrix of white noise errors
+# scaling: LS model requires noise to have variance matrix Sigma
+# as underlying fBM process
+Eps <- sigma_loc * Eps %*% chol(Sigma) # sigma_loc: amount of noise
+Yn <- Xt + Eps # recorded positions are signal + noise
+
 
 #--- fit fBM to all trajectories in a given data frame -------------------------
 
@@ -228,7 +236,7 @@ Gfun <- function(psi) {
 # - aD_mle, aD_se
 # - aD_cov = cov(alpha, logD)
 # add comment
-idxs<- c(1:(dim(Psi_est)[2])) # ------THIS IS NOT REAL IDS, these are now indices since Psi_est divorces 
+idxs<- c(1:(dim(Psi_est)[2])) # ------THIS IS NOT REAL IDS, these are now indices since Psi_est divorces
                             #--------estimates from particle IDs
 omega_stat <- sapply(idxs, function(id) {
   # MLE and variance estimator on unconstrained scale (kappa, lambda1)
@@ -250,7 +258,7 @@ omega_stat <- sapply(idxs, function(id) {
   omega_cov_aDN <- omega_ve[4]
   omega_cov_alogDN <- omega_ve[5]
   omega_cov <-(c(omega_cov_aD,omega_cov_alogD,omega_cov_aDN,omega_cov_alogDN))
-  
+
   setNames(c(id, psi_mle, sqrt(diag(psi_ve)), omega_mle, omega_se, omega_cov),
            c("id", "kappa_mle", "lambda1_mle",
              "kappa_se", "lambda1_se",
@@ -278,7 +286,7 @@ DN_ci <- cbind(L = omega_stat$DN_mle - 1.96 * omega_stat$DN_se,
                U = omega_stat$DN_mle + 1.96 * omega_stat$DN_se)
 
 logDN_ci <- cbind(L = omega_stat$logDN_mle - 1.96 * omega_stat$logDN_se,
-                  U = omega_stat$logDN_mle + 1.96 * omega_stat$logDN_se)                                      
+                  U = omega_stat$logDN_mle + 1.96 * omega_stat$logDN_se)
 
 # compare 2 methods via table
 tab <- cbind(omega_stat[,"id"], alpha_ci,D_ci,logD_ci,DN_ci,logDN_ci)
@@ -365,7 +373,7 @@ alogD_ell <- sapply(idxs, function(id) {
   diag(alogD_ve) <- as.numeric(get_vars(omega_stat, id = id,
                                      vars = c("alpha_se", "logD_se")))^2
   alogD_ve[1,2] <- alogD_ve[2,1] <- get_vars(omega_stat, id = id, vars = "omega_cov_alogD")
-  
+
   # calculate points of 95% confidence ellipse
   ell <- ellipse(mu = alogD_mle, V = alogD_ve)
   colnames(ell) <- c("alpha", "logD")
@@ -406,7 +414,7 @@ aDN_ell <- sapply(idxs, function(id) {
   diag(aDN_ve) <- as.numeric(get_vars(omega_stat, id = id,
                                         vars = c("alpha_se", "DN_se")))^2
   aDN_ve[1,2] <- aDN_ve[2,1] <- get_vars(omega_stat, id = id, vars = "omega_cov_aDN")
-  
+
   # calculate points of 95% confidence ellipse
   ell <- ellipse(mu = aDN_mle, V = aDN_ve)
   colnames(ell) <- c("alpha", "DN")
@@ -446,7 +454,7 @@ alogDN_ell <- sapply(idxs, function(id) {
   diag(alogDN_ve) <- as.numeric(get_vars(omega_stat, id = id,
                                       vars = c("alpha_se", "logDN_se")))^2
   alogDN_ve[1,2] <- alogDN_ve[2,1] <- get_vars(omega_stat, id = id, vars = "omega_cov_alogDN")
-  
+
   # calculate points of 95% confidence ellipse
   ell <- ellipse(mu = alogDN_mle, V = alogDN_ve)
   colnames(ell) <- c("alpha", "logDN")

@@ -14,16 +14,16 @@ test_that("floc_acf formula is correct.", {
     acf1 <- floc_acf(alpha, tau, 0, dT, N)
     # long formula
     acf_2 <- fbm_acf(alpha, dT*tau, N*M/tau)
-    trans.mat <- function(N, M, tau) {
+    trans_mat <- function(N, M, tau) {
       mat <- matrix(0, N, N*M/tau)
       for(ii in 1:N){
         mat[ii, (ii-1)*M/tau + 1:M] <- 1/M
       }
       mat
     }
-    acf2 <- trans.mat(N, M, tau) %*% as.matrix(acf_2)
+    acf2 <- trans_mat(N, M, tau) %*% as.matrix(acf_2)
     # check calculation
-    expect_lt(max.xdiff(cbind(acf1, acf2)), .01)
+    expect_lt(max_xdiff(cbind(acf1, acf2)), .01)
   })
 })
 

@@ -3,7 +3,7 @@
 getq <- function(ndims) if(ndims == 1) 1 else 3
 
 # max of min of abs and rel error
-max.xdiff <- function(x) {
+max_xdiff <- function(x) {
   xdiff <- abs(diff(x))
   max(pmin(xdiff[,1], xdiff[,2]))
 }
@@ -24,12 +24,12 @@ log1pexp <- function(x) {
 }
 
 
-# inverse logit function
-ilogit <- function(x, min = 0, max = 1) {
-  1/(1+exp(-x)) * (max - min) + min
-}
+## # inverse logit function
+## ilogit <- function(x, min = 0, max = 1) {
+##   1/(1+exp(-x)) * (max - min) + min
+## }
 
-logit <- function(x, min = 0, max = 1) {
-  x <- (x - min) / (max - min)
-  log(x) - log(1-x)
-}
+## logit <- function(x, min = 0, max = 1) {
+##   x <- (x - min) / (max - min)
+##   log(x) - log(1-x)
+## }

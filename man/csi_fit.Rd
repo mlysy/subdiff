@@ -36,7 +36,7 @@ X[n] = \mu n \Delta t + \Sigma^{1/2} Z[n]
 }
 where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process.
 
-In the location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{LMN::lmn.prof}.
+In the location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{LMN::lmn_prof}.
 }
 \examples{
 # generating 2-d stationary time series

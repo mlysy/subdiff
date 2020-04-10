@@ -1,0 +1,6 @@
+---
+title: Notes from Feb 19 Meeting
+---
+
+- Regression vs MLE?
+- How to estimate alpha/D with considerable noise floor?

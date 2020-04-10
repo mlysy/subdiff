@@ -5,7 +5,7 @@ context("lsc_resid")
 lsc_fwd <- function(Z, dT, mu, acf, Sigma) {
   ed <- eigen(Sigma)
   C <- sqrt(ed$val) * t(ed$vec)
-  dX <- cholZX(Z = Z, acf = acf) %*% C
+  dX <- SuperGauss::cholZX(Z = Z, acf = acf) %*% C
   t(t(dX) + mu * dT)
 }
 
