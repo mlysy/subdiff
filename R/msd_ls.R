@@ -4,7 +4,7 @@
 #' @param tseq Vector of time points at which the MSDs are recorded (see Details).
 #' @param pooled Logical; whether to calculate separate regressions for each MSD or pool all of them together.
 #' @param logw Logical; whether or not regression should be log-weighted (see Details).
-#' @return A vector of length 2 if \code{pooled = TRUE}, or a 2-row matrix of \code{alpha} and \code{D} values if \code{pooled = FALSE}.
+#' @return A vector of length 2 if `pooled = TRUE`, or a 2-row matrix of `alpha` and `D` values if `pooled = FALSE`.
 #' @details A power-law fit to the empirical MSD is calculated by performing the linear regression
 #' \preformatted{
 #' log(msd) ~ log(D) + alpha * log(tseq).
@@ -13,9 +13,9 @@
 #' \preformatted{
 #' integral_0^Inf | log MSD(t) - log(D) - alpha * log(t) |^2 w(t) dt,
 #' }
-#' where \code{w(t) > 0} is a weight function.  The default value of \code{logw = FALSE} uses \code{w(t) = 1}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting \code{logw = TRUE} uses uniform weighting on the log-scale, which corresponds to \code{w(t) = 1/t}.
+#' where `w(t) > 0` is a weight function.  The default value of `logw = FALSE` uses `w(t) = 1`, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting `logw = TRUE` uses uniform weighting on the log-scale, which corresponds to `w(t) = 1/t`.
 #'
-#' For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by \code{NA} in the \code{msd} matrix.
+#' For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by `NA` in the `msd` matrix.
 #' 
 #' @example examples/Xt_setup.R
 #' @example examples/msd_fit.R

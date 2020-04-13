@@ -6,18 +6,18 @@
 #' @name norm_pval
 #' @details The following normality tests are currently implemented:
 #' \describe{
-#'   \item{\code{ad_pval}}{The Anderson-Darling test, which assumes iid observations.  This is merely a wrapper to \code{nortest::ad.test}.}
-#'   \item{\code{sw_pval}}{A modified Shapiro-Wilk test, which also assumes iid observations.  For sample sizes less than 5000, this function is merely a wrapper to \code{\link[stats]{shapiro.test}}.  For sample sizes greater than 5000, the algorithm due to Royston (1992) used in \code{stats::shapiro.test} breaks down.  The modification proposed here is to (i) randomly divide the sample into \code{K} roughly equal parts each less than 5000, (ii) calculate the Shapiro-Wilk p-value for each, and (iii) note that the minimum of \code{K} independent p-values has a \code{Beta(1, K)} distribution.  It is this second-stage p-value whic is returned by \code{sw_pval}.}
-#'   \item{\code{bc_pval}}{The so-called "Berkowitz' Correlation" test.  That is, An autoregressive model of the form
+#'   \item{`ad_pval`}{The Anderson-Darling test, which assumes iid observations.  This is merely a wrapper to `nortest::ad.test`.}
+#'   \item{`sw_pval`}{A modified Shapiro-Wilk test, which also assumes iid observations.  For sample sizes less than 5000, this function is merely a wrapper to [stats::shapiro.test()].  For sample sizes greater than 5000, the algorithm due to Royston (1992) used in `stats::shapiro.test` breaks down.  The modification proposed here is to (i) randomly divide the sample into `K` roughly equal parts each less than 5000, (ii) calculate the Shapiro-Wilk p-value for each, and (iii) note that the minimum of `K` independent p-values has a `Beta(1, K)` distribution.  It is this second-stage p-value whic is returned by `sw_pval`.}
+#'   \item{`bc_pval`}{The so-called "Berkowitz' Correlation" test.  That is, An autoregressive model of the form
 #' \preformatted{
 #' x[n] = rho * x[n-1] + z[n],    z[n] ~iid N(0,1)
 #' }
-#' is fit to the data, and a likelihood ratio test against \code{H0: rho = 0} is performed.}
+#' is fit to the data, and a likelihood ratio test against `H0: rho = 0` is performed.}
 #' }
-#' @note The tests above **only** check for normality, not that \code{x} is iid \code{N(0,1)}.  Such modifications will need to be made before the package is released.
-#' @references Royston, P. "Approximating the Shapiro-Wilk W-test for non-normality." \emph{Statistics and Computing} 2:3 (1992): 117-119. \url{https://doi.org/10.1007/BF01891203}.
+#' @note The tests above **only** check for normality, not that `x` is iid `N(0,1)`.  Such modifications will need to be made before the package is released.
+#' @references Royston, P. "Approximating the Shapiro-Wilk W-test for non-normality." *Statistics and Computing* 2:3 (1992): 117-119. <https://doi.org/10.1007/BF01891203>.
 #'
-#' Berkowitz, J. "Testing density forecasts, with applications to risk management." \emph{Journal of Business and Economic Statistics} 19:4 (2001): 465-474. \url{https://doi.org/10.1198/07350010152596718}.
+#' Berkowitz, J. "Testing density forecasts, with applications to risk management." *Journal of Business and Economic Statistics* 19:4 (2001): 465-474. <https://doi.org/10.1198/07350010152596718>.
 
 # anderson-darling test
 #' @rdname norm_pval

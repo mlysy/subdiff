@@ -18,9 +18,9 @@
 #' @param alpha Rouse-GLE subdiffusion coefficient.
 #' @param K Number of modes in relaxation spectrum.
 #' @param tau Shortest timescale of force memory.
-#' @param est_alpha If \code{FALSE}, use the Rouse-GLE's \code{alpha} parameter, otherwise estimate \code{alpha} by least-squares.
-#' @param ... Additional arguments to pass to \code{prony_coeff}.
-#' @return Vector with named elements \code{tmin}, \code{tmax}, \code{alpha}, and \code{D}.
+#' @param est_alpha If `FALSE`, use the Rouse-GLE's `alpha` parameter, otherwise estimate `alpha` by least-squares.
+#' @param ... Additional arguments to pass to `prony_coeff`.
+#' @return Vector with named elements `tmin`, `tmax`, `alpha`, and `D`.
 #' @export
 rouse_sub <- function(alpha, tau, K, est_alpha = TRUE, ...) {
   nPrec <- 5e3 # for fitting D_eff and alpha_eff

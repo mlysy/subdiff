@@ -9,14 +9,14 @@ fbm_fit(dX, dT, Tz, var_calc = TRUE)
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
+\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{SuperGauss::Toeplitz}).}
+\item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+\item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link{fbm_model}}). If \code{var_calc}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=fbm_model]{fbm_model()}}). If \code{var_calc}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -32,9 +32,9 @@ X_t = \mu t + \Sigma^{1/2} Z_t
 }{
 X[t] = \mu t + \Sigma^{1/2} Z[t],
 }
-where \eqn{Z[t]} consists of \code{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
+where \eqn{Z[t]} consists of \verb{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
 
-Optimization is done by \code{\link{optim}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{fbm_model}}).
+Optimization is done by \code{\link[=optim]{optim()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fbm_model]{fbm_model()}}).
 }
 \examples{
 # generating 2-d stationary time series

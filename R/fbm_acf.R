@@ -1,6 +1,6 @@
 #' Calculate the ACF for the fBM model.
 #' 
-#' Compute the autocovariance of fBM increments of equally-spaced observations (see \strong{Details}).
+#' Compute the autocovariance of fBM increments of equally-spaced observations (see **Details**).
 #' 
 #' @param alpha Power law exponent. A scalar between 0 and 2.
 #' @template args-dT

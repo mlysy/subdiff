@@ -1,8 +1,8 @@
 #' Fit the location-scale model for Gaussian CSI process.
 #'
-#' Estimate the coefficients and their covariance for parameters in location-scale model where target data follows Gaussian CSI process (See \strong{Details}).
+#' Estimate the coefficients and their covariance for parameters in location-scale model where target data follows Gaussian CSI process (See **Details**).
 #'
-#' @param model An list of class \code{csi_class} (see \code{\link{fbm_model}}, \code{\link{floc_model}}, \code{\link{farma_model}}).
+#' @param model An list of class `csi_class` (see [fbm_model()], [floc_model()], [farma_model()]).
 #' @template args-dX
 #' @template args-dT
 #' @template args-Tz
@@ -15,11 +15,11 @@
 #' }{
 #' X[n] = \mu n \Delta t + \Sigma^{1/2} Z[n]
 #' }
-#' where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process.
+#' where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z_n}{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process.
 #'
-#' In the location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{LMN::lmn_prof}.
+#' In the location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function [LMN::lmn_prof()].
 #'
-#' @references Lysy, M., Pillai, N.S., Hill, D.B., Forest, M.G., Mellnik, J.W.R., Vasquez, P.A., and McKinley, S.A. "Model comparison and assessment for single particle tracking in biological fluids." \emph{Journal of the American Statistical Association} 111.516 (2016): 1413-1426. \url{https://doi.org/10.1080/01621459.2016.1158716}.
+#' @references Lysy, M., Pillai, N.S., Hill, D.B., Forest, M.G., Mellnik, J.W.R., Vasquez, P.A., and McKinley, S.A. "Model comparison and assessment for single particle tracking in biological fluids." *Journal of the American Statistical Association* 111.516 (2016): 1413-1426. <https://doi.org/10.1080/01621459.2016.1158716>.
 #'
 #' @example examples/fit_setup.R
 #' @example examples/csi_fit.R

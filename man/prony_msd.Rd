@@ -11,7 +11,7 @@ prony_msd(t, lambda, ...)
 
 \item{lambda}{coefficients of the sum of OU processes.}
 
-\item{...}{Additional arguments to \code{\link{prony_coeff}} for obtaining the BM-OU coefficients.}
+\item{...}{Additional arguments to \code{\link[=prony_coeff]{prony_coeff()}} for obtaining the BM-OU coefficients.}
 }
 \value{
 Vector of mean square displacements.

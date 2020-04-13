@@ -1,7 +1,7 @@
 #' ACF2 of fBM + Dynamic Error
 #'
 #' @param alpha Subdiffusion exponent
-#' @param tau Ratio of time-window over \code{dT}, range from 0 to 1.
+#' @param tau Ratio of time-window over `dT`, range from 0 to 1.
 #' @param dT Vector of time points \eqn{ \{\Delta t, 2\Delta t, ..., N\Delta t\} }
 #' @param N length
 #' @details 

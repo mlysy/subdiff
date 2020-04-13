@@ -11,7 +11,7 @@ prony_coeff(lambda, r, C, nsteps = 100, tol = 0)
 
 \item{r}{Optional vector of pre-computed OU mean-reversion parameters.  Avoids calling the mode-finding routine.}
 
-\item{C}{Optional vector of pre-computed OU scale coefficients.  Can't pass \code{C} without \code{r}.  When both \code{r} and \code{C} are supplied the function does nothign.  This is mainly for the convenience of calling \code{\link{prony_coeff}} from other functions.}
+\item{C}{Optional vector of pre-computed OU scale coefficients.  Can't pass \code{C} without \code{r}.  When both \code{r} and \code{C} are supplied the function does nothign.  This is mainly for the convenience of calling \code{\link[=prony_coeff]{prony_coeff()}} from other functions.}
 
 \item{nsteps}{Number of steps in mode-finding golden search algorithm.}
 

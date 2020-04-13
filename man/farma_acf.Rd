@@ -9,13 +9,13 @@ farma_acf(alpha, phi, rho, dT, N, m = 30)
 \arguments{
 \item{alpha}{Power law exponent of the fBM process. A scalar between 0 and 2.}
 
-\item{phi}{A vector of AR coefficients.}
+\item{phi}{A vector of autoregressive (AR) coefficients.}
 
-\item{rho}{A vector of MA coefficients.}
+\item{rho}{A vector of moving-average (MA) coefficients.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
+\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{N}{Length of observations (positive integer).}
+\item{N}{Number of observations (positive integer).}
 
 \item{m}{Number of MA coefficients used for approximating AR coefficients (see \strong{Details}).}
 }
@@ -23,20 +23,20 @@ farma_acf(alpha, phi, rho, dT, N, m = 30)
 A vector of \code{N} autocorrelation values.
 }
 \description{
-Compute the autocovariance of increment process of farma(p,q) model (see \strong{Details}).
+Compute the autocovariance of increment process of a fARMA(p,q) model (see \strong{Details}).
 }
 \details{
-The farma(p,q) model is of following form:
+The fARMA(p,q) model is of following form:
 \deqn{
 Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
 }{
 Y[n] = \phi_1 Y[n-1] + ... + \phi_p Y[n-p] + \rho_0 X[n] + ... + \rho_q X[n-q]
 }
-where residuals \eqn{X[n]} follow the fBM process with parameter \code{alpha} (See \code{\link{fbm_acf}}).
+where residuals \eqn{X[n]} follow the fBM process with parameter \code{alpha} (See \code{\link[=fbm_acf]{fbm_acf()}}).
 
 This function returns the autocovariance of stationary increment process \eqn{\Delta Y[n] = Y[n] - Y[n-1]}.
 
-In this function, the Auto-regressive terms are approximated with \code{m} terms of Moving-average terms. Currently this function only supports AR(1) term.
+In this function, the autoregressive terms are approximated with \code{m} moving-average terms, as described in Ling et al (2019).
 }
 \examples{
 # ACF parameters
@@ -47,4 +47,7 @@ phi <- 0.1
 rho <- c(0.1, 0.05)
 # ACF of farma model
 farma_acf(alpha, phi, rho, dT, N)
+}
+\references{
+Ling, Y., Lysy, M., Seim, I., Newby, J.M., Hill, D.B., Cribb, J., and Forest, M.G. "Measurement error correction in particle tracking microrheology." (2019). \url{https://arxiv.org/abs/1911.06451}.
 }

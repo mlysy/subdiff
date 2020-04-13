@@ -16,7 +16,7 @@
 #' @param K Number of relaxation modes.
 #' @param N Number of observations.
 #' @param dt Time between obserations.
-#' @param ... Additional arguments to pass to \code{\link{prony_acf}}.
+#' @param ... Additional arguments to pass to [prony_acf()].
 #' @return Vector of autocorrelations.
 #' @export
 rouse_acf <- function(alpha, tau, K, N, dt, ...) {

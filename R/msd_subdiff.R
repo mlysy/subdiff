@@ -3,20 +3,20 @@
 #' @param msd Vector of sample MSDs.
 #' @param tseq Vector of time points at which the MSDs are recorded (see Details).
 #' @param rel_tol Relative tolerence for difference between msd and linear fit.
-#' @param tmax Logical; if \code{TRUE} estimate \code{tmax}, otherwise set it to the last MSD timepoint \code{tseq[length(tseq)]} (See details).
+#' @param tmax Logical; if `TRUE` estimate `tmax`, otherwise set it to the last MSD timepoint `tseq[length(tseq)]` (See details).
 #' @param log Logical; whether or not the time window is measured on log-scale (See details).
-#' @return A vector of length 3 if \code{tmax = FALSE}, or a vector of length 4 if \code{tmax = FALSE}.
+#' @return A vector of length 3 if `tmax = FALSE`, or a vector of length 4 if `tmax = FALSE`.
 #' @details 
-#' Effective subdiffusion time window is defined as the longest time window whose power-law fit (computed by function \code{msd_ls}) is within a small margin of real msd. It is actually performing the linear regression 
+#' Effective subdiffusion time window is defined as the longest time window whose power-law fit (computed by function `msd_ls`) is within a small margin of real msd. It is actually performing the linear regression 
 #' \preformatted{
 #' log(msd[tmin, tmax]) ~ log(D) + alpha * log(tseq[tmin,tmax]).
 #' }
-#' where \code{tmin} is the starting point of time window and \code{tmax} is the end of time window. And the relative error between the true msd and power law approximation is defined as
+#' where `tmin` is the starting point of time window and `tmax` is the end of time window. And the relative error between the true msd and power law approximation is defined as
 #' \preformatted{
 #' epsilon = max((msd[tmin, tmax] - D * tseq[tmin,tmax]^alpha) / msd[tmin, tmax]).
 #' }
-#' Since in many experiment \code{tmax} is out-of-observation, this function allows to set \code{tmax = tseq[length(tseq)]}, which is the end of experiment. By doing this we only search for \code{tmin}. In addition, the default value of \code{log = FALSE} means the length of time window is defined as \code{tmax - tmin}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting \code{log = TRUE} defines the length of time window as \code{log(tmax) - log(tmin)} and also applies a log-scaled weight in power fitting (more details in \code{msd_ls}).
-#' This function finds the longest time window whose \code{epsilon} is smaller than \code{rel_tol} by applying grid search.
+#' Since in many experiment `tmax` is out-of-observation, this function allows to set `tmax = tseq[length(tseq)]`, which is the end of experiment. By doing this we only search for `tmin`. In addition, the default value of `log = FALSE` means the length of time window is defined as `tmax - tmin`, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting `log = TRUE` defines the length of time window as `log(tmax) - log(tmin)` and also applies a log-scaled weight in power fitting (more details in `msd_ls`).
+#' This function finds the longest time window whose `epsilon` is smaller than `rel_tol` by applying grid search.
 #' 
 #' @example examples/Xt_setup.R
 #' @example examples/msd_fit.R

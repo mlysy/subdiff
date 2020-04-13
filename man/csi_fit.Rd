@@ -7,21 +7,21 @@
 csi_fit(model, dX, dT, Tz, var_calc)
 }
 \arguments{
-\item{model}{An list of class \code{csi_class} (see \code{\link{fbm_model}}, \code{\link{floc_model}}, \code{\link{farma_model}}).}
+\item{model}{An list of class \code{csi_class} (see \code{\link[=fbm_model]{fbm_model()}}, \code{\link[=floc_model]{floc_model()}}, \code{\link[=farma_model]{farma_model()}}).}
 
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
+\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{SuperGauss::Toeplitz}).}
+\item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+\item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link{farma_model}}, \code{\link{fbm_model}}, \code{\link{floc_model}}). If \code{var_calc}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=farma_model]{farma_model()}}, \code{\link[=fbm_model]{fbm_model()}}, \code{\link[=floc_model]{floc_model()}}). If \code{var_calc = TRUE}, a list with components:
 \describe{
-\item{coef}{A vector of estimated parameters on transformed scale.}
-\item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
+\item{\code{coef}}{A vector of estimated parameters on transformed scale.}
+\item{\code{vcov}}{A matrix of estimated covariance of parameters on transformed scale.}
 }
 }
 \description{
@@ -34,9 +34,9 @@ X_n = \mu n \Delta t + \Sigma^{1/2} Z_n
 }{
 X[n] = \mu n \Delta t + \Sigma^{1/2} Z[n]
 }
-where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process.
+where \eqn{\mu} is the drift parameter, \eqn{\Sigma} is the between-trajectory covariance and \eqn{Z_n}{Z[n]} is a Gaussian continuous-stationary-increment (CSI) process.
 
-In the location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{LMN::lmn_prof}.
+In the location-scale model, \eqn{\mu, \Sigma} are nuisance parameters and can be profiled out using function \code{\link[LMN:lmn_prof]{LMN::lmn_prof()}}.
 }
 \examples{
 # generating 2-d stationary time series

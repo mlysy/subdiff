@@ -24,7 +24,7 @@ A vector of length 3 if \code{tmax = FALSE}, or a vector of length 4 if \code{tm
 Calculate effective subdiffusion time window and parameters from an arbitrary mean square displacement curve.
 }
 \details{
-Effective subdiffusion time window is defined as the longest time window whose power-law fit (computed by function \code{msd_ls}) is within a small margin of real msd. It is actually performing the linear regression 
+Effective subdiffusion time window is defined as the longest time window whose power-law fit (computed by function \code{msd_ls}) is within a small margin of real msd. It is actually performing the linear regression
 \preformatted{
 log(msd[tmin, tmax]) ~ log(D) + alpha * log(tseq[tmin,tmax]).
 }

@@ -1,33 +1,33 @@
 #' Calculate the ACF for the fLOC model.
 #'
-#' Compute the autocovariance for the increments of Savin & Doyle's localization model with fBM process (see \strong{Details}).
-#' 
+#' Compute the autocovariance for the increments of Savin & Doyle's localization model with fBM process (see **Details**).
+#'
 #' @param alpha Power law exponent of fBM process. A scalar between 0 and 2.
-#' @param tau The ratio between camera shutter open time and interobservation time \code{dT} (see \strong{Details}). A scalar between 0 and 1. 
-#' @param sigma2 The Magnitude of static errors (see \strong{Details}). A positive scalar.
+#' @param tau The ratio between camera shutter open time and interobservation time `dT` (see **Details**). A scalar between 0 and 1.
+#' @param sigma2 The Magnitude of static errors (see **Details**). A positive scalar.
 #' @template args-dT
 #' @template args-N
-#' 
+#'
 #' @template ret-acf
-#' 
+#'
 #' @details The Savin & Doyle's localization error model with fBM process (floc model) is of following form:
 #' \deqn{
 #' Y_n = 1/\tau \int_0^\tau X_{n  \Delta t+s} ds + \sigma e_{n}
 #' }{
 #' Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t+s} ds + \sigma e[n]
 #' }
-#' where \eqn{X_n} is an fBM process. 
-#' 
+#' where \eqn{X_n} is an fBM process.
+#'
 #' The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
 #' \eqn{e[n]} is a standard white noise, and this term is called static error.
-#' 
+#'
 #' This function returns the autocovariance function of increments of \eqn{Y[n]}.
-#' 
-#' @references Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical journal 88.1 (2005): 623-638.
-#' 
+#'
+#' @references Savin, T., and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
+#'
 #' @example examples/acf_setup.R
 #' @example examples/floc_acf.R
-#' 
+#'
 #' @export
 floc_acf <- function(alpha, tau, sigma2, dT, N) {
   if(!tau) {
@@ -37,7 +37,7 @@ floc_acf <- function(alpha, tau, sigma2, dT, N) {
     if(N == 1) {
       acf1 <- 2 * vec[2] - 2 * vec[1]
     } else {
-      acf1 <- vec[1:N + 1] + c(vec[2], vec[1:(N - 1)]) - 2 * vec[1:N]  
+      acf1 <- vec[1:N + 1] + c(vec[2], vec[1:(N - 1)]) - 2 * vec[1:N]
     }
   }
   acf1[1:2] <- acf1[1:2] + sigma2*c(2,-1)

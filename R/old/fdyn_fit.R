@@ -2,16 +2,16 @@
 #'
 #' @param dX one or two-column matrix of trajectory increments.
 #' @param dT Interobservation time.
-#' @param tau Camera exposure time divided by \code{dT}
+#' @param tau Camera exposure time divided by `dT`
 #' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
-#' @param ... Additional \code{control} arguments to \code{stats::optim}.
+#' @param var_calc If `TRUE`, also estimate variance matrix.
+#' @param ... Additional `control` arguments to `stats::optim`.
 #' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 #' @details The fractional AR(1) model has the form
 #' \deqn{
 #' \Delta X_n = (1-\rho) \Delta Z_n + \rho \Delta X_{n-1},
 #' }
-#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by `trans(rho) = logit(1-rho/2)`, `trans(mu) = mu`, [trans_alpha()], and [trans_Sigma()].
 #' @export
 fdyn_fit <- function(dX, dT, tau, Tz, var_calc = TRUE) {
   # memory allocation

@@ -17,7 +17,7 @@ rouse_acf(alpha, tau, K, N, dt, ...)
 
 \item{dt}{Time between obserations.}
 
-\item{...}{Additional arguments to pass to \code{\link{prony_acf}}.}
+\item{...}{Additional arguments to pass to \code{\link[=prony_acf]{prony_acf()}}.}
 }
 \value{
 Vector of autocorrelations.

@@ -4,14 +4,14 @@
 #' @template args-dT
 #' @template args-Tz
 #' @template args-var_calc
-#' @param theta0 Length-2 vector of initial values for \code{(alpha, rho)}.  Default value is \code{(1, 0)}.
+#' @param theta0 Length-2 vector of initial values for `(alpha, rho)`.  Default value is `(1, 0)`.
 #' @template args-dots_optim
 #' @template ret-cov_vcov
 #' @details The fractional AR(1) model has the form
 #' \deqn{
 #' \Delta X_n = (1-\rho) \Delta Z_n + \rho \Delta X_{n-1},
 #' }
-#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by `trans(rho) = logit(1-rho/2)`, `trans(mu) = mu`, [trans_alpha()], and [trans_Sigma()].
 #' @export
 far_fit <- function(dX, dT, Tz, var_calc = TRUE, theta0, ...) {
   # memory allocation

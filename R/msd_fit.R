@@ -2,8 +2,8 @@
 #'
 #' @param Xt Vector or matrix of trajectory positions (each column is a different coordinate).  The trajectory is assumed to be sampled at a constant frequency.
 #' @param nlag Number of MSD lags to calculate.
-#' @param demean Logical; whether or not to remove the mean of \code{Xt} as estimated by linear drift.
-#' @return Sample MSD vector of length \code{nlag}.
+#' @param demean Logical; whether or not to remove the mean of `Xt` as estimated by linear drift.
+#' @return Sample MSD vector of length `nlag`.
 #' 
 #' @example examples/Xt_setup.R
 #' @example examples/msd_fit.R

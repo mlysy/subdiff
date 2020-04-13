@@ -2,7 +2,7 @@
 #'
 #' Extracts the white-noise residuals from the Gaussian models provided by the package.
 #'
-#' @param theta Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).
+#' @param theta Vector of parameter values on the transformed scale returned by the corresponding `model_fit` procedure (see Details).
 #' @param dX One or two-column matrix of increments.
 #' @param dT Interobservation time.
 #' @return A one or two-column matrix of white noise residuals (see Details).
@@ -22,7 +22,7 @@ fbm_resid <- function(theta, dX, dT) {
   alpha <- itrans_alpha(theta[1]) # parameters
   mu <- theta[1+1:qq]
   Sigma <- itrans_Sigma(theta[qq+1+1:nq])
-  lsc_resid(dX, dT, mu, fbm_acf(alpha, dT, N), Sigma)
+  csi_resid(dX, dT, mu, fbm_acf(alpha, dT, N), Sigma)
 }
 
 #' @rdname subdiff-resid
@@ -43,7 +43,7 @@ farma_resid <- function(theta, dX, dT, order) {
   rho <- theta[1+p+1:q]
   mu <- theta[1+p+q+1:qq]
   Sigma <- itrans_Sigma(theta[qq+1+p+q+1:nq])
-  lsc_resid(dX, dT, mu, farma_acf(alpha, phi, rho, dT, N), Sigma)
+  csi_resid(dX, dT, mu, farma_acf(alpha, phi, rho, dT, N), Sigma)
 }
 
 #' @rdname subdiff-resid
@@ -58,7 +58,7 @@ floc_resid <- function(theta, dX, dT) {
   mu <- theta[3+1:qq]
   Sigma <- itrans_Sigma(theta[qq+3+1:nq])
   acf1 <- floc_acf(alpha, tau, sigma2, dT, N)
-  res <- lsc_resid(dX, dT, mu, acf1, Sigma)
+  res <- csi_resid(dX, dT, mu, acf1, Sigma)
   res
 }
 
@@ -74,21 +74,21 @@ floc_resid <- function(theta, dX, dT) {
 #     mu <- theta[3+1:qq]
 #     Sigma <- itrans_Sigma(theta[qq+3+1:nq])
 #     acf1 <- fdyn_acf(alpha, tau, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
-#     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
+#     res <- csi_resid(dX, dT, mu, acf1, Sigma)
 #   } else if(type == "fdy") {
 #     alpha <- itrans_alpha(theta[1]) # parameters
 #     tau <- itrans_tau(theta[2])
 #     mu <- theta[2+1:qq]
 #     Sigma <- itrans_Sigma(theta[qq+2+1:nq])
 #     acf1 <- fdyn_acf(alpha, tau, dT, N)
-#     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
+#     res <- csi_resid(dX, dT, mu, acf1, Sigma)
 #   } else if(type == "flo") {
 #     alpha <- itrans_alpha(theta[1]) # parameters
 #     sigma2 <- theta[2]^2
 #     mu <- theta[2+1:qq]
 #     Sigma <- itrans_Sigma(theta[qq+2+1:nq])
 #     acf1 <- fbm_acf(alpha, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
-#     res <- lsc_resid(dX, dT, mu, acf1, Sigma)
+#     res <- csi_resid(dX, dT, mu, acf1, Sigma)
 #   }
 #   res
 # }

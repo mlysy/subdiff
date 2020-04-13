@@ -13,7 +13,7 @@ prony_acf(lambda, N, dt, ...)
 
 \item{dt}{interobservation time.}
 
-\item{...}{Additional arguments to \code{\link{prony_coeff}} for obtaining the BM-OU coefficients.}
+\item{...}{Additional arguments to \code{\link[=prony_coeff]{prony_coeff()}} for obtaining the BM-OU coefficients.}
 }
 \value{
 Vector of autocorrelations.

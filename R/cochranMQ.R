@@ -1,16 +1,16 @@
 #' Cochran's multivariate Q-test for heterogeneity.
 #'
-#' Under \code{H0}, \code{k} independent estimators are of a common \code{p}-diemensional parameter; their precision-weighted sum-of-squares follows asymptotically a \code{chi^2} distribution with \code{k-p} degrees of freedom.
+#' Under `H0`, `k` independent estimators are of a common `p`-diemensional parameter; their precision-weighted sum-of-squares follows asymptotically a `chi^2` distribution with `k-p` degrees of freedom.
 #'
-#' @param est A \code{k x p} matrix of independent estimates of a common parameter.
-#' @param ve A \code{(p x p x k)}-dimensional array of corresponding variance estimates.
+#' @param est A `k x p` matrix of independent estimates of a common parameter.
+#' @param ve A `(p x p x k)`-dimensional array of corresponding variance estimates.
 #' @return A list with elements:
 #' \describe{
-#'   \item{\code{Q}}{The value of the test statistic.}
-#'   \item{\code{df}}{The degrees of freedom of the test.}
-#'   \item{\code{pval}}{The p-value of the test.}
-#'   \item{\code{est}}{The combined estimate of the parameter under \code{H0}.}
-#'   \item{\code{ve}}{The variance estimate of the combined estimator.}
+#'   \item{`Q`}{The value of the test statistic.}
+#'   \item{`df`}{The degrees of freedom of the test.}
+#'   \item{`pval`}{The p-value of the test.}
+#'   \item{`est`}{The combined estimate of the parameter under `H0`.}
+#'   \item{`ve`}{The variance estimate of the combined estimator.}
 #' }
 #' @export
 cochranMQ <- function(est, ve) {

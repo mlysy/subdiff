@@ -20,7 +20,7 @@
 #' @note Since temperature is not provided, the result is only proportional to the desired GLE, such that PUT IN CORRECT EQUATION.
 #' @param t times at which to calculate the MSD.
 #' @param lambda coefficients of the sum of OU processes.
-#' @param ... Additional arguments to \code{\link{prony_coeff}} for obtaining the BM-OU coefficients.
+#' @param ... Additional arguments to [prony_coeff()] for obtaining the BM-OU coefficients.
 #' @return Vector of mean square displacements.
 #' @export
 prony_msd <- function(t, lambda, ...) {

@@ -7,18 +7,18 @@
 cochranMQ(est, ve)
 }
 \arguments{
-\item{est}{A \code{k x p} matrix of independent estimates of a common parameter.}
+\item{est}{A \verb{k x p} matrix of independent estimates of a common parameter.}
 
-\item{ve}{A \code{(p x p x k)}-dimensional array of corresponding variance estimates.}
+\item{ve}{A \verb{(p x p x k)}-dimensional array of corresponding variance estimates.}
 }
 \value{
 A list with elements:
 \describe{
-  \item{\code{Q}}{The value of the test statistic.}
-  \item{\code{df}}{The degrees of freedom of the test.}
-  \item{\code{pval}}{The p-value of the test.}
-  \item{\code{est}}{The combined estimate of the parameter under \code{H0}.}
-  \item{\code{ve}}{The variance estimate of the combined estimator.}
+\item{\code{Q}}{The value of the test statistic.}
+\item{\code{df}}{The degrees of freedom of the test.}
+\item{\code{pval}}{The p-value of the test.}
+\item{\code{est}}{The combined estimate of the parameter under \code{H0}.}
+\item{\code{ve}}{The variance estimate of the combined estimator.}
 }
 }
 \description{

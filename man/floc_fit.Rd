@@ -9,14 +9,14 @@ floc_fit(dX, dT, Tz, var_calc = TRUE)
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
+\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{SuperGauss::Toeplitz}).}
+\item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+\item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link{floc_model}}). If \code{var_calc}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=floc_model]{floc_model()}}). If \code{var_calc}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -32,16 +32,16 @@ Y_n = 1/\tau \int_0^\tau X_{n \Delta t +s} ds + \sigma e_{n}
 }{
 Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t +s} ds + \sigma e[n]
 }
-where \eqn{X_n} is an \code{q = 1,2} dimensional fBM model (See \code{\link{fbm_fit}}).
+where \eqn{X_n} is an \verb{q = 1,2} dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
 
 The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
 \eqn{e_n} is a standard white noise, and this term is called static error.
 
 When put \code{tau} = 0, this model becomes fractional static error model.
 When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
-When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
+When put \verb{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
 
-Optimization is done by \code{\link{optimize}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{floc_model}}).
+Optimization is done by \code{\link[=optimize]{optimize()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=floc_model]{floc_model()}}).
 }
 \examples{
 # generating 2-d stationary time series

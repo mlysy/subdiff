@@ -2,7 +2,7 @@
 #' @param Y Original time series following Matrix Normal MN(X*Beta, V, Sigma), downsampled case 
 #' would be Y_ds ~ MN(X_ds*Beta, V_ds, Sigma)
 #' @param X Linear drift of time series. If X is of length 1, X_ds = rep(X, n)
-#' @param acf ACF of columnwise-variance matrix \code{V_ds}, either vector or Toeplitz-object
+#' @param acf ACF of columnwise-variance matrix `V_ds`, either vector or Toeplitz-object
 #' @param ds Downsampling rate, starting at 2
 #' @param noSigma logic, assume Sigma is identity matrix if true.
 #' @return Composite likelihood likelihood using profile sufficient statistics

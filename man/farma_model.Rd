@@ -12,13 +12,13 @@ farma_model(p, q)
 \item{q}{An integer of Moving-average order.}
 }
 \value{
-An list of class `csi_class` with components:
+An list of class \code{csi_class} with components:
 \describe{
-\item{theta_names}{A vector of parameter names.}
-\item{acf}{An ACF function with three arguments: vector of parameters; interobservation time \eqn{\Delta t}; length \code{N}.}
-\item{theta_trans}{Transformation function that converts original ACF parameter into unrestricted parameters.}
-\item{theta_itrans}{Inverse Transformation function that converts unrestricted parameters into original ACF parameter.}
-\item{penalty}{Penalty function for unrestricted parameters.}
+\item{\code{theta_names}}{A vector of parameter names.}
+\item{\code{acf}}{An ACF function with three arguments: vector of parameters; interobservation time \eqn{\Delta t}; length \code{N}.}
+\item{\code{theta_trans}}{Transformation function that converts original ACF parameter into unrestricted parameters.}
+\item{\code{theta_itrans}}{Inverse Transformation function that converts unrestricted parameters into original ACF parameter.}
+\item{\code{penalty}}{Penalty function for unrestricted parameters.}
 }
 }
 \description{

@@ -13,9 +13,9 @@ floc_acf(alpha, tau, sigma2, dT, N)
 
 \item{sigma2}{The Magnitude of static errors (see \strong{Details}). A positive scalar.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
+\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{N}{Length of observations (positive integer).}
+\item{N}{Number of observations (positive integer).}
 }
 \value{
 A vector of \code{N} autocorrelation values.
@@ -30,7 +30,7 @@ Y_n = 1/\tau \int_0^\tau X_{n  \Delta t+s} ds + \sigma e_{n}
 }{
 Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t+s} ds + \sigma e[n]
 }
-where \eqn{X_n} is an fBM process. 
+where \eqn{X_n} is an fBM process.
 
 The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
 \eqn{e[n]} is a standard white noise, and this term is called static error.
@@ -48,5 +48,5 @@ sigma2 <- 0.001
 floc_acf(alpha, tau, sigma2, dT, N)
 }
 \references{
-Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical journal 88.1 (2005): 623-638.
+Savin, T., and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 }

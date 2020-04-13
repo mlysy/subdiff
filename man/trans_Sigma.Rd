@@ -14,7 +14,7 @@ itrans_Sigma(lambda, D_scale = TRUE, rho_scale = FALSE)
 
 \item{D_scale}{Logical, whether or not the transformation targets the diffusivity constant (see Details).}
 
-\item{rho_scale}{If \code{TRUE}, the variance matrix is expressed as \code{sigma = sqrt{Sigma[1,1]}} in 1D and \code{(sigma1, sigma2, rho)} in 2D.  Otherwise it is expressed as a \code{1x1} or \code{2x2} matrix.}
+\item{rho_scale}{If \code{TRUE}, the variance matrix is expressed as \code{sigma = sqrt{Sigma[1,1]}} in 1D and \verb{(sigma1, sigma2, rho)} in 2D.  Otherwise it is expressed as a \verb{1x1} or \verb{2x2} matrix.}
 
 \item{lambda}{Variance matrix on the normalized scale (see Details).}
 }
@@ -27,7 +27,7 @@ Unconstraining transformations for 1D or 2D variance matrices.
 \details{
 The unconstrained variance matrix is defined as follows:
 \itemize{
-  \item In 1D, it is \code{lambda = .5 * log(Sigma)}.
-  \item In 2D, \code{lambda} is a vector of length 3 with last element \code{lambda[3] = logit(rho/2+1/2)}, where \eqn{\rho = \Sigma_{12}/} is the correlation.  When \code{D_scale = TRUE}, we have \code{lambda[1:2] = (log(D), log(Sigma[1,1]/Sigma[2,2]))}, where \eqn{D = (\Sigma_{11} + \Sigma_{22})/2}.  Otherwise, the unconstraining transformation is \code{lambda[1:2] = (log(Sigma[1,1]), log(Sigma[2,2]))}.
+\item In 1D, it is \code{lambda = .5 * log(Sigma)}.
+\item In 2D, \code{lambda} is a vector of length 3 with last element \code{lambda[3] = logit(rho/2+1/2)}, where \eqn{\rho = \Sigma_{12}/} is the correlation.  When \code{D_scale = TRUE}, we have \verb{lambda[1:2] = (log(D), log(Sigma[1,1]/Sigma[2,2]))}, where \eqn{D = (\Sigma_{11} + \Sigma_{22})/2}.  Otherwise, the unconstraining transformation is \verb{lambda[1:2] = (log(Sigma[1,1]), log(Sigma[2,2]))}.
 }
 }

@@ -1,8 +1,8 @@
 
-context("lsc_resid")
+context("csi_resid")
 
 # forward transformation
-lsc_fwd <- function(Z, dT, mu, acf, Sigma) {
+csi_fwd <- function(Z, dT, mu, acf, Sigma) {
   ed <- eigen(Sigma)
   C <- sqrt(ed$val) * t(ed$vec)
   dX <- SuperGauss::cholZX(Z = Z, acf = acf) %*% C
@@ -26,7 +26,7 @@ racf <- function(N, dT, type = c("fbm", "floc", "farma")) {
 }
 
 ntest <- 20
-test_that("Z == lsc_resid(dX = lsc_fwd(Z))", {
+test_that("Z == csi_resid(dX = csi_fwd(Z))", {
   replicate(ntest, {
     nd <- sample(1:5, 1)
     mu <- rnorm(nd)
@@ -35,8 +35,8 @@ test_that("Z == lsc_resid(dX = lsc_fwd(Z))", {
     N <- sample(1000:2000,1)
     Z1 <- matrix(rnorm(N*nd),N,nd)
     acf1 <- racf(N, dT, "floc")
-    dX <- lsc_fwd(Z1, dT, mu, acf1, Sigma)
-    Z2 <- lsc_resid(dX, dT, mu, acf1, Sigma)
+    dX <- csi_fwd(Z1, dT, mu, acf1, Sigma)
+    Z2 <- csi_resid(dX, dT, mu, acf1, Sigma)
     expect_equal(max(abs(Z1-Z2)), 0)
   })
 })

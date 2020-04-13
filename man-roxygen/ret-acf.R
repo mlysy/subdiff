@@ -1,1 +1,1 @@
-#' @return A vector of \code{N} autocorrelation values.
+#' @return A vector of `N` autocorrelation values.

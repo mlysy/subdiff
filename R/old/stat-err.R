@@ -8,9 +8,9 @@
 #' @param dt interobservation
 #' @param acf Toeplitz space
 #' @param ConfInt logical, default to be FALSE
-#' @return if \code{ConfInt} = \code{TRUE} return list containing estimation and length of error bar,
+#' @return if `ConfInt` = `TRUE` return list containing estimation and length of error bar,
 #' return estimation only otherwise.
-#' @note requires package \code{LMN} and \code{SuperGauss}
+#' @note requires package `LMN` and `SuperGauss`
 #' @export
 stat.infer <- function(Yt, dt, acf, ConfInt = FALSE) {
   N <- nrow(Yt)

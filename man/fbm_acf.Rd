@@ -9,9 +9,9 @@ fbm_acf(alpha, dT, N)
 \arguments{
 \item{alpha}{Power law exponent. A scalar between 0 and 2.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
+\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{N}{Length of observations (positive integer).}
+\item{N}{Number of observations (positive integer).}
 }
 \value{
 A vector of \code{N} autocorrelation values.

@@ -16,7 +16,7 @@
 #' @param alpha Subdiffusion coefficient between 0 and 1.
 #' @param tau Shortest timescale of memory kernel.
 #' @param K Number of relaxation modes.
-#' @param ... Additional arguments to pass to \code{prony.msd}.
+#' @param ... Additional arguments to pass to `prony.msd`.
 #' @return Vector of mean square displacements.
 #' @export
 rouse_msd <- function(t, alpha, tau, K, ...) {

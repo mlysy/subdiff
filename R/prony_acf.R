@@ -1,7 +1,7 @@
 #' @title Prony Acf.
 #' @description GLE with 0 mass and 0 external potential.
 #' @details
-#' process \code{x} is defined as
+#' process `x` is defined as
 #' \code{vsigma * int_{-infty}^t gamma(t-s)  x_s d s = k_B T vsigma * F_t}
 #' where the force noise F_t is a sum of independent OU processes, ie,
 #' cov(F_s, F_{t+s}) = gamma(t) = exp(-alpha1 t) + ... + exp(-alphaK t).
@@ -14,7 +14,7 @@
 #' @param lambda coefficients of the sum of OU processes.
 #' @param N number of samples.
 #' @param dt interobservation time.
-#' @param ... Additional arguments to \code{\link{prony_coeff}} for obtaining the BM-OU coefficients.
+#' @param ... Additional arguments to [prony_coeff()] for obtaining the BM-OU coefficients.
 #' @return Vector of autocorrelations.
 #' @export
 prony_acf <- function(lambda, N, dt, ...) {

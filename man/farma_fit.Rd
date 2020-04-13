@@ -9,16 +9,16 @@ farma_fit(dX, dT, order, Tz, var_calc = TRUE)
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t =} 1/fps (positive scalar).}
+\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{order}{A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.}
 
-\item{Tz}{Optional object of class `Toeplitz` for intermediate calculations (See \code{SuperGauss::Toeplitz}).}
+\item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+\item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link{farma_model}}). If \code{var_calc}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=farma_model]{farma_model()}}). If \code{var_calc}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -34,9 +34,9 @@ Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
 }{
 Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
 }
-where \eqn{X_n} is an \code{q = 1,2} dimensional fBM model (See \code{\link{fbm_fit}}).
+where \eqn{X_n} is an \verb{q = 1,2} dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
 
-Optimization is done by \code{stats::optimize}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link{farma_model}}).
+Optimization is done by \code{stats::optimize}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=farma_model]{farma_model()}}).
 }
 \examples{
 # generating 2-d stationary time series

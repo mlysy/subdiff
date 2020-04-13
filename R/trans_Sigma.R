@@ -1,13 +1,13 @@
 #' Unconstraining transformations for 1D or 2D variance matrices.
 #'
 #' @param Sigma Variance matrix on the regular scale.
-#' @param rho_scale If \code{TRUE}, the variance matrix is expressed as \code{sigma = sqrt{Sigma[1,1]}} in 1D and \code{(sigma1, sigma2, rho)} in 2D.  Otherwise it is expressed as a \code{1x1} or \code{2x2} matrix.
+#' @param rho_scale If `TRUE`, the variance matrix is expressed as \code{sigma = sqrt{Sigma[1,1]}} in 1D and `(sigma1, sigma2, rho)` in 2D.  Otherwise it is expressed as a `1x1` or `2x2` matrix.
 #' @param D_scale Logical, whether or not the transformation targets the diffusivity constant (see Details).
 #' @return Variance matrix on the regular or normalized scale.
 #' @details The unconstrained variance matrix is defined as follows:
 #' \itemize{
-#'   \item In 1D, it is \code{lambda = .5 * log(Sigma)}.
-#'   \item In 2D, \code{lambda} is a vector of length 3 with last element \code{lambda[3] = logit(rho/2+1/2)}, where \eqn{\rho = \Sigma_{12}/} is the correlation.  When \code{D_scale = TRUE}, we have \code{lambda[1:2] = (log(D), log(Sigma[1,1]/Sigma[2,2]))}, where \eqn{D = (\Sigma_{11} + \Sigma_{22})/2}.  Otherwise, the unconstraining transformation is \code{lambda[1:2] = (log(Sigma[1,1]), log(Sigma[2,2]))}.
+#'   \item In 1D, it is `lambda = .5 * log(Sigma)`.
+#'   \item In 2D, `lambda` is a vector of length 3 with last element `lambda[3] = logit(rho/2+1/2)`, where \eqn{\rho = \Sigma_{12}/} is the correlation.  When `D_scale = TRUE`, we have `lambda[1:2] = (log(D), log(Sigma[1,1]/Sigma[2,2]))`, where \eqn{D = (\Sigma_{11} + \Sigma_{22})/2}.  Otherwise, the unconstraining transformation is `lambda[1:2] = (log(Sigma[1,1]), log(Sigma[2,2]))`.
 #' }
 #' @name trans_Sigma
 #' @export

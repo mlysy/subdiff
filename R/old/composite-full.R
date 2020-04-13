@@ -4,7 +4,7 @@
 #' @param X Linear drift of time series. If X is of length 1, X_ds = rep(X, n)
 #' @param Beta Parameter for linear drift
 #' @param Sigma Parameter for row-wise covariance matrix
-#' @param acf ACF of column-wise covariance matrix \code{V_ds}, either vector or Toeplitz-object
+#' @param acf ACF of column-wise covariance matrix `V_ds`, either vector or Toeplitz-object
 #' @param ds Downsampling rate, starting at 2
 #' @return Composite likelihood likelihood using profile sufficient statistics
 #' @export

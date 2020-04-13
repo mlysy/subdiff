@@ -35,5 +35,5 @@ No fitting functions for this yet, but could easily be done for derived ACF/MSD 
 
 Tools for diagnosing model fit.
 
-- Model residuals: `fbm_resid`, `fma_resid`, `far_resid` (depreciated), `fsd_resid` (to be soon depreciated), `fd_resid` (rename to `floc_resid`).  The workhorse function is `lsc_resid` which applies to any Gaussian CSI location-scale model.
+- Model residuals: `fbm_resid`, `fma_resid`, `far_resid` (depreciated), `fsd_resid` (to be soon depreciated), `fd_resid` (rename to `floc_resid`).  The workhorse function is `csi_resid` which applies to any Gaussian CSI location-scale model.
 - P-values for normal residuals: `ad_pval`, `sw_pval`, `bc_pval`.  Note that `ad_pval` and `bc_pval` assume that we are testing against N(0,1), whereas `sw_pval` is against N(mu,sig^2), which is not quite correct.
