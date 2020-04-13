@@ -1,31 +1,33 @@
 #' Calculate the ACF for the farma model.
 #'
-#' Compute the autocovariance of increment process of farma(p,q) model (see \strong{Details}).
+#' Compute the autocovariance of increment process of a fARMA(p,q) model (see **Details**).
 #'
 #' @param alpha Power law exponent of the fBM process. A scalar between 0 and 2.
-#' @param phi A vector of AR coefficients.
-#' @param rho A vector of MA coefficients.
+#' @param phi A vector of autoregressive (AR) coefficients.
+#' @param rho A vector of moving-average (MA) coefficients.
 #' @template args-dT
 #' @template args-N
-#' @param m Number of MA coefficients used for approximating AR coefficients (see \strong{Details}).
+#' @param m Number of MA coefficients used for approximating AR coefficients (see **Details**).
 #'
 #' @template ret-acf
 #'
-#' @details The farma(p,q) model is of following form:
+#' @details The fARMA(p,q) model is of following form:
 #' \deqn{
 #' Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
 #' }{
 #' Y[n] = \phi_1 Y[n-1] + ... + \phi_p Y[n-p] + \rho_0 X[n] + ... + \rho_q X[n-q]
 #' }
-#' where residuals \eqn{X[n]} follow the fBM process with parameter \code{alpha} (See \code{\link{fbm_acf}}).
-#' 
+#' where residuals \eqn{X[n]} follow the fBM process with parameter `alpha` (See [fbm_acf()]).
+#'
 #' This function returns the autocovariance of stationary increment process \eqn{\Delta Y[n] = Y[n] - Y[n-1]}.
-#' 
-#' In this function, the Auto-regressive terms are approximated with \code{m} terms of Moving-average terms. Currently this function only supports AR(1) term.
+#'
+#' In this function, the autoregressive terms are approximated with `m` moving-average terms, as described in Ling et al (2019).
+#'
+#' @references Ling, Y., Lysy, M., Seim, I., Newby, J.M., Hill, D.B., Cribb, J., and Forest, M.G. "Measurement error correction in particle tracking microrheology." (2019). <https://arxiv.org/abs/1911.06451>.
 #'
 #' @example examples/acf_setup.R
 #' @example examples/farma_acf.R
-#' 
+#'
 #' @importFrom fftw FFT
 #' @importFrom fftw IFFT
 #'
@@ -34,7 +36,7 @@ farma_acf <- function(alpha, phi, rho, dT, N, m = 30) {
   if(!phi) {
     acf2 <- .fma_acf(alpha, c(1-sum(rho), rho), dT, N)
   } else {
-    acf1 <- .fma_acf(alpha, c(1-phi-sum(rho), rho), dT, N+m+1)
+    acf1 <- .fma_acf(alpha, c(1-sum(phi)-sum(rho), rho), dT, N+m+1)
     acf2 <- .ar1_acf(acf1, phi, N, m)
   }
   acf2
