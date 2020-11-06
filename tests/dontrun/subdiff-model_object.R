@@ -1,27 +1,437 @@
-#--- Implementation of subdiff model_object and model_fit ----------------------
+#' ---
+#' title: "Model Objects in **subdiff**"
+#' author: "Martin Lysy"
+#' date: "`r Sys.Date()`"
+#' output:
+#'   rmarkdown::html_document:
+#'     toc: yes
+#' ---
+#'
+#' \newcommand{\bm}[1]{\boldsymbol{#1}}
+#' \newcommand{\RR}{\bm{R}}
+#' \newcommand{\XX}{\bm{X}}
+#' \newcommand{\YY}{\bm{Y}}
+#' \newcommand{\ZZ}{\bm{Z}}
+#' \newcommand{\dt}{\Delta t}
+#' \newcommand{\N}{\mathcal{N}}
+#' \newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
+#' \newcommand{\msd}{\operatorname{MSD}}
+#' \newcommand{\var}{\operatorname{var}}
+#' \newcommand{\mmu}{\bm{\mu}}
+#' \newcommand{\eet}{\bm{\eta}}
+#' \newcommand{\tth}{\bm{\theta}}
+#' \newcommand{\lla}{\bm{\lambda}}
+#' \newcommand{\pps}{\bm{\psi}}
+#' \newcommand{\pph}{\bm{\phi}}
+#' \newcommand{\SSi}{\bm{\Sigma}}
 
-# essentially memory allocation.
-fmod <- fbm_model(dX, drift = "linear")
+#+ setup, include = FALSE
+knitr::opts_chunk$set(eval = FALSE)
 
-# usage:
+#' # Naming Conventions
+#'
+#' - Model: $\XX(t) = \RR(t \mid \pph) \mmu + \SSi^{1/2} \ZZ(t), \qquad \msd_Z(t) = \eta(t \mid \pph)$.
+#'
+#' - Original basis: $\tth = (\pph, \mmu, \SSi)$.
+#'
+#' - Computational basis: $\pps = \bm{g}(\pph)$, $\eet = (\pps, \mmu, \lla)$.
+#'
+#' # Usage
+#'
+#' Model objects will inherit from a base class `csi_model` which provides a number of default methods outlined below.
+#'
+#'
+#' ## Constructor
+#'
+#' - Performs memory allocation.
+#' - Can optionally override the drift which defaults to "linear".
+#' - Should the data be provided on the increment or regular scale?
+#'
+#' Examples:
 
+#+ constructor
+# direct inheritance of base class constructor. drift can be skipped.
+mod <- fbm_model(dX, dt, drift = "linear")
+
+# custom derived class constructor with additional arguments
+mod <- farma_model(dX, dt, p = 3, q = 2)
+mod <- fsd_model(dX, dt, tau = 0) # savin-doyle model, pure static error
+
+#' ## Internal Variables
+#'
+#' A number of members and methods in `csi_model` will need to be set by the derived model class:
+#'
+#' - `p`: The number of basis functions in the drift term.  E.g., for linear drift this is $p = 1$ and for quadratic drift this is $p = 2$.
+#' - `phi_names`: The names of the MSD and drift parameters in the original basis.
+#' - `n_phi`: The dimension of $\pph$.  This is automatically determined from `phi_names`.
+#' - `trans`/`itrans`: `psi = trans(phi)` and `phi = itrans(psi)`.
+
+
+#' ## Other Methods
+
+#+ methods
 # basics
-fmod$acf(phi) # original parametrization
-fmod$drift(phi)
-fmod$mu_hat(phi)
-fmod$Sigma_hat(phi)
+mod$acf(phi) # original parametrization
+mod$drift(phi)
+mod$mu_hat(phi)
+mod$Sigma_hat(phi)
+# change data
+mod$dt <- dt
+mod$dX <- dX # reallocate memory only if needed
+
 # parameter conversions
-fmod$trans(mu, Sigma, phi)
-fmod$itrans(psi)
+mod$trans(phi)
+mod$itrans(psi)
+mod$trans_full(phi, mu, Sigma)
+mod$itrans_full(eta) # returns list
 
 # model fitting
-fmod$nlp(psi) # computational parametrization
-fmod$nlp_grad(psi) # if applicable
-fmod$loglik(psi)
+mod$nlp(psi) # computational parametrization
+mod$nlp_grad(psi) # if applicable
+mod$fisher(eta) # observed fisher information
 
 # model residuals
-fmod$resid(mu, Sigma, phi) # original scale???
+mod$resid(phi, mu, Sigma) # wrapper to csi_resid()
 
-# change data? maybe not worth it...
-fmod$set_dX(dX)
+# simulation
+mod$sim(phi, mu, Sigma) # wrapper to csi_sim()
 
+# for AIC and otherwise potentially useful
+mod$loglik(phi, mu, Sigma) # original scale
+
+#' # Base Class
+
+#+ base_class
+require(R6)
+
+csi_model <- R6Class(
+  #' Base class for CSI models.
+  #'
+  #' @details See helper functions below.
+  classname = "csi_model",
+
+  private = list(
+    dX_ = NULL, # internal increments.
+    dt_ = NULL, # internal interobservation time.
+    N_ = NULL, # internal number of increments.
+    q_ = NULL, # internal number of dimensions.
+    p_ = NULL, # internal number of drift basis coefficients.
+    n_phi = NULL, # internal number of drift + acf parameters.
+
+    #' Toeplitz matrix object.
+    Tz_ = NULL,
+
+    #' Calculate the profile likelihood sufficient statistics.
+    get_suff = function(phi) {
+      # acf and drift
+      acf <- self$acf(phi, dt = private$dt_, N = private$N_)
+      dr <- self$drift(phi, dt = private$dt_, N = private$N_)
+      # sufficient statistics
+      private$Tz_$set_acf(acf)
+      lmn_suff(Y = private$dX_, X = dr, V = private$Tz_, Vtype = "acf")
+    }
+
+  ),
+
+  active = list(
+    #' Trajectory increments.
+    #'
+    #' @details Only reallocates memory for the internal Toeplitz matrix if necessary.
+    dX = function(value) {
+      if(missing(value)) {
+        return(private$dX_)
+      } else {
+        if(!is.numeric(value) || !is.matrix(value)) {
+          stop("`dX` must be a numeric matrix.")
+        }
+        if(nrow(value) != private$N_) {
+          # reallocate Toeplitz matrix
+          private$N_ <- nrow(value)
+          priviate$q_ <- ncol(value)
+          private$Tz_ <- Toeplitz$new(N = private$N_)
+        }
+        private$dX_ <- value
+      }
+    },
+
+    #' Interobservation time.
+    dt = function(value) {
+      if(missing(value)) {
+        return(private$dt_)
+      } else {
+        if(!is.numeric(value) || length(value) != 1 || value <= 0) {
+          stop("`dt` must be a positive scalar.")
+        }
+        private$dt_ <- value
+      }
+    }
+  ),
+
+  public = list(
+    #' Methods and members to be defined by the derived class
+    trans = NULL,
+    itrans = NULL,
+    acf = NULL,
+    drift = NULL,
+    phi_names = NULL,
+
+    #' Convert from original to computational basis.
+    #'
+    #' @param phi Kernel parameters in the original basis.
+    #' @param mu Drift coefficients.
+    #' @param Sigma Scale matrix.
+    #' @return Full parameter vector in the computational basis.
+    trans_full = function(phi, mu, Sigma) {
+      c(self$trans(phi), mu, trans_Sigma(Sigma))
+    },
+
+    #' Convert from computational to original basis.
+    #'
+    #' @param eta Vector of parameters in the computational basis.
+    #' @return List with elements `phi`, `mu`, and `Sigma`.
+    itrans_full = function(eta) {
+      n_phi <- private$n_phi
+      p_ <- private$p_
+      q_ <- private$q_
+      # number of parameters in the log-cholesky factor
+      n_chol <- q_ * (q_+1) / 2
+      phi <- self$itrans(eta[1:n_phi])
+      mu <- matrix(eta[n_phi + 1:(p_*q_)], p_, q_)
+      Sigma <- itrans_Sigma(eta[n_phi + p_*q_ + 1:n_chol])
+      list(phi = phi, mu = mu, Sigma = Sigma)
+    },
+
+    #' Negative profile likelihood.
+    #'
+    #' @param psi Kernel parameters in the computational basis.
+    nlp = function(psi) {
+      phi <- self$itrans(psi) # convert psi to original scale
+      suff <- private$get_suff(phi) # sufficient statistics
+      -lmn_prof(suff)
+    },
+
+    #' Conditional MLE of nuisance parameters.
+    #'
+    #' @param phi Kernel parameters in the original basis.
+    muSigma_hat = function(phi) {
+      suff <- private$get_suff(phi) # sufficient statistics
+      list(mu = suff$Bhat, Sigma = suff$S/suff$n)
+    },
+
+    #' Loglikelihood function.
+    #'
+    #' @param phi Kernel parameters in the original basis.
+    #' @param mu Drift coefficients.
+    #' @param Sigma Scale matrix.
+    loglik = function(phi, mu, Sigma) {
+      suff <- private$get_suff(phi) # sufficient statistics
+      lmn_loglik(Beta = mu, Sigma = Sigma, suff = suff)
+    },
+
+    #' Observed Fisher information matrix.
+    #'
+    #' @param eta Full set of parameters in the computational basis.
+    fisher = function(eta) {
+      numDeriv::hessian(x = eta, func = function(eta) {
+        # convert eta to phi, mu, Sigma
+        theta <- self$itrans_full(eta)
+        -self$loglik(theta$phi, theta$mu, theta$Sigma)
+      })
+    },
+
+    #' Model object constructor.
+    #'
+    #' @param dX Trajectory increments.
+    #' @param dt Interobservation time.
+    #' @param drift Drift specification.  Either one of the strings "none", "linear", "quadratric", or a function with signature `function(phi, dt, N)`.
+    #'
+    #' @details Probably worth checking whether model object is valid at construction time.
+    initialize = function(dX, dt, drift = "linear") {
+      if(!missing(dX)) self$dX <- dX
+      self$dt <- dt
+      # get drift
+      if(drift == "linear") {
+        self$drift <- drift_linear
+        private$p_ <- 1
+      } else if(self$drift == "none") {
+        self$drift <- drift_none
+        private$p_ <- 0
+      } else if(self$drift == "quadratic") {
+        self$drift <- drift_quadratic
+        private$p_ <- 2
+      } else {
+        check_drift(drift)
+        self$drift <- drift
+        ## # determine number of drift coefficients
+        ## dr <- self$drift(phi = self$itrans(psi = rep(0, private$n_phi)),
+        ##                  N = 2, dt = 1)
+        ## private$p_ <- ncol(as.matrix(dr))
+      }
+      private$n_phi <- length(self$phi_names)
+    }
+  )
+)
+
+#' Helper functions.
+#'
+drift_linear <- function(phi, dt, N) dt
+drift_none <- function(phi, dt, N) 0
+drift_quadratic <- function(phi, dt, N) cbind(dt, diff((0:N*dt)^2))
+check_drift <- function(drift) {
+  # FIXME: is this too strict?
+  if(!identical(methods::formalArgs(drift), c("phi", "dt", "N"))) {
+    stop("drift must have argument signature phi, dt, N.")
+  }
+}
+
+
+#' Derived class for the FBM model.
+fbm_model <- R6Class(
+  classname = "fbm_model",
+  inherit = csi_model,
+
+  public = list(
+    phi_names = "alpha",
+    acf = function(phi, dt, N) fbm_acf(alpha = phi, dt = dt, N = N),
+    trans = function(phi) logit(phi, 0, 2),
+    itrans = function(psi) ilogit(psi, 0, 2)
+  )
+
+)
+
+#' Derived class for the fARMA model.
+#'
+#' @details Lots of mistakes here.  The point is to prototype something to illustrate a complex custom constructor.
+farma_model <- R6Class(
+  classname = "farma_model",
+  inherit = "csi_model",
+
+  private = list(
+    #' Obtain the `p` and `q` parameters.
+    #'
+    #' Gives an error if these are not formatted correctly
+    get_pq = function(p, q) {
+      if(missing(p)) p <- 0
+      if((p - as.integer(p) != 0) && p < 0) {
+        "AR order term `p` must be a nonnegative integer."
+      }
+      if(missing(q)) q <- 0
+      if((q - as.integer(q) != 0) && q < 0) {
+        "MA order term `q` must be a nonnegative integer."
+      }
+      setNames(c(p, q), nm = c("p", "q"))
+    }
+  ),
+
+  public = list(
+    trans = function(phi) {
+      psi <- phi
+      psi[1] <- logit(phi[1], min = 0, max = 2)
+      psi[-1] <- logit(phi[-1], min = -1, max = 1)
+      psi
+    },
+    itrans = function(psi) {
+      phi <- psi
+      phi[1] <- ilogit(psi[1], min = 0, max = 2)
+      phi[-1] <- ilogit(psi[-1], min = -1, max = 1)
+      phi
+    },
+
+    initialize = function(dX, dt, p, q, drift = "linear", m = 30) {
+      pq <- private$get_pq(p, q)
+      p <- pq["p"]
+      q <- pq["q"]
+      phi_names <- "alpha"
+      if(p > 0) phi_names <- c(phi_names, paste0("phi", 1:p))
+      if(q > 0) phi_names <- c(phi_names, paste0("rho", 1:q))
+      self$phi_names <- phi_names
+      ## if(p == 0) {
+      ##   if(q == 0) {
+      ##     # pure fbm process
+      ##     self$acf <- fbm_acf
+      ##   } else {
+      ##     # pure fma process
+      ##     self$acf <- function(phi, dt, N) {
+      ##       fma_acf(alpha = phi[1], rho = phi[1+1:q], dt = dt, N = N)
+      ##     }
+      ##   }
+      ## } else if(q == 0) {
+      ##   # pure far process
+      ## }
+      # FIXME: farma_acf must dispatch based on order itself.
+      self$acf <- function(phi, dt, N) {
+        farma_acf(alpha = phi[1], phi[1+1:p], phi[1+p+1:q], dt, N, m = m)
+      }
+      # this will set self$drift and private$p_
+      super$initialize(dX, dt, drift = function(phi, dt, N) {
+        farma_
+      })
+      # now fix the drift term
+    }
+  )
+)
+
+fobj <- fbm_model$new()
+
+fobj$foo(5)
+
+#' Create a CSI derived class generator.
+csi_model <- function(classname,
+                      trans,
+                      itrans,
+                      acf,
+                      drift = "linear") {
+  if(drift == "linear") {
+    drift <- function(phi, dt, N) dt
+  } else if(drift == "none") {
+    drift <- function(phi, dt, N) 0
+  } else if(drift == "quadratic") {
+    drift <- function(phi, dt, N) cbind(dt, diff((0:N*dt)^2))
+  }
+  if(missing(trans) != missing(itrans)) {
+    stop("`trans` and `itrans` must both be missing or both be provided.")
+  }
+  if(missing(trans)) trans <- function(phi) phi
+  if(missing(itrans)) itrans <- function(psi) psi
+  R6Class(
+    classname = classname,
+    inherit = csi_model,
+    public
+  )
+}
+
+#--- tests ---------------------------------------------------------------------
+
+require(R6)
+
+base_class <- R6Class(
+  "base_class",
+  private = list(
+    x_= 10
+  ),
+  ## active = list(
+  ##   x = function() private$x_
+  ## )
+)
+
+derived_class <- R6Class(
+  "derived_class",
+  inherit = base_class,
+  private = list(
+    x_ = 20
+  ),
+  ## active = list(
+  ##   x = function() private$dx_
+  ## ),
+  public = list(
+    get_x = function(base = FALSE) {
+      if(base) return(super$private$x_)
+      private$x_
+    }
+  )
+)
+
+foo <- derived_class$new()
+
+foo$get_x()
+foo$get_x(base=TRUE) # fails
