@@ -4,12 +4,12 @@
 \alias{fbm_fit}
 \title{Fit the fBM model.}
 \usage{
-fbm_fit(dX, dT, Tz, var_calc = TRUE)
+fbm_fit(dX, dt, Tz, var_calc = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
 
@@ -39,12 +39,12 @@ Optimization is done by \code{\link[=optim]{optim()}}. It works better when para
 \examples{
 # generating 2-d stationary time series
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dT, N)
+acf1 <- fbm_acf(alpha, dt, N)
 dX <- rSnorm(2, acf = acf1)
 # Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
 # Fit the fBM model
-fbm_fit(dX, dT, Tz, var_calc = TRUE)
+fbm_fit(dX, dt, Tz, var_calc = TRUE)
 }

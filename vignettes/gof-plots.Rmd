@@ -128,7 +128,7 @@ for(ii in 1:nrow(select_paths)) {
   data_paths <- read.csv(file.path(data_path,
                                    paste0(data_name, ".csv")))
   npaths <- length(unique(data_paths$pathID))
-  dT <- 1/fps_info$fps[fps_info$name == data_name]
+  dt <- 1/fps_info$fps[fps_info$name == data_name]
   iexper <- data_stats$exper == data_name
   dstats <- data_stats[iexper,]
   nexper <- sum(iexper)
@@ -142,7 +142,7 @@ for(ii in 1:nrow(select_paths)) {
   theta <- readRDS(file = theta)[[ipath]]$coef
   main <- paste0("Trajectory ", ii, ":     ", data_name, " -- Path ", ipath)
   ## main <- paste0("Dataset: ", data_name, "    Path: ", ipath)
-  gof_plot(Xt, dT, theta, type = "qq", main = main)
+  gof_plot(Xt, dt, theta, type = "qq", main = main)
   box("figure")
 }
 ```

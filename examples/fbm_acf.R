@@ -1,2 +1,2 @@
 # ACF of fBM model
-fbm_acf(alpha, dT, N)
+fbm_acf(alpha, dt, N)

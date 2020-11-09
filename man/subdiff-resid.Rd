@@ -7,18 +7,18 @@
 \alias{floc_resid}
 \title{Model-based residual calculations.}
 \usage{
-fbm_resid(theta, dX, dT)
+fbm_resid(theta, dX, dt)
 
-farma_resid(theta, dX, dT, order)
+farma_resid(theta, dX, dt, order)
 
-floc_resid(theta, dX, dT)
+floc_resid(theta, dX, dt)
 }
 \arguments{
 \item{theta}{Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).}
 
 \item{dX}{One or two-column matrix of increments.}
 
-\item{dT}{Interobservation time.}
+\item{dt}{Interobservation time.}
 
 \item{order}{Integer vector of length 2 specifying the number of AR and MA terms respectively.}
 }

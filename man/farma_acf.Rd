@@ -4,7 +4,7 @@
 \alias{farma_acf}
 \title{Calculate the ACF for the farma model.}
 \usage{
-farma_acf(alpha, phi = numeric(), rho = numeric(), dT, N, m = 30)
+farma_acf(alpha, phi = numeric(), rho = numeric(), dt, N, m = 30)
 }
 \arguments{
 \item{alpha}{Power law exponent of the fBM process. A scalar between 0 and 2.}
@@ -13,7 +13,7 @@ farma_acf(alpha, phi = numeric(), rho = numeric(), dT, N, m = 30)
 
 \item{rho}{A vector of \code{q >= 0} moving-average (MA) coefficients (see 'Details').}
 
-\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{N}{Number of observations (positive integer).}
 
@@ -39,12 +39,12 @@ This function returns the autocovariance of stationary increment process \eqn{\D
 \examples{
 # ACF parameters
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
 phi <- 0.1
 rho <- c(0.1, 0.05)
 # ACF of farma model
-farma_acf(alpha, phi, rho, dT, N)
+farma_acf(alpha, phi, rho, dt, N)
 }
 \references{
 Ling, Y., Lysy, M., Seim, I., Newby, J.M., Hill, D.B., Cribb, J., and Forest, M.G. "Measurement error correction in particle tracking microrheology." (2019). \url{https://arxiv.org/abs/1911.06451}.

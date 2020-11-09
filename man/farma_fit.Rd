@@ -4,12 +4,12 @@
 \alias{farma_fit}
 \title{Fit the farma model.}
 \usage{
-farma_fit(dX, dT, order, Tz, var_calc = TRUE)
+farma_fit(dX, dt, order, Tz, var_calc = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{order}{A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.}
 
@@ -41,12 +41,12 @@ Optimization is done by \code{stats::optimize}. It works better when parameters 
 \examples{
 # generating 2-d stationary time series
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dT, N)
+acf1 <- fbm_acf(alpha, dt, N)
 dX <- rSnorm(2, acf = acf1)
 # Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
 # Fit the farma(0,1) model
-farma_fit(dX, dT, order = c(0,1), Tz, var_calc = TRUE)
+farma_fit(dX, dt, order = c(0,1), Tz, var_calc = TRUE)
 }

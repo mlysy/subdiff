@@ -13,3 +13,12 @@
 6. [ ] Fix `*_resid` functions.  Currently using depreciated `trans_alpha`, etc.
 
 7. [ ] `msd_fit` and `msd_subdiff` should compare true MSD to estimate.  Also, should use GLE model.
+
+# Formatting
+
+- [ ] Use roxygen markdown for all documentation.
+
+- [ ] Check all documentation for consistent use of sentence case.
+
+- [ ] Explicitly name all arguments in function calls instead of simply relying on order?
+

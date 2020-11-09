@@ -5,7 +5,7 @@
 #' @param alpha Power law exponent of the fBM process. A scalar between 0 and 2.
 #' @param phi A vector of `p >= 0` autoregressive (AR) coefficients.
 #' @param rho A vector of `q >= 0` moving-average (MA) coefficients (see 'Details').
-#' @template args-dT
+#' @template args-dt
 #' @template args-N
 #' @param m Number of MA coefficients used for approximating the ARMA filter (see **Details**).
 #'
@@ -30,17 +30,17 @@
 #' @importFrom fftw IFFT
 #'
 #' @export
-farma_acf <- function(alpha, phi = numeric(), rho = numeric(), dT, N, m = 30) {
+farma_acf <- function(alpha, phi = numeric(), rho = numeric(), dt, N, m = 30) {
   rho0 <- (1 - sum(rho) - sum(phi))
   if(length(rho) != 0) {
     rho <- rho/rho0
   }
   if(length(phi) == 0) {
     # pure MA filter
-    facf <- fbm_acf(alpha, dT, N+length(rho))
+    facf <- fbm_acf(alpha, dt, N+length(rho))
     acf <- ma_acf(facf, rho = rho)
   } else {
-    facf <- fbm_acf(alpha, dT, N+m)
+    facf <- fbm_acf(alpha, dt, N+m)
     acf <- arma_acf(facf, phi = phi, rho = rho, m = m)
   }
   # scaling

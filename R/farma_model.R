@@ -18,11 +18,11 @@ farma_model <- function(p, q) {
   if(p) farma_theta <- c(farma_theta, paste0("phi", 1:p))
   if(q) farma_theta <- c(farma_theta, paste0("rho", 1:q))
 
-  .farma_acf <- function(theta, dT, N, m = 30) {
+  .farma_acf <- function(theta, dt, N, m = 30) {
     if(!p) {
-      farma_acf(theta[1], numeric(), theta[1+1:q], dT, N, m)
+      farma_acf(theta[1], numeric(), theta[1+1:q], dt, N, m)
     } else {
-      farma_acf(theta[1], theta[1+1:p], theta[1+p+1:q], dT, N, m)
+      farma_acf(theta[1], theta[1+1:p], theta[1+p+1:q], dt, N, m)
     }
   }
 

@@ -1,7 +1,7 @@
 #' Residuals of a Gaussian CSI process.
 #'
 #' @template args-dX
-#' @template args-dT
+#' @template args-dt
 #' @param mu Vector of linear drift in each direction.
 #' @param acf Autocorrelation, a vector of length `nrow(dX)`.
 #' @param Sigma Covariance matrix of size `ncol(dX) x ncol(dX)`.
@@ -20,9 +20,9 @@
 #' @example examples/csi_resid.R
 #'
 #' @export
-csi_resid <- function(dX, dT, mu, acf, Sigma) {
+csi_resid <- function(dX, dt, mu, acf, Sigma) {
   # time decorrelation
-  Z <- t(t(dX) - mu*dT)
+  Z <- t(t(dX) - mu*dt)
   Z <- cholXZ(X = Z, acf = acf)
   # spatial decorrelation
   ed <- eigen(Sigma)

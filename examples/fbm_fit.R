@@ -1,2 +1,2 @@
 # Fit the fBM model
-fbm_fit(dX, dT, Tz, var_calc = TRUE)
+fbm_fit(dX, dt, Tz, var_calc = TRUE)

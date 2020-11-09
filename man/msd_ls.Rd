@@ -37,15 +37,15 @@ For computational efficiency, the MSDs are expected to all be sampled at the sam
 \examples{
 # generates a 2-d series of fBM.
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dT, N)
+acf1 <- fbm_acf(alpha, dt, N)
 dX <- rSnorm(2, acf = acf1)
 Xt <- apply(dX, 2, cumsum)
 # Compute the MSD of Xt
 nlag <- 600
 msd1 <- msd_fit(Xt, nlag = nlag)
 # Least-Square fitting of MSD
-tseq <- 1:nlag * dT
+tseq <- 1:nlag * dt
 msd_ls(msd1, tseq)
 }

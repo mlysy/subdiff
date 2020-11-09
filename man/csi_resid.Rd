@@ -4,12 +4,12 @@
 \alias{csi_resid}
 \title{Residuals of a Gaussian CSI process.}
 \usage{
-csi_resid(dX, dT, mu, acf, Sigma)
+csi_resid(dX, dt, mu, acf, Sigma)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{mu}{Vector of linear drift in each direction.}
 
@@ -37,14 +37,14 @@ The "square roots" correspond to the Cholesky decomposition for the Toeplitz row
 \examples{
 # generating 2-d stationary time series
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dT, N)
+acf1 <- fbm_acf(alpha, dt, N)
 dX <- rSnorm(2, acf = acf1)
 # Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
 mu <- c(1,2)
 Sigma <- diag(2)
 # compute the residuals
-csi_resid(dX, dT, mu, acf1, Sigma)
+csi_resid(dX, dt, mu, acf1, Sigma)
 }

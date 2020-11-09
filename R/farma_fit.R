@@ -3,7 +3,7 @@
 #' Fit a farma(p,q) model to a multi-dimensional CSI process (See **Details**).
 #'
 #' @template args-dX
-#' @template args-dT
+#' @template args-dt
 #' @param order A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.
 #' @template args-Tz
 #' @template args-var_calc
@@ -27,8 +27,8 @@
 #' @example examples/farma_fit.R
 #'
 #' @export
-farma_fit <- function(dX, dT, order, Tz, var_calc = TRUE) {
+farma_fit <- function(dX, dt, order, Tz, var_calc = TRUE) {
   model <- farma_model(order[1], order[2])
-  ans <- csi_fit(model, dX, dT, Tz, var_calc)
+  ans <- csi_fit(model, dX, dt, Tz, var_calc)
   ans
 }

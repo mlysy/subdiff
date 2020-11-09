@@ -4,12 +4,12 @@
 \alias{floc_fit}
 \title{Fit the floc model.}
 \usage{
-floc_fit(dX, dT, Tz, var_calc = TRUE)
+floc_fit(dX, dt, Tz, var_calc = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
 
@@ -46,14 +46,14 @@ Optimization is done by \code{\link[=optimize]{optimize()}}. It works better whe
 \examples{
 # generating 2-d stationary time series
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dT, N)
+acf1 <- fbm_acf(alpha, dt, N)
 dX <- rSnorm(2, acf = acf1)
 # Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
 # Fit the fLOC model
-floc_fit(dX, dT, Tz, var_calc = TRUE)
+floc_fit(dX, dt, Tz, var_calc = TRUE)
 }
 \references{
 Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical journal 88.1 (2005): 623-638.

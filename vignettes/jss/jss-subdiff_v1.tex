@@ -168,7 +168,7 @@ Whereas $\alpha = 1$ corresponds to the MSD of ordinary diffusion observed in Br
 
 \subsection{Empirical MSD and Semiparametric Subdiffusion Estimator}
 
-The \code{hbe} dataset included in \pkg{subdiff} package consists of \code{`r length(unique(hbe[["id"]]))`} 2D trajectories consisting of \code{`r n_rng[1]`-`r n_rng[2]`} observations recorded at a frequency of \code{`r 1/dT`}Hz.  These trajectories are displayed in Figure~\ref{fig:hbe_plot}. 
+The \code{hbe} dataset included in \pkg{subdiff} package consists of \code{`r length(unique(hbe[["id"]]))`} 2D trajectories consisting of \code{`r n_rng[1]`-`r n_rng[2]`} observations recorded at a frequency of \code{`r 1/dt`}Hz.  These trajectories are displayed in Figure~\ref{fig:hbe_plot}. 
 
 Let $\XX = (\rv [0] \XX N)$, $\XX_n = \XX(n \cdot \dt)$ denote recorded positions of a given particle trajectory.  The semi-parametric subdiffusion estimator consists of two steps:
 \begin{enumerate}

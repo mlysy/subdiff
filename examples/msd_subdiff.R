@@ -1,3 +1,3 @@
 # Effective subdiffusion time of MSD
-tseq <- 1:nlag * dT
+tseq <- 1:nlag * dt
 msd_subdiff(msd1, tseq)

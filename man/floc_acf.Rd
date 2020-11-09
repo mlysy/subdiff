@@ -4,16 +4,16 @@
 \alias{floc_acf}
 \title{Calculate the ACF for the fLOC model.}
 \usage{
-floc_acf(alpha, tau, sigma2, dT, N)
+floc_acf(alpha, tau, sigma2, dt, N)
 }
 \arguments{
 \item{alpha}{Power law exponent of fBM process. A scalar between 0 and 2.}
 
-\item{tau}{The ratio between camera shutter open time and interobservation time \code{dT} (see \strong{Details}). A scalar between 0 and 1.}
+\item{tau}{The ratio between camera shutter open time and interobservation time \code{dt} (see \strong{Details}). A scalar between 0 and 1.}
 
 \item{sigma2}{The Magnitude of static errors (see \strong{Details}). A positive scalar.}
 
-\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{N}{Number of observations (positive integer).}
 }
@@ -40,12 +40,12 @@ This function returns the autocovariance function of increments of \eqn{Y[n]}.
 \examples{
 # ACF parameters
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
 tau <- 0.1
 sigma2 <- 0.001
 # ACF of floc model
-floc_acf(alpha, tau, sigma2, dT, N)
+floc_acf(alpha, tau, sigma2, dt, N)
 }
 \references{
 Savin, T., and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.

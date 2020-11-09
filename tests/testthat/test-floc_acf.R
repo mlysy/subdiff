@@ -6,14 +6,14 @@ test_that("floc_acf formula is correct.", {
   replicate(ntest, {
     # parameters
     N <- sample(10:20, 1)
-    dT <- runif(1)
+    dt <- runif(1)
     tau <- 1/sample(5:10, size = 1)
     M <- 50 # resolution
     alpha <- runif(1, 0, 2)
     # simplified formula
-    acf1 <- floc_acf(alpha, tau, 0, dT, N)
+    acf1 <- floc_acf(alpha, tau, 0, dt, N)
     # long formula
-    acf_2 <- fbm_acf(alpha, dT*tau, N*M/tau)
+    acf_2 <- fbm_acf(alpha, dt*tau, N*M/tau)
     trans_mat <- function(N, M, tau) {
       mat <- matrix(0, N, N*M/tau)
       for(ii in 1:N){

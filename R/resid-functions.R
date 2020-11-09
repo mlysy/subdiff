@@ -4,7 +4,7 @@
 #'
 #' @param theta Vector of parameter values on the transformed scale returned by the corresponding `model_fit` procedure (see Details).
 #' @param dX One or two-column matrix of increments.
-#' @param dT Interobservation time.
+#' @param dt Interobservation time.
 #' @return A one or two-column matrix of white noise residuals (see Details).
 #' @details Each of the models provided by the package generates a normal data matrix \eqn{\Delta X} via the linear transformation
 #' \deqn{
@@ -15,20 +15,20 @@
 
 #' @rdname subdiff-resid
 #' @export
-fbm_resid <- function(theta, dX, dT) {
+fbm_resid <- function(theta, dX, dt) {
   qq <- ncol(dX) # problem dimensions
   N <- nrow(dX)
   nq <- if(qq == 1) 1 else 3
   alpha <- itrans_alpha(theta[1]) # parameters
   mu <- theta[1+1:qq]
   Sigma <- itrans_Sigma(theta[qq+1+1:nq])
-  csi_resid(dX, dT, mu, fbm_acf(alpha, dT, N), Sigma)
+  csi_resid(dX, dt, mu, fbm_acf(alpha, dt, N), Sigma)
 }
 
 #' @rdname subdiff-resid
 #' @param order Integer vector of length 2 specifying the number of AR and MA terms respectively.
 #' @export
-farma_resid <- function(theta, dX, dT, order) {
+farma_resid <- function(theta, dX, dt, order) {
   qq <- ncol(dX) # problem dimensions
   N <- nrow(dX)
   nq <- if(qq == 1) 1 else 3
@@ -43,12 +43,12 @@ farma_resid <- function(theta, dX, dT, order) {
   rho <- theta[1+p+1:q]
   mu <- theta[1+p+q+1:qq]
   Sigma <- itrans_Sigma(theta[qq+1+p+q+1:nq])
-  csi_resid(dX, dT, mu, farma_acf(alpha, phi, rho, dT, N), Sigma)
+  csi_resid(dX, dt, mu, farma_acf(alpha, phi, rho, dt, N), Sigma)
 }
 
 #' @rdname subdiff-resid
 #' @export
-floc_resid <- function(theta, dX, dT) {
+floc_resid <- function(theta, dX, dt) {
   qq <- ncol(dX) # problem dimensions
   N <- nrow(dX)
   nq <- if(qq == 1) 1 else 3
@@ -57,12 +57,12 @@ floc_resid <- function(theta, dX, dT) {
   sigma2 <- exp(2*theta[3])
   mu <- theta[3+1:qq]
   Sigma <- itrans_Sigma(theta[qq+3+1:nq])
-  acf1 <- floc_acf(alpha, tau, sigma2, dT, N)
-  res <- csi_resid(dX, dT, mu, acf1, Sigma)
+  acf1 <- floc_acf(alpha, tau, sigma2, dt, N)
+  res <- csi_resid(dX, dt, mu, acf1, Sigma)
   res
 }
 
-# fdl_resid <- function(theta, dX, dT, type = c("fdl", "fdy", "flo")) {
+# fdl_resid <- function(theta, dX, dt, type = c("fdl", "fdy", "flo")) {
 #   qq <- ncol(dX) # problem dimensions
 #   N <- nrow(dX)
 #   nq <- if(qq == 1) 1 else 3
@@ -73,22 +73,22 @@ floc_resid <- function(theta, dX, dT) {
 #     sigma2 <- exp(2*theta[3])
 #     mu <- theta[3+1:qq]
 #     Sigma <- itrans_Sigma(theta[qq+3+1:nq])
-#     acf1 <- fdyn_acf(alpha, tau, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
-#     res <- csi_resid(dX, dT, mu, acf1, Sigma)
+#     acf1 <- fdyn_acf(alpha, tau, dt, N) + sigma2 * c(2, 1, rep(0, N-2))
+#     res <- csi_resid(dX, dt, mu, acf1, Sigma)
 #   } else if(type == "fdy") {
 #     alpha <- itrans_alpha(theta[1]) # parameters
 #     tau <- itrans_tau(theta[2])
 #     mu <- theta[2+1:qq]
 #     Sigma <- itrans_Sigma(theta[qq+2+1:nq])
-#     acf1 <- fdyn_acf(alpha, tau, dT, N)
-#     res <- csi_resid(dX, dT, mu, acf1, Sigma)
+#     acf1 <- fdyn_acf(alpha, tau, dt, N)
+#     res <- csi_resid(dX, dt, mu, acf1, Sigma)
 #   } else if(type == "flo") {
 #     alpha <- itrans_alpha(theta[1]) # parameters
 #     sigma2 <- theta[2]^2
 #     mu <- theta[2+1:qq]
 #     Sigma <- itrans_Sigma(theta[qq+2+1:nq])
-#     acf1 <- fbm_acf(alpha, dT, N) + sigma2 * c(2, 1, rep(0, N-2))
-#     res <- csi_resid(dX, dT, mu, acf1, Sigma)
+#     acf1 <- fbm_acf(alpha, dt, N) + sigma2 * c(2, 1, rep(0, N-2))
+#     res <- csi_resid(dX, dt, mu, acf1, Sigma)
 #   }
 #   res
 # }

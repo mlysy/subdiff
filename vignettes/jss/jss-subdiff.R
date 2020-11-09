@@ -16,7 +16,7 @@ require(kableExtra)
 head(hbe) # data is already part of subdiff package
 npaths <- length(unique(hbe$id)) # number of trajectories
 n_rng <- range(tapply(hbe$id, hbe$id, length)) # range of trajectory lengths
-dT <- 1/60 # interobservation time
+dt <- 1/60 # interobservation time
 
 # plot trajectories and histogram of trajectory lengths
 qplot(x = x, y = y, data = hbe,
@@ -36,8 +36,8 @@ get_vars <- function(data, id, vars) data[data$id == id, vars]
 # calculate empirical MSDs
 ids <- unique(hbe$id)
 nlags <- 500 # number of lags
-dT <- 1/60 # interobservation time
-tseq <- 1:nlags*dT # time sequence
+dt <- 1/60 # interobservation time
+tseq <- 1:nlags*dt # time sequence
 msd_hat <- sapply(ids, function(id) {
   Xt <- get_vars(data = hbe, id = id, vars = c("x", "y"))
   cbind(id = id, t = tseq, msd = msd_fit(Xt = Xt, nlag = nlags))
@@ -94,7 +94,7 @@ mu <- c(.025, -.025) # drift coefficients
 Sigma <- cbind(c(.1,.05), c(.05,.1)) # scale matrix
 
 N <- 1800 # number of observations
-dT <- 1/60 # interobservation time
+dt <- 1/60 # interobservation time
 
 # simulate an fBM trajectory
 
@@ -102,7 +102,7 @@ dT <- 1/60 # interobservation time
 fbm_cov <- function(t, s, alpha) {
   .5 * (abs(t)^alpha + abs(s)^alpha - abs(t-s)^alpha)
 }
-tseq <- (1:N)*dT # sequence of time points excluding t = 0
+tseq <- (1:N)*dt # sequence of time points excluding t = 0
 V <- outer(tseq, tseq, fbm_cov, alpha = alpha) # temporal variance matrix
 
 # step 2: simulate fbm
@@ -116,11 +116,11 @@ system.time({
 
 # simulate fbm trajectory efficiently
 system.time({
-  acf <- fbm_acf(alpha, dT = dT, N = N) # increment autocorrelation
+  acf <- fbm_acf(alpha, dt = dt, N = N) # increment autocorrelation
   # generate temporally correlated increments
   dX <- SuperGauss::rSnorm(n = 2, acf = acf)
   dX <- dX %*% chol(Sigma) # spatial correlations
-  dX <- dX + rep(dT, N) %o% mu # drift
+  dX <- dX + rep(dt, N) %o% mu # drift
   Xt <- apply(dX, 2, cumsum) # convert increments to positions
   Xt <- cbind(0, Xt) # add first observations
 })
@@ -137,7 +137,7 @@ Yn <- Xt + Eps # recorded positions are signal + noise
 #--- fit fBM to all trajectories in a given data frame -------------------------
 
 ids <- unique(hbe$id) # trajectory labels
-dT <- 1/60 # interobservation time
+dt <- 1/60 # interobservation time
 
 # create a function to fit the MLE for dataset id
 # FIXME: should wrap fbm_fit in a try-catch block
@@ -150,7 +150,7 @@ fbm_mle <- function(id) {
   N <- nrow(dX) # number of increments
   # external memory allocation (to speed up calculations)
   Tz <- SuperGauss::Toeplitz(n = N)
-  fbm_fit(dX = dX, dT = dT, Tz = Tz, var_calc = TRUE)
+  fbm_fit(dX = dX, dt = dt, Tz = Tz, var_calc = TRUE)
 }
 
 parallel::detectCores() # detect number of cores
@@ -165,7 +165,7 @@ parallel::clusterEvalQ(cl = parclust, expr = {
 })
 # add required global variables to cluster
 parallel::clusterExport(cl = parclust,
-                        varlist = c("get_vars", "hbe", "dT"))
+                        varlist = c("get_vars", "hbe", "dt"))
 
 # fit MLE to each dataset in parallel
 system.time({

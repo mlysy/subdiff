@@ -4,7 +4,7 @@
 #'
 #' @param model An list of class `csi_class` (see [fbm_model()], [floc_model()], [farma_model()]).
 #' @template args-dX
-#' @template args-dT
+#' @template args-dt
 #' @template args-Tz
 #' @template args-var_calc
 #' @template ret-cov_vcov
@@ -25,7 +25,7 @@
 #' @example examples/csi_fit.R
 #'
 #' @export
-csi_fit <- function(model, dX, dT, Tz, var_calc) {
+csi_fit <- function(model, dX, dt, Tz, var_calc) {
   # problem dimensions
   N <- nrow(dX)
   qq <- ncol(dX)
@@ -45,10 +45,10 @@ csi_fit <- function(model, dX, dT, Tz, var_calc) {
     # convert theta into original scale
     theta <- model$theta_itrans(gamma)
     # ACF
-    acf1 <- model$acf(theta, dT, N)
+    acf1 <- model$acf(theta, dt, N)
     Tz$set_acf(acf1)
     # profile likelihood
-    suff <- lmn_suff(Y = dX, X = dT, V = Tz, Vtype = "acf")
+    suff <- lmn_suff(Y = dX, X = dt, V = Tz, Vtype = "acf")
     nlp <- -lmn_prof(suff)
     # penalty
     nlp <- nlp + model$penalty(gamma)
@@ -65,11 +65,11 @@ csi_fit <- function(model, dX, dT, Tz, var_calc) {
   }
 
   # ACF
-  acf1 <- model$acf(model$theta_itrans(theta_hat[1:ntheta]), dT, N)
+  acf1 <- model$acf(model$theta_itrans(theta_hat[1:ntheta]), dt, N)
   Tz$set_acf(acf1)
 
   # profile likelihood
-  suff <- lmn_suff(Y = dX, X = dT, V = Tz, Vtype = "acf")
+  suff <- lmn_suff(Y = dX, X = dt, V = Tz, Vtype = "acf")
   theta_hat[ntheta+1:qq] <- suff$Bhat
   theta_hat[ntheta+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   ans <- theta_hat
@@ -80,9 +80,9 @@ csi_fit <- function(model, dX, dT, Tz, var_calc) {
       theta <- model$theta_itrans(gamma[1:ntheta])
       mu <- gamma[ntheta+1:qq]
       Sigma <- itrans_Sigma(gamma[ntheta+qq+1:nq])
-      acf1 <- model$acf(theta, dT, N)
+      acf1 <- model$acf(theta, dt, N)
       Tz$set_acf(acf1)
-      suff <- lmn_suff(Y = dX, X = dT, V = Tz, Vtype = "acf")
+      suff <- lmn_suff(Y = dX, X = dt, V = Tz, Vtype = "acf")
       nlp <- -lmn_loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
       nlp
     }

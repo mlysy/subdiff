@@ -61,7 +61,7 @@ mod <- fsd_model(dX, dt, tau = 0) # savin-doyle model, pure static error
 #'
 #' A number of members and methods in `csi_model` will need to be set by the derived model class:
 #'
-#' - `p`: The number of basis functions in the drift term.  E.g., for linear drift this is $p = 1$ and for quadratic drift this is $p = 2$.
+#' - `n_drift`: The number of basis functions in the drift term.  E.g., for linear drift this is `n_drift = 1` and for quadratic drift this is `n_drift = 2`.
 #' - `phi_names`: The names of the MSD and drift parameters in the original basis.
 #' - `n_phi`: The dimension of $\pph$.  This is automatically determined from `phi_names`.
 #' - `trans`/`itrans`: `psi = trans(phi)` and `phi = itrans(psi)`.
@@ -124,8 +124,8 @@ csi_model <- R6Class(
     dX_ = NULL, # internal increments.
     dt_ = NULL, # internal interobservation time.
     N_ = NULL, # internal number of increments.
-    q_ = NULL, # internal number of dimensions.
-    p_ = NULL, # internal number of drift basis coefficients.
+    n_dims = NULL, # internal number of dimensions.
+    n_drift = NULL, # internal number of drift basis coefficients.
     n_phi = NULL, # internal number of drift + acf parameters.
 
     #' Toeplitz matrix object.
@@ -157,7 +157,7 @@ csi_model <- R6Class(
         if(nrow(value) != private$N_) {
           # reallocate Toeplitz matrix
           private$N_ <- nrow(value)
-          priviate$q_ <- ncol(value)
+          priviate$n_dims <- ncol(value)
           private$Tz_ <- Toeplitz$new(N = private$N_)
         }
         private$dX_ <- value
@@ -201,13 +201,13 @@ csi_model <- R6Class(
     #' @return List with elements `phi`, `mu`, and `Sigma`.
     itrans_full = function(eta) {
       n_phi <- private$n_phi
-      p_ <- private$p_
-      q_ <- private$q_
+      n_drift <- private$n_drift
+      n_dims <- private$n_dims
       # number of parameters in the log-cholesky factor
-      n_chol <- q_ * (q_+1) / 2
+      n_chol <- n_dims * (n_dims+1) / 2
       phi <- self$itrans(eta[1:n_phi])
-      mu <- matrix(eta[n_phi + 1:(p_*q_)], p_, q_)
-      Sigma <- itrans_Sigma(eta[n_phi + p_*q_ + 1:n_chol])
+      mu <- matrix(eta[n_phi + 1:(n_drift*n_dims)], n_drift, n_dims)
+      Sigma <- itrans_Sigma(eta[n_phi + n_drift*n_dims + 1:n_chol])
       list(phi = phi, mu = mu, Sigma = Sigma)
     },
 
@@ -265,21 +265,21 @@ csi_model <- R6Class(
       # get drift
       if(drift == "linear") {
         self$drift <- drift_linear
-        private$p_ <- 1
+        private$n_drift <- 1
       } else if(self$drift == "none") {
         self$drift <- drift_none
-        private$p_ <- 0
+        private$n_drift <- 0
       } else if(self$drift == "quadratic") {
         self$drift <- drift_quadratic
-        private$p_ <- 2
+        private$n_drift <- 2
       } else {
         check_drift(drift)
         self$drift <- drift
-        private$p_ <- n_drift
+        private$n_drift <- n_drift
         ## # determine number of drift coefficients
         ## dr <- self$drift(phi = self$itrans(psi = rep(0, private$n_phi)),
         ##                  N = 2, dt = 1)
-        ## private$p_ <- ncol(as.matrix(dr))
+        ## private$n_drift <- ncol(as.matrix(dr))
       }
       if(is.na(self$phi_names)) stop("`self$phi_names` has not been set.")
       private$n_phi <- length(self$phi_names)
@@ -324,7 +324,7 @@ farma_model <- R6Class(
   private = list(
     #' Obtain the `p` and `q` parameters.
     #'
-    #' Gives an error if these are not formatted correctly
+    #' Gives an error if these are not formatted correctly.
     get_pq = function(p, q) {
       if(missing(p)) p <- 0
       if((p - as.integer(p) != 0) && p < 0) {

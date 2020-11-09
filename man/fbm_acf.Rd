@@ -4,12 +4,12 @@
 \alias{fbm_acf}
 \title{Calculate the ACF for the fBM model.}
 \usage{
-fbm_acf(alpha, dT, N)
+fbm_acf(alpha, dt, N)
 }
 \arguments{
 \item{alpha}{Power law exponent. A scalar between 0 and 2.}
 
-\item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{N}{Number of observations (positive integer).}
 }
@@ -24,7 +24,7 @@ The autocovariance of fBM increments at lag \eqn{h} is given by
 \deqn{
 \textrm{acf}(h) = \Delta t^\alpha/2 \times \left(|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha\right).
 }{
-acf(h) = \Delta t^\alpha/2 * (|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha). 
+acf(h) = \Delta t^\alpha/2 * (|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha).
 }
 
 This function returns the autocovariance function of increments of fBM process.
@@ -32,8 +32,8 @@ This function returns the autocovariance function of increments of fBM process.
 \examples{
 # ACF parameters
 alpha <- 0.8
-dT <- 1/60
+dt <- 1/60
 N <- 1800
 # ACF of fBM model
-fbm_acf(alpha, dT, N)
+fbm_acf(alpha, dt, N)
 }

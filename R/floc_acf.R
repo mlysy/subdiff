@@ -3,9 +3,9 @@
 #' Compute the autocovariance for the increments of Savin & Doyle's localization model with fBM process (see **Details**).
 #'
 #' @param alpha Power law exponent of fBM process. A scalar between 0 and 2.
-#' @param tau The ratio between camera shutter open time and interobservation time `dT` (see **Details**). A scalar between 0 and 1.
+#' @param tau The ratio between camera shutter open time and interobservation time `dt` (see **Details**). A scalar between 0 and 1.
 #' @param sigma2 The Magnitude of static errors (see **Details**). A positive scalar.
-#' @template args-dT
+#' @template args-dt
 #' @template args-N
 #'
 #' @template ret-acf
@@ -29,11 +29,11 @@
 #' @example examples/floc_acf.R
 #'
 #' @export
-floc_acf <- function(alpha, tau, sigma2, dT, N) {
+floc_acf <- function(alpha, tau, sigma2, dt, N) {
   if(!tau) {
-    acf1 <- fbm_acf(alpha, dT, N)
+    acf1 <- fbm_acf(alpha, dt, N)
   } else {
-    vec <- .g_func(alpha, tau, dT, N)
+    vec <- .g_func(alpha, tau, dt, N)
     if(N == 1) {
       acf1 <- 2 * vec[2] - 2 * vec[1]
     } else {
@@ -44,10 +44,10 @@ floc_acf <- function(alpha, tau, sigma2, dT, N) {
   acf1
 }
 
-.g_func <- function(alpha, tau, dT, N) {
+.g_func <- function(alpha, tau, dt, N) {
   vec <- (0:N) / tau
   alpha2 <- alpha + 2
   ans <- (vec + 1)^alpha2 + abs(vec - 1)^alpha2 - 2 * vec^alpha2
-  ans * (tau * dT)^alpha / (alpha+1) / alpha2 / 2
+  ans * (tau * dt)^alpha / (alpha+1) / alpha2 / 2
 }
 

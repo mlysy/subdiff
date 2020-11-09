@@ -1,20 +1,20 @@
 #' Constructor of fLOC model object.
-#' 
+#'
 #' @details Constructor function that generates a list of floc model for purpose of fitting.
 #' @template ret-csi_class
-#' 
+#'
 #' @example examples/floc_model.R
-#' 
+#'
 #' @export
 floc_model <- function() {
   # parameter name
   floc_theta <- c("alpha", "tau", "sigma2")
-  
+
   # ACF function
-  .floc_acf <- function(theta, dT, N) {
-    floc_acf(theta[1], theta[2], theta[3], dT, N)
+  .floc_acf <- function(theta, dt, N) {
+    floc_acf(theta[1], theta[2], theta[3], dt, N)
   }
-  
+
   # transformation, from original scale (theta) to unrestricted scale (gamma)
   floc_trans <- function(theta) {
     gamma <- theta
@@ -26,7 +26,7 @@ floc_model <- function() {
     gamma[3] <- log(theta[3])
     gamma
   }
-  
+
   # inverse transformation, from unrestricted scale (gamma) to original scale (theta)
   floc_itrans <- function(gamma) {
     theta <- gamma
@@ -38,12 +38,12 @@ floc_model <- function() {
     theta[3] <- exp(gamma[3])
     theta
   }
-  
+
   # penalty function on transformed scale
   floc_penalty <- function(gamma) {
     log1pe(gamma[2]) + log1pe(-gamma[2]) - gamma[3]
   }
-  
+
   # plug-in values
   # floc_plugin <- names_plugin <- NULL
   # if(!missing(tau)) {
@@ -55,12 +55,12 @@ floc_model <- function() {
   #   names_plugin <- c(names_plugin, "sigma2")
   # }
   # names(floc_plugin) <- names_plugin
-  
+
   model <- list(theta_names = floc_theta,
                 acf = .floc_acf,
                 theta_trans = floc_trans,
                 theta_itrans = floc_itrans,
                 penalty = floc_penalty)
-  class(model) <- "csi_model"  
+  class(model) <- "csi_model"
   model
 }

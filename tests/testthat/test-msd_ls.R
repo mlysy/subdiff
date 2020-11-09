@@ -35,8 +35,8 @@ test_that("msd_ls pools estimators properly", {
     D <- rexp(1)
     ntimes <- sample(10:2000, 1)
     npaths <- sample(10:20, 1)
-    dT <- runif(1)
-    tseq <- (1:ntimes) * dT
+    dt <- runif(1)
+    tseq <- (1:ntimes) * dt
     msd <- exp(log(D) + alpha * log(tseq) +
                matrix(rnorm(ntimes*npaths), ntimes, npaths))
     # add NA's

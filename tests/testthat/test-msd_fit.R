@@ -8,11 +8,11 @@ test_that("msd calculation in C++ matches that of R", {
   for(ii in 1:ntest) {
     # simulate data
     N <- sample(1000:2000, 1)
-    dT <- runif(1)
+    dt <- runif(1)
     alpha <- runif(1, 0, 2)
     ndims <- test_cases$ndims[ii]
     dX <- as.matrix(rnormtz(n = ndims,
-                            acf = fbm_acf(alpha, dT, N-1)))
+                            acf = fbm_acf(alpha, dt, N-1)))
     Xt <- apply(rbind(0, dX), 2, cumsum)
     # calculate msd
     nlag <- sample(nrow(Xt), 1)

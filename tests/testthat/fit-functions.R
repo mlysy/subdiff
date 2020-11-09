@@ -35,21 +35,21 @@ log1pexp <- function(x) {
 ##   log(x) - log(1-x)
 ## }
 
-farma_acf2 <- function(alpha, phi, rho, dT, N, m = 30) {
+farma_acf2 <- function(alpha, phi, rho, dt, N, m = 30) {
   # ACF of fbm process (internal)
-  .fbm_acf <- function(alpha, dT, N) {
+  .fbm_acf <- function(alpha, dt, N) {
     if(N == 1) {
-      acf <- dT^alpha
+      acf <- dt^alpha
     } else {
-      acf <- (dT*(0:N))^alpha
+      acf <- (dt*(0:N))^alpha
       acf <- .5 * (acf[1:N+1] + c(acf[2], acf[1:(N-1)]) - 2*acf[1:N])
     }
     acf
   }
   # ACF of unparametrized moving-average model with fBM noises.
-  .fma_acf <- function(alpha, rho, dT, N) {
+  .fma_acf <- function(alpha, rho, dt, N) {
     nlag <- length(rho)
-    acf1 <- .fbm_acf(alpha, dT, N+nlag)
+    acf1 <- .fbm_acf(alpha, dt, N+nlag)
     if(nlag == 1) {
       acf2 <- rho^2 * acf1[1:N]
     } else if(nlag == 2) {
@@ -78,9 +78,9 @@ farma_acf2 <- function(alpha, phi, rho, dT, N, m = 30) {
   }
   # now farma
   if(!phi) {
-    acf2 <- .fma_acf(alpha, c(1-sum(rho), rho), dT, N)
+    acf2 <- .fma_acf(alpha, c(1-sum(rho), rho), dt, N)
   } else {
-    acf1 <- .fma_acf(alpha, c(1-sum(phi)-sum(rho), rho), dT, N+m+1)
+    acf1 <- .fma_acf(alpha, c(1-sum(phi)-sum(rho), rho), dt, N+m+1)
     acf2 <- .ar1_acf(acf1, phi, N, m)
   }
   acf2
