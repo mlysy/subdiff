@@ -21,12 +21,12 @@ loglik_loc <- function(theta, dX, dT, Tz) {
   ll
 }
 
-ntest <- 10
+ntest <- 1
 test_that("MLE is at the mode of the projection plots, dynamic and localization.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
   require(optimCheck)
-  replicate(n = ntest, {
+  for(ii in 1:ntest) {
     # simulate data
     N <- sample(1000:2000, 1)
     dT <- runif(1)
@@ -46,7 +46,7 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
                          plot = F, xrng = .1, npts = 20, equalize = FALSE)
 
     expect_lt(max_xdiff(ocheck), .05)
-  })
+  }
 })
 
 # # fdy loglikelihood

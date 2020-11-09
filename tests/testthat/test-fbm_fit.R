@@ -16,12 +16,12 @@ loglik <- function(theta, dX, dT, Tz) {
   lmn_loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
 }
 
-ntest <- 10
+ntest <- 1
 test_that("MLE is at the mode of the projection plots.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
   require(optimCheck)
-  replicate(n = ntest, {
+  for(ii in 1:ntest) {
     # simulate data
     N <- sample(1000:2000, 1)
     dT <- runif(1)
@@ -36,5 +36,5 @@ test_that("MLE is at the mode of the projection plots.", {
                          fun = function(theta) loglik(theta, dX, dT, Tz),
                          plot = FALSE, xrng = .05, npts = 20)
     expect_lt(max_xdiff(ocheck), .01)
-  })
+  }
 })

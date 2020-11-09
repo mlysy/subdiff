@@ -12,7 +12,7 @@ Depends: R (>= 2.10), LMN, SuperGauss
 Imports: Rcpp (>= 0.12.12), numDeriv, fftw, stats
 LinkingTo: Rcpp
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Encoding: UTF-8
 Suggests: 
     testthat,

@@ -1,3 +1,4 @@
+require(fftw)
 
 # dimension of covariacne matrix
 getq <- function(ndims) if(ndims == 1) 1 else 3
@@ -33,3 +34,55 @@ log1pexp <- function(x) {
 ##   x <- (x - min) / (max - min)
 ##   log(x) - log(1-x)
 ## }
+
+farma_acf2 <- function(alpha, phi, rho, dT, N, m = 30) {
+  # ACF of fbm process (internal)
+  .fbm_acf <- function(alpha, dT, N) {
+    if(N == 1) {
+      acf <- dT^alpha
+    } else {
+      acf <- (dT*(0:N))^alpha
+      acf <- .5 * (acf[1:N+1] + c(acf[2], acf[1:(N-1)]) - 2*acf[1:N])
+    }
+    acf
+  }
+  # ACF of unparametrized moving-average model with fBM noises.
+  .fma_acf <- function(alpha, rho, dT, N) {
+    nlag <- length(rho)
+    acf1 <- .fbm_acf(alpha, dT, N+nlag)
+    if(nlag == 1) {
+      acf2 <- rho^2 * acf1[1:N]
+    } else if(nlag == 2) {
+      acf2 <- sum(rho^2)*acf1[1:N] + (rho[1]*rho[2])*(acf1[c(2,2:N-1)]+acf1[1:N+1])
+    } else if(nlag == 3) {
+      acf2 <- sum(rho^2)*acf1[1:N] +
+        (rho[1]*rho[2]+rho[2]*rho[3])*(acf1[c(2,2:N-1)]+acf1[1:N+1]) +
+        (rho[1]*rho[3])*(acf1[c(3,2,3:N-2)]+acf1[1:N+2])
+    } else {
+      a <- c(rho[1], rep(0, N), rev(rho[-1]))
+      b <- c(acf1, rev(acf1[2:nlag]))
+      c <- c(rho, rep(0, N+nlag-1))
+      k1 <- Re(IFFT(FFT(b)*FFT(c)))[1:(N+nlag)]
+      acf2 <- Re(IFFT(FFT(a)*FFT(k1)))[1:N]
+    }
+    acf2
+  }
+  # ACF of un-parametrizd far(1)
+  .ar1_acf <- function(acf1, phi, N, m) {
+    a <- c(1, rep(0, N), phi^(m:1))
+    b <- c(acf1, rev(acf1[1:m+1]))
+    c <- c(phi^(0:m), rep(0, N+m))
+    k1 <- Re(IFFT(FFT(b)*FFT(c)))[1:(N+m+1)]
+    acf2 <- Re(IFFT(FFT(a)*FFT(k1)))[1:N]
+    acf2
+  }
+  # now farma
+  if(!phi) {
+    acf2 <- .fma_acf(alpha, c(1-sum(rho), rho), dT, N)
+  } else {
+    acf1 <- .fma_acf(alpha, c(1-sum(phi)-sum(rho), rho), dT, N+m+1)
+    acf2 <- .ar1_acf(acf1, phi, N, m)
+  }
+  acf2
+}
+

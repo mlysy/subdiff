@@ -65,8 +65,17 @@ mod <- fsd_model(dX, dt, tau = 0) # savin-doyle model, pure static error
 #' - `phi_names`: The names of the MSD and drift parameters in the original basis.
 #' - `n_phi`: The dimension of $\pph$.  This is automatically determined from `phi_names`.
 #' - `trans`/`itrans`: `psi = trans(phi)` and `phi = itrans(psi)`.
-
-
+#' - `acf(theta, dt, N)`: The increment autocorrelation function in the original basis $\tth$.
+#' - `drift(theta, dt, N)`: An optional function specifying the drift on the increment scale.  Thus, linear drift for the trajectory is constant drift for the increments.
+#'
+#' ## Drift Specification
+#'
+#' As long as the drift is one of the preset values `none`, `linear`, or `quadratic`, it can be easily specified by the constructor and changed after instantiation, because these methods automatically determine the number of drift parameters `p`.  If a custom drift is used, then not only does it need to specify `p`, but also any additional drift parameters must be added to the acf function as well, such that `n_phi`, `phi_names`, etc. must also be changed.
+#'
+#' So, it seems that adding a custom drift after instantiation potentially requires changing many members and methods.  So it's probably best not to provide this functionality to users.  If they have a custom drift in mind, they can supply it to the constructor.
+#'
+#' In this sense, perhaps the base class constructor can have a drift and a `p` argument.  The latter is ignored when drift is one of the default options, but required when drift is a custom function.  Or, the transformed parameter `psi = rep(0, n_phi)` is expected to be valid, in which case a drift evaluation will determine `p`.
+#'
 #' ## Other Methods
 
 #+ methods
@@ -89,6 +98,7 @@ mod$itrans_full(eta) # returns list
 mod$nlp(psi) # computational parametrization
 mod$nlp_grad(psi) # if applicable
 mod$fisher(eta) # observed fisher information
+mod$fit(psi0, vcov = TRUE) # default fitting function???
 
 # model residuals
 mod$resid(phi, mu, Sigma) # wrapper to csi_resid()
@@ -168,12 +178,12 @@ csi_model <- R6Class(
   ),
 
   public = list(
-    #' Methods and members to be defined by the derived class
+    #' Methods and members to be defined by the derived class.
     trans = NULL,
     itrans = NULL,
     acf = NULL,
     drift = NULL,
-    phi_names = NULL,
+    phi_names = NA, # setting to NULL means n_phi = 0
 
     #' Convert from original to computational basis.
     #'
@@ -244,9 +254,12 @@ csi_model <- R6Class(
     #' @param dX Trajectory increments.
     #' @param dt Interobservation time.
     #' @param drift Drift specification.  Either one of the strings "none", "linear", "quadratric", or a function with signature `function(phi, dt, N)`.
+    #' @param n_drift Integer number of drift terms.  Ignored if `drift` is one of the default strings.  Required otherwise.
     #'
-    #' @details Probably worth checking whether model object is valid at construction time.
-    initialize = function(dX, dt, drift = "linear") {
+    #' @details
+    #' - Is it worth checking whether model object is valid at construction time?
+    #' - `n_phi` is automatically determined from `phi_names`.  But this means the latter must be set by `derived$initialize()` before `super$initialize()` is called.  Should an error be raised if it is not?
+    initialize = function(dX, dt, drift = "linear", n_drift) {
       if(!missing(dX)) self$dX <- dX
       self$dt <- dt
       # get drift
@@ -262,11 +275,13 @@ csi_model <- R6Class(
       } else {
         check_drift(drift)
         self$drift <- drift
+        private$p_ <- n_drift
         ## # determine number of drift coefficients
         ## dr <- self$drift(phi = self$itrans(psi = rep(0, private$n_phi)),
         ##                  N = 2, dt = 1)
         ## private$p_ <- ncol(as.matrix(dr))
       }
+      if(is.na(self$phi_names)) stop("`self$phi_names` has not been set.")
       private$n_phi <- length(self$phi_names)
     }
   )
@@ -337,7 +352,7 @@ farma_model <- R6Class(
       phi
     },
 
-    initialize = function(dX, dt, p, q, drift = "linear", m = 30) {
+    initialize = function(dX, dt, p, q, m = 30, drift = "linear", n_drift) {
       pq <- private$get_pq(p, q)
       p <- pq["p"]
       q <- pq["q"]
@@ -362,11 +377,8 @@ farma_model <- R6Class(
       self$acf <- function(phi, dt, N) {
         farma_acf(alpha = phi[1], phi[1+1:p], phi[1+p+1:q], dt, N, m = m)
       }
-      # this will set self$drift and private$p_
-      super$initialize(dX, dt, drift = function(phi, dt, N) {
-        farma_
-      })
-      # now fix the drift term
+      super$initialize(dX = dX, dt = dt, drift = drift, n_drift = n_drift)
+      ## FIXME: modify the drift term
     }
   )
 )

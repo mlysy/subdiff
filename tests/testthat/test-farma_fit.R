@@ -18,7 +18,7 @@ loglik_11 <- function(theta, dX, dT, Tz) {
   lmn_loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
 }
 
-ntest <- 10
+ntest <- 1
 test_that("MLE is at the mode of the projection plots.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")
@@ -55,12 +55,12 @@ loglik_01 <- function(theta, dX, dT, Tz) {
   rho <- ilogit(theta[2], min = -1, max = 1)
   mu <- theta[2+1:nd]
   Sigma <- itrans_Sigma(theta[2+nd+1:nq]) # default: log(D)
-  Tz$set_acf(farma_acf(alpha, 0, rho, dT, N))
+  Tz$set_acf(farma_acf(alpha, numeric(), rho, dT, N))
   suff <- lmn_suff(Y = dX, X = dT, V = Tz, Vtype = "acf")
   lmn_loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
 }
 
-ntest <- 10
+ntest <- 1
 test_that("MLE is at the mode of the projection plots.", {
   skip_if_not(requireNamespace("optimCheck", quietly = TRUE),
               "Package \"optimCheck\" required to run this test.")

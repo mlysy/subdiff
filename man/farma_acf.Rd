@@ -4,20 +4,20 @@
 \alias{farma_acf}
 \title{Calculate the ACF for the farma model.}
 \usage{
-farma_acf(alpha, phi, rho, dT, N, m = 30)
+farma_acf(alpha, phi = numeric(), rho = numeric(), dT, N, m = 30)
 }
 \arguments{
 \item{alpha}{Power law exponent of the fBM process. A scalar between 0 and 2.}
 
-\item{phi}{A vector of autoregressive (AR) coefficients.}
+\item{phi}{A vector of \code{p >= 0} autoregressive (AR) coefficients.}
 
-\item{rho}{A vector of moving-average (MA) coefficients.}
+\item{rho}{A vector of \code{q >= 0} moving-average (MA) coefficients (see 'Details').}
 
 \item{dT}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{N}{Number of observations (positive integer).}
 
-\item{m}{Number of MA coefficients used for approximating AR coefficients (see \strong{Details}).}
+\item{m}{Number of MA coefficients used for approximating the ARMA filter (see \strong{Details}).}
 }
 \value{
 A vector of \code{N} autocorrelation values.
@@ -32,11 +32,9 @@ Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
 }{
 Y[n] = \phi_1 Y[n-1] + ... + \phi_p Y[n-p] + \rho_0 X[n] + ... + \rho_q X[n-q]
 }
-where residuals \eqn{X[n]} follow the fBM process with parameter \code{alpha} (See \code{\link[=fbm_acf]{fbm_acf()}}).
+where residuals \eqn{X[n]} follow the fBM process with parameter \code{alpha} (see \code{\link[=fbm_acf]{fbm_acf()}}), and \code{rho_0 = 1 - sum(phi) - sum(rho)}.
 
-This function returns the autocovariance of stationary increment process \eqn{\Delta Y[n] = Y[n] - Y[n-1]}.
-
-In this function, the autoregressive terms are approximated with \code{m} moving-average terms, as described in Ling et al (2019).
+This function returns the autocovariance of stationary increment process \eqn{\Delta Y[n] = Y[n] - Y[n-1]}.  The \code{ARMA(p,q)} filter is approximated with \code{m} moving-average terms using the method of Brockwell & Davis (1991).
 }
 \examples{
 # ACF parameters

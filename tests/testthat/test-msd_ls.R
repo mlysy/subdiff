@@ -1,10 +1,9 @@
 
 context("msd_ls")
 
-
 test_that(".weighted_ls is equivalent to lm with 'weights'", {
-  ntest <- 50
-  replicate(ntest, {
+  ntest <- 2
+  for(ii in 1:ntest) {
     # simulate data
     alpha <- runif(1, 0, 2)
     D <- rexp(1)
@@ -20,15 +19,17 @@ test_that(".weighted_ls is equivalent to lm with 'weights'", {
     # custom method
     theta_w <- .weighted_ls(yy, xx, ww/sum(ww))
     expect_equal(theta_lm, theta_w)
-  })
+  }
 })
 
 test_that("msd_ls pools estimators properly", {
-  ntest <- 50
-  replicate(ntest, {
+  test_cases <- expand.grid(logw = c(TRUE, FALSE),
+                            pooled = c(TRUE, FALSE))
+  ntest <- nrow(test_cases)
+  for(ii in 1:ntest) {
     # msd conditions
-    logw <- sample(c(TRUE, FALSE), 1)
-    pooled <- sample(c(TRUE, FALSE), 1)
+    logw <- test_cases$logw[ii]
+    pooled <- test_cases$pooled[ii]
     # simulate data
     alpha <- runif(1, 0, 2)
     D <- rexp(1)
@@ -58,5 +59,5 @@ test_that("msd_ls pools estimators properly", {
       aD_lm <-  rbind(alpha = aD_lm[2,], D = exp(aD_lm[1,]))
     }
     expect_equal(aD_ls, aD_lm)
-  })
+  }
 })

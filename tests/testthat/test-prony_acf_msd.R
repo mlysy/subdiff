@@ -6,7 +6,7 @@ context("Prony-GLE ACF and MSD")
 ##   c(abs = max(abs(x1-x2)), rel = max(abs(x1-x2)/max(abs(x1), 1e-8)))
 ## }
 
-ntest <- 20
+ntest <- 1
 test_that("MSD => ACF", {
   for(ii in 1:ntest) {
     Temp <- runif(1, 290, 300)
