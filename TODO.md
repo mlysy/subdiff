@@ -22,3 +22,6 @@
 
 - [ ] Explicitly name all arguments in function calls instead of simply relying on order?
 
+- [ ] Format references to `@details` section as e.g., `(see 'Details')`.  The point is that Details should be between single quotes as opposed to double-stars (i.e., bold).  Same for referring to other sections.
+
+- [ ] Examples for `csi_model`, `fbm_model`, etc.

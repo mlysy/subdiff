@@ -3,9 +3,6 @@
 \name{fbm_model}
 \alias{fbm_model}
 \title{Constructor of fBM model object.}
-\usage{
-fbm_model()
-}
 \value{
 An list of class \code{csi_class} with components:
 \describe{
@@ -23,8 +20,113 @@ Constructor of fBM model object.
 Constructor function that generates a list of fBM model for purpose of fitting.
 }
 \examples{
-# generate a fBM model object
-model <- fbm_model()
-# we can modify the elements of generated object
-model$theta_names <- "gamma"
+# --- FIXME ---
+## # generate a fBM model object
+## model <- fbm_model()
+## # we can modify the elements of generated object
+## model$theta_names <- "gamma"
+
+}
+\section{Super class}{
+\code{\link[subdiff:csi_model]{subdiff::csi_model}} -> \code{fbm_model}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{phi_names}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-acf}{\code{fbm_model$acf()}}
+\item \href{#method-trans}{\code{fbm_model$trans()}}
+\item \href{#method-itrans}{\code{fbm_model$itrans()}}
+\item \href{#method-clone}{\code{fbm_model$clone()}}
+}
+}
+\if{html}{
+\out{<details ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="drift">}\href{../../subdiff/html/csi_model.html#method-drift}{\code{subdiff::csi_model$drift()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fisher">}\href{../../subdiff/html/csi_model.html#method-fisher}{\code{subdiff::csi_model$fisher()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fit">}\href{../../subdiff/html/csi_model.html#method-fit}{\code{subdiff::csi_model$fit()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="initialize">}\href{../../subdiff/html/csi_model.html#method-initialize}{\code{subdiff::csi_model$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="itrans_full">}\href{../../subdiff/html/csi_model.html#method-itrans_full}{\code{subdiff::csi_model$itrans_full()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="loglik">}\href{../../subdiff/html/csi_model.html#method-loglik}{\code{subdiff::csi_model$loglik()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="muSigma_hat">}\href{../../subdiff/html/csi_model.html#method-muSigma_hat}{\code{subdiff::csi_model$muSigma_hat()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nlp">}\href{../../subdiff/html/csi_model.html#method-nlp}{\code{subdiff::csi_model$nlp()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="trans_full">}\href{../../subdiff/html/csi_model.html#method-trans_full}{\code{subdiff::csi_model$trans_full()}}\out{</span>}
+}
+\out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-acf"></a>}}
+\if{latex}{\out{\hypertarget{method-acf}{}}}
+\subsection{Method \code{acf()}}{
+Increment autocorrelation function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fbm_model$acf(phi, dt, N)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{phi, dt, N}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-trans"></a>}}
+\if{latex}{\out{\hypertarget{method-trans}{}}}
+\subsection{Method \code{trans()}}{
+Transform kernel parameters from regular to computational basis.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fbm_model$trans(phi)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{phi}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-itrans"></a>}}
+\if{latex}{\out{\hypertarget{method-itrans}{}}}
+\subsection{Method \code{itrans()}}{
+Transform kernel parameters from computational to regular basis.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fbm_model$itrans(psi)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{psi}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fbm_model$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
 }

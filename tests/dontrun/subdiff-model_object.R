@@ -238,6 +238,10 @@ csi_model <- R6Class(
       lmn_loglik(Beta = mu, Sigma = Sigma, suff = suff)
     },
 
+    #' Calculate model residuals.
+    #'
+    #'
+
     #' Observed Fisher information matrix.
     #'
     #' @param eta Full set of parameters in the computational basis.
@@ -276,10 +280,6 @@ csi_model <- R6Class(
         check_drift(drift)
         self$drift <- drift
         private$n_drift <- n_drift
-        ## # determine number of drift coefficients
-        ## dr <- self$drift(phi = self$itrans(psi = rep(0, private$n_phi)),
-        ##                  N = 2, dt = 1)
-        ## private$n_drift <- ncol(as.matrix(dr))
       }
       if(is.na(self$phi_names)) stop("`self$phi_names` has not been set.")
       private$n_phi <- length(self$phi_names)
@@ -315,13 +315,15 @@ fbm_model <- R6Class(
 )
 
 #' Derived class for the fARMA model.
-#'
-#' @details Lots of mistakes here.  The point is to prototype something to illustrate a complex custom constructor.
 farma_model <- R6Class(
   classname = "farma_model",
   inherit = "csi_model",
 
   private = list(
+    p_ = NULL, # number of AR terms.
+    q_ = NULL, # number of MA terms.
+    m_ = NULL, # number of terms in MA approximation.
+
     #' Obtain the `p` and `q` parameters.
     #'
     #' Gives an error if these are not formatted correctly.
@@ -339,6 +341,7 @@ farma_model <- R6Class(
   ),
 
   public = list(
+
     trans = function(phi) {
       psi <- phi
       psi[1] <- logit(phi[1], min = 0, max = 2)
@@ -356,26 +359,19 @@ farma_model <- R6Class(
       pq <- private$get_pq(p, q)
       p <- pq["p"]
       q <- pq["q"]
+      private$p_ <- p
+      private$q_ <- q
+      private$m_ <- m
       phi_names <- "alpha"
       if(p > 0) phi_names <- c(phi_names, paste0("phi", 1:p))
       if(q > 0) phi_names <- c(phi_names, paste0("rho", 1:q))
       self$phi_names <- phi_names
-      ## if(p == 0) {
-      ##   if(q == 0) {
-      ##     # pure fbm process
-      ##     self$acf <- fbm_acf
-      ##   } else {
-      ##     # pure fma process
-      ##     self$acf <- function(phi, dt, N) {
-      ##       fma_acf(alpha = phi[1], rho = phi[1+1:q], dt = dt, N = N)
-      ##     }
-      ##   }
-      ## } else if(q == 0) {
-      ##   # pure far process
-      ## }
-      # FIXME: farma_acf must dispatch based on order itself.
       self$acf <- function(phi, dt, N) {
-        farma_acf(alpha = phi[1], phi[1+1:p], phi[1+p+1:q], dt, N, m = m)
+        alpha <- phi[1]
+        ar_coef <- if(private$p_ == 0) numeric() else phi[1+1:p]
+        ma_coef <- if(private$q_ == 0) numeric() else phi[1+p+1:q]
+        farma_acf(alpha = alpha, phi = ar_coef, rho = ma_coef,
+                  dt = dt, N = N, m = private$m_)
       }
       super$initialize(dX = dX, dt = dt, drift = drift, n_drift = n_drift)
       ## FIXME: modify the drift term

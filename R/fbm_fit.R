@@ -27,7 +27,9 @@
 #'
 #' @export
 fbm_fit <- function(dX, dt, Tz, var_calc = TRUE) {
-  model <- fbm_model()
-  ans <- csi_fit(model, dX, dt, Tz, var_calc)
-  ans
+  ## model <- fbm_model()
+  ## ans <- csi_fit(model, dX, dt, Tz, var_calc)
+  ## ans
+  mobj <- fbm_model$new(dX = dX, dt = dt)
+  mobj$fit(phi0 = c(.001, 1.999), var_calc = var_calc)
 }
