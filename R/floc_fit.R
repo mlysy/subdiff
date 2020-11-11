@@ -5,8 +5,8 @@
 #' @template args-dX
 #' @template args-dt
 #' @template args-Tz
-#' @template args-var_calc
-#' @return A vector of estimated parameters on transformed scale (See [floc_model()]). If `var_calc`, a list with components:
+#' @template args-vcov
+#' @return A vector of estimated parameters on transformed scale (See [floc_model()]). If `vcov`, a list with components:
 #' \describe{
 #' \item{coef}{A vector of estimated parameters on transformed scale.}
 #' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -35,9 +35,9 @@
 #' @example examples/floc_fit.R
 #'
 #' @export
-floc_fit <- function(dX, dt, Tz, var_calc = TRUE) {
+floc_fit <- function(dX, dt, Tz, vcov = TRUE) {
   model <- floc_model()
-  ans <- csi_fit(model, dX, dt, Tz, var_calc)
+  ans <- csi_fit(model, dX, dt, Tz, vcov)
   ans
 }
 

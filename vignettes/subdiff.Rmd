@@ -411,7 +411,7 @@ fbm_mle <- function(id) {
   N <- nrow(dX) # number of increments
   # external memory allocation (to speed up calculations)
   Tz <- SuperGauss::Toeplitz(n = N)
-  fbm_fit(dX = dX, dt = dt, Tz = Tz, var_calc = TRUE)
+  fbm_fit(dX = dX, dt = dt, Tz = Tz, vcov = TRUE)
 }
 
 parallel::detectCores() # detect number of cores

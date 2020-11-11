@@ -1,7 +1,7 @@
 Package: subdiff
 Type: Package
 Title: Inference for Subdiffusive Particle Tracking
-Version: 0.0.1.9001
+Version: 0.0.1.9002
 Date: 2020-04-10
 Authors@R: c(person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
 	            role = c("aut", "cre")),

@@ -5,8 +5,6 @@
 \title{Base class for CSI models.}
 \description{
 Base class for CSI models.
-
-Base class for CSI models.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -264,15 +262,15 @@ The \verb{n_eta x n_eta} observed Fisher information matrix.
 \subsection{Method \code{fit()}}{
 Calculate the maximum likelihood parameter values.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{csi_model$fit(var_calc = TRUE, phi0, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$fit(phi0, vcov = TRUE, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{var_calc}}{Whether to also calculate the MLE variance estimate.}
-
 \item{\code{phi0}}{Vector of kernel parameter values (on the regular scale) to initialize the optimization if \code{n_phi > 1}.  If \code{n_phi == 1}, a vector of length 2 giving the range in which to perform the optimum search.}
+
+\item{\code{vcov}}{Whether to also calculate the MLE variance estimate.}
 
 \item{\code{...}}{Additional arguments to \code{\link[stats:optim]{stats::optim()}} or \code{\link[stats:optimize]{stats::optimize()}} for \code{n_phi == 1}.}
 }

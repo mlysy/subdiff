@@ -4,9 +4,9 @@
 #'
 #' @template args-dX
 #' @template args-dt
-#' @template args-Tz
-#' @template args-var_calc
-#' @return A vector of estimated parameters on transformed scale (See [fbm_model()]). If `var_calc`, a list with components:
+#' @template args-drift_preset
+#' @template args-vcov
+#' @return A vector of estimated parameters on transformed scale (See [fbm_model()]). If `vcov`, a list with components:
 #' \describe{
 #' \item{coef}{A vector of estimated parameters on transformed scale.}
 #' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -26,10 +26,11 @@
 #' @example examples/fbm_fit.R
 #'
 #' @export
-fbm_fit <- function(dX, dt, Tz, var_calc = TRUE) {
+fbm_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
+                    vcov = TRUE) {
   ## model <- fbm_model()
-  ## ans <- csi_fit(model, dX, dt, Tz, var_calc)
+  ## ans <- csi_fit(model, dX, dt, Tz, vcov)
   ## ans
-  mobj <- fbm_model$new(dX = dX, dt = dt)
-  mobj$fit(phi0 = c(.001, 1.999), var_calc = var_calc)
+  mobj <- fbm_model$new(dX = dX, dt = dt, drift = drift)
+  mobj$fit(phi0 = c(.001, 1.999), vcov = vcov)
 }

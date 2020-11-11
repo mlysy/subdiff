@@ -4,14 +4,14 @@
 #' @param dt Interobservation time.
 #' @param lags Integer vector of lags to use in the fit.
 #' @param type Either "standard" for the usual LS estimator, or "improved" for the version of Zhang et al (2018).
-#' @param var_calc If `TRUE`, calculates the variance matrix of `(alpha, logD)`.
+#' @param vcov If `TRUE`, calculates the variance matrix of `(alpha, logD)`.
 #'
-#' @return If `var_calc = FALSE`, vector of length 2 with estimates of `(alpha, logD)`.  Otherwise, a list with elements `coef` and `vcov`, where the former is the estimate and the latter is the corresponding variance estimator.
+#' @return If `vcov = FALSE`, vector of length 2 with estimates of `(alpha, logD)`.  Otherwise, a list with elements `coef` and `vcov`, where the former is the estimate and the latter is the corresponding variance estimator.
 #'
 #' @note Uses the **subdiff** convention for `D`.
 #' @references Zhang, K., Crizer, K.P.R., Schoenfisch, M.H., Hill, B.D., Didier, G. (2018) "Fluid heterogeneity detection based on the asymptotic distribution of the time-averaged mean squared displacement in single particle tracking experiments". *Journal of Physics A: Mathematical and Theoretical*, 51, pp 445601(44).
 ls_fit <- function(dX, dt, lags,
-                   type = c("standard", "improved"), var_calc = TRUE) {
+                   type = c("standard", "improved"), vcov = TRUE) {
   type <- match.arg(type)
   # calculate the MSD
   N <- nrow(dX)
@@ -21,7 +21,7 @@ ls_fit <- function(dX, dt, lags,
   }
   msd <- msd_fit(Xt = apply(dX, 2, cumsum), nlag = max(lags))
   tau <- dt * lags
-  if(type == "standard" || var_calc) {
+  if(type == "standard" || vcov) {
     # need the standard estimator
     y <- log(msd[lags])
     X <- cbind(1, log(tau))
@@ -29,7 +29,7 @@ ls_fit <- function(dX, dt, lags,
     theta_stand <- solve(qX, y)
     alpha_stand <- theta_stand[2]
   }
-  if(type == "improved" || var_calc) {
+  if(type == "improved" || vcov) {
     # variance matrix
     V <- ls_var(alpha_stand, tau, N)
   }
@@ -38,12 +38,12 @@ ls_fit <- function(dX, dt, lags,
     bias <- ls_bias(alpha_stand, tau, N)
     suff <- LMN::lmn_suff(Y = as.matrix(y + bias), X = X, V = V)
     theta_hat <- suff$Bhat[,1]
-    if(var_calc) {
+    if(vcov) {
       V_hat <- chol2inv(chol(suff$T))
     }
   } else {
     theta_hat <- theta_stand
-    if(var_calc) {
+    if(vcov) {
       # variance of the standard estimator
       V_hat <- solve(qX, t(solve(qX, V)))
     }
@@ -51,7 +51,7 @@ ls_fit <- function(dX, dt, lags,
   # format output
   tnames <- c("alpha", "logD")
   ans <- setNames(theta_hat, tnames)
-  if(var_calc) {
+  if(vcov) {
     colnames(V_hat) <- rownames(V_hat) <- tnames
     ans <- list(coef = ans, vcov = V_hat)
   }

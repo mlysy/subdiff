@@ -38,7 +38,7 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
     dX <- as.matrix(rnormtz(n = ndims, fft = FALSE, acf = acf1))
 
     # floc
-    theta_hat <- floc_fit(dX, dt, var_calc = FALSE) # fit MLE
+    theta_hat <- floc_fit(dX, dt, vcov = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
     ocheck <- optim_proj(xsol = theta_hat,
@@ -87,7 +87,7 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
 #     dX <- as.matrix(rSnorm(n = ndims, fft = FALSE, acf = acf1))
 #
 #     # fdl
-#     theta_hat <- fdl_fit(dX, dt, sigma2 = sig^2, var_calc = FALSE, penalty = penalty,
+#     theta_hat <- fdl_fit(dX, dt, sigma2 = sig^2, vcov = FALSE, penalty = penalty,
 #                          control = list(maxit = 1e6, trace = 0)) # fit MLE
 #     # projection plots
 #     Tz <- Toeplitz(n = N) # memory allocation
@@ -137,7 +137,7 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
 #     dX <- as.matrix(rSnorm(n = ndims, fft = FALSE, acf = acf1))
 #
 #     # fdl
-#     theta_hat <- fdl_fit(dX, dt, tau = tau, var_calc = FALSE, penalty = penalty,
+#     theta_hat <- fdl_fit(dX, dt, tau = tau, vcov = FALSE, penalty = penalty,
 #                          control = list(maxit = 1e6, trace = 0)) # fit MLE
 #     # projection plots
 #     Tz <- Toeplitz(n = N) # memory allocation
@@ -181,7 +181,7 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
 #     dX <- as.matrix(rSnorm(n = ndims, fft = FALSE, acf = acf1))
 #
 #     # fdl
-#     theta_hat <- fdl_fit(dX, dt, tau = tau, sigma2 = sig^2, var_calc = FALSE,
+#     theta_hat <- fdl_fit(dX, dt, tau = tau, sigma2 = sig^2, vcov = FALSE,
 #                           control = list(maxit = 1e6, trace = 0)) # fit MLE
 #     # projection plots
 #     Tz <- Toeplitz(n = N) # memory allocation

@@ -1,0 +1,1 @@
+#' @param drift Character string specifying one of the *preset* drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See [csi_model] for details.

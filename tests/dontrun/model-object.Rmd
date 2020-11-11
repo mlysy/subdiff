@@ -30,7 +30,7 @@ class(fbm_model) <- "csi_model"
 For now, let's try re-implementing the existing functions as follows:
 
 ```{r, fbm_fit, eval = FALSE}
-fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
+fbm_fit <- function(dX, dT, Tz, vcov = TRUE) {
   # problem dimensions
   N <- nrow(dX)
   qq <- ncol(dX)
@@ -38,7 +38,7 @@ fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
   csi_fit(model = fbm_model,
           dX = dX, dT = dT, Tz = Tz, # data arguments
           penalty = FALSE, # don't penalize (error if penalize when no penalty defined)
-          var_calc = var_calc)
+          vcov = vcov)
 }
 ```
 
@@ -51,5 +51,5 @@ fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
 ```{r, csi_fit, eval = FALSE}
 #' @param ... Additional arguments passed to \code{model$acf}.
 #' @param penalty Either a logical, in which case \code{penalty = TRUE} uses the default penalty function, or a function with arguments in \code{model$theta_names}.
-csi_fit <- function(model, dX, dT, Tz, var_calc, penalty, ...)
+csi_fit <- function(model, dX, dT, Tz, vcov, penalty, ...)
 ```

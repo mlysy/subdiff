@@ -4,19 +4,19 @@
 \alias{fbm_fit}
 \title{Fit the fBM model.}
 \usage{
-fbm_fit(dX, dt, Tz, var_calc = TRUE)
+fbm_fit(dX, dt, drift = c("linear", "none", "quadratic"), vcov = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
+\item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link[=fbm_model]{fbm_model()}}). If \code{var_calc}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=fbm_model]{fbm_model()}}). If \code{vcov}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -46,5 +46,5 @@ dX <- rSnorm(2, acf = acf1)
 # Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
 # Fit the fBM model
-fbm_fit(dX, dt, Tz, var_calc = TRUE)
+fbm_fit(dX, dt, Tz, vcov = TRUE)
 }

@@ -6,7 +6,7 @@
 #' @template args-dX
 #' @template args-dt
 #' @template args-Tz
-#' @template args-var_calc
+#' @template args-vcov
 #' @template ret-cov_vcov
 #'
 #' @details The location-scale model is of following form
@@ -25,7 +25,7 @@
 #' @example examples/csi_fit.R
 #'
 #' @export
-csi_fit <- function(model, dX, dt, Tz, var_calc) {
+csi_fit <- function(model, dX, dt, Tz, vcov) {
   # problem dimensions
   N <- nrow(dX)
   qq <- ncol(dX)
@@ -74,7 +74,7 @@ csi_fit <- function(model, dX, dt, Tz, var_calc) {
   theta_hat[ntheta+qq+1:nq] <- trans_Sigma(suff$S/suff$n)
   ans <- theta_hat
 
-  if(var_calc) {
+  if(vcov) {
     # likelihood on transformed scale
     negloglik <- function(gamma) {
       theta <- model$theta_itrans(gamma[1:ntheta])

@@ -4,7 +4,7 @@
 \alias{farma_fit}
 \title{Fit the farma model.}
 \usage{
-farma_fit(dX, dt, order, Tz, var_calc = TRUE)
+farma_fit(dX, dt, order, Tz, vcov = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
@@ -18,7 +18,7 @@ farma_fit(dX, dt, order, Tz, var_calc = TRUE)
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link[=farma_model]{farma_model()}}). If \code{var_calc}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=farma_model]{farma_model()}}). If \code{vcov}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -48,5 +48,5 @@ dX <- rSnorm(2, acf = acf1)
 # Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
 # Fit the farma(0,1) model
-farma_fit(dX, dt, order = c(0,1), Tz, var_calc = TRUE)
+farma_fit(dX, dt, order = c(0,1), Tz, vcov = TRUE)
 }

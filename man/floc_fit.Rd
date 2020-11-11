@@ -4,7 +4,7 @@
 \alias{floc_fit}
 \title{Fit the floc model.}
 \usage{
-floc_fit(dX, dt, Tz, var_calc = TRUE)
+floc_fit(dX, dt, Tz, vcov = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
@@ -16,7 +16,7 @@ floc_fit(dX, dt, Tz, var_calc = TRUE)
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link[=floc_model]{floc_model()}}). If \code{var_calc}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=floc_model]{floc_model()}}). If \code{vcov}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -53,7 +53,7 @@ dX <- rSnorm(2, acf = acf1)
 # Toeplitz object for internal computation
 Tz <- Toeplitz(n = N)
 # Fit the fLOC model
-floc_fit(dX, dt, Tz, var_calc = TRUE)
+floc_fit(dX, dt, Tz, vcov = TRUE)
 }
 \references{
 Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical journal 88.1 (2005): 623-638.

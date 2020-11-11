@@ -1,5 +1,7 @@
 #' Base class for CSI models.
 #'
+#' @description Base class for CSI models.
+#'
 #' @importFrom stats optim optimize
 #' @export
 csi_model <- R6::R6Class(
@@ -15,6 +17,15 @@ csi_model <- R6::R6Class(
     eta_names = NULL, # Parameter names in the computational basis.
 
     Tz_ = NULL, # Toeplitz matrix object.
+
+    #` Deep clone method.
+    #`
+    #` Required to create a new R6 object for `Tz_`.
+    deep_clone = function(name, value) {
+      switch(name,
+             Tz_ = private$Tz_$clone(deep = TRUE),
+             value)
+    },
 
     #` @description Internal drift implementation.
     #`
@@ -125,8 +136,12 @@ csi_model <- R6::R6Class(
       n_dims <- private$n_dims
       # number of parameters in the log-cholesky factor
       n_chol <- n_dims * (n_dims+1) / 2
-      phi <- self$itrans(eta[1:n_phi])
-      mu <- matrix(eta[n_phi + 1:(n_drift*n_dims)], n_drift, n_dims)
+      if(n_phi > 0) {
+        phi <- self$itrans(eta[1:n_phi])
+      } else phi <- NULL
+      if(n_drift > 0) {
+        mu <- matrix(eta[n_phi + 1:(n_drift*n_dims)], n_drift, n_dims)
+      } else mu <- NULL
       Sigma <- itrans_Sigma(eta[n_phi + n_drift*n_dims + 1:n_chol])
       list(phi = phi, mu = mu, Sigma = Sigma)
     },
@@ -175,12 +190,12 @@ csi_model <- R6::R6Class(
 
     #' @description Calculate the maximum likelihood parameter values.
     #'
-    #' @param var_calc Whether to also calculate the MLE variance estimate.
     #' @param phi0 Vector of kernel parameter values (on the regular scale) to initialize the optimization if `n_phi > 1`.  If `n_phi == 1`, a vector of length 2 giving the range in which to perform the optimum search.
+    #' @param vcov Whether to also calculate the MLE variance estimate.
     #' @param ... Additional arguments to [stats::optim()] or [stats::optimize()] for `n_phi == 1`.
     #'
     #' @return A list with elements `coef` and optionally `vcov` containing the MLE in the computational basis and its variance estimate.
-    fit = function(var_calc = TRUE, phi0, ...) {
+    fit = function(phi0, vcov = TRUE, ...) {
       # calculate MLE
       if(private$n_phi > 1) {
         opt <- optim(par = self$trans(phi0),
@@ -196,7 +211,7 @@ csi_model <- R6::R6Class(
       nu <- self$muSigma_hat(phi_hat)
       eta_hat <- c(psi_hat, nu$mu, trans_Sigma(nu$Sigma))
       names(eta_hat) <- private$eta_names
-      if(var_calc) {
+      if(vcov) {
         # fisher information
         fi <- self$fisher(eta_hat)
         # invert to get variance estimate
@@ -221,6 +236,7 @@ csi_model <- R6::R6Class(
       if(!missing(dX)) self$dX <- dX
       self$dt <- dt
       # set drift
+      check_drift(drift) # validate
       if(drift == "linear") {
         private$drift_impl <- drift_linear
         private$n_drift <- 1
@@ -231,7 +247,7 @@ csi_model <- R6::R6Class(
         private$drift_impl <- drift_quadratic
         private$n_drift <- 2
       } else {
-        check_drift(drift) # checks argument signature
+        # custom drift
         private$drift_impl <- drift
         private$n_drift <- n_drift
       }
@@ -239,10 +255,9 @@ csi_model <- R6::R6Class(
       if(is.na(self$phi_names)) stop(undef_msg("phi_names")) # must have already been set
       private$n_phi <- length(self$phi_names)
       # computational parameter names
-      n_chol <- private$n_dims * (private$n_dims+1) / 2
-      private$eta_names <- c(paste0("psi", 1:private$n_phi),
-                             paste0("mu", 1:private$n_drift),
-                             paste0("lambda", 1:n_chol))
+      private$eta_names <- get_eta_names(n_dims = private$n_dims,
+                                         n_drift = private$n_drift,
+                                         n_phi = private$n_phi)
     }
   )
 )
@@ -254,8 +269,15 @@ csi_model <- R6::R6Class(
 #' @param drift Drift function.
 #' @noRd
 check_drift <- function(drift) {
-  if(!identical(methods::formalArgs(drift), c("phi", "dt", "N"))) {
-    stop("drift must have argument signature phi, dt, N.")
+  if(length(drift) != 1 || (!is.character(drift) &&
+                            !is.function(drift))) {
+    stop("Incorrect drift specification.  Please see `csi_model` for details.")
+  }
+  if(is.character(drift) && !(drift %in% c("linear", "none", "quadratic"))) {
+    stop('Prespecified drift must be one of "linear", "none", or "quadratic".')
+  }
+  if(is.function(drift) && !identical(methods::formalArgs(drift), c("phi", "dt", "N"))) {
+    stop("`drift()` must have argument signature `phi`, `dt`, `N`.")
   }
 }
 
@@ -265,4 +287,30 @@ check_drift <- function(drift) {
 #' @noRd
 undef_msg <- function(name) {
   paste0("`self$", name, "` has not been defined yet.")
+}
+
+#' Set computational basis parameter names.
+#'
+#' @param n_dims Number of trajectory dimensions.
+#' @param n_drift Number of drift dimensions.
+#' @param n_phi Number of act parameters.
+#'
+#' @details The computational basis parameters are named in the following order:
+#' - `psi`: Numbered from 1 to `n_phi`.
+#' - `mu`: Double indexing from the matrix of size `n_drift x n_dims` in column-major order.
+#' - `lambda`: Double indexing from upper triangular matrix of size `n_dims x n_dims`.
+#' @noRd
+get_eta_names <- function(n_dims, n_drift, n_phi) {
+  if(n_phi > 0) {
+    psi_names <- paste0("psi", 1:n_phi)
+  } else psi_names <- NULL
+  if(n_drift > 0) {
+    mu_names <- paste0("mu", apply(expand.grid(1:n_drift, 1:n_dims), 1,
+                                   paste0, collapse = ""))
+  } else mu_names <- NULL
+  lambda_names <- paste0("lambda", apply(expand.grid(1:n_dims, 1:n_dims), 1,
+                                         paste0, collapse = ""))
+  lambda_names <- matrix(lambda_names, n_dims, n_dims)
+  lambda_names <- lambda_names[upper.tri(lambda_names, diag = TRUE)]
+  c(psi_names, mu_names, lambda_names)
 }

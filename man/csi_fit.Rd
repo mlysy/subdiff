@@ -4,7 +4,7 @@
 \alias{csi_fit}
 \title{Fit the location-scale model for Gaussian CSI process.}
 \usage{
-csi_fit(model, dX, dt, Tz, var_calc)
+csi_fit(model, dX, dt, Tz, vcov)
 }
 \arguments{
 \item{model}{An list of class \code{csi_class} (see \code{\link[=fbm_model]{fbm_model()}}, \code{\link[=floc_model]{floc_model()}}, \code{\link[=farma_model]{farma_model()}}).}
@@ -50,7 +50,7 @@ Tz <- Toeplitz(n = N)
 # generate a fBM model object
 model <- fbm_model()
 # fit the fBM model
-csi_fit(model, dX, dt, Tz, var_calc = TRUE)
+csi_fit(model, dX, dt, Tz, vcov = TRUE)
 }
 \references{
 Lysy, M., Pillai, N.S., Hill, D.B., Forest, M.G., Mellnik, J.W.R., Vasquez, P.A., and McKinley, S.A. "Model comparison and assessment for single particle tracking in biological fluids." \emph{Journal of the American Statistical Association} 111.516 (2016): 1413-1426. \url{https://doi.org/10.1080/01621459.2016.1158716}.
