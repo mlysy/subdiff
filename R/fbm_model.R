@@ -1,7 +1,12 @@
-#' Constructor of fBM model object.
+#' Constructor for fBM model objects.
 #'
 #' @name fbm_model
-#' @details Constructor function that generates a list of fBM model for purpose of fitting.
+#'
+#' @details Fractional Brownian motion `X_t` is the only (zero-mean) continuous stationary increments (CSI) Gaussian process having mean square displacement (MSD) function given by the power law
+#' ```
+#' E[(X_t-X_0)^2] = t^alpha,
+#' ```
+#' with subdiffusion exponent `0 < alpha < 2`.
 #' @template ret-csi_class
 #'
 #' @example examples/fbm_model.R
@@ -14,7 +19,7 @@ fbm_model <- R6::R6Class(
   inherit = csi_model,
 
   public = list(
-    #' @field phi_names See [csi_model].
+    #' @field phi_names Kernel parameter names. In this case, the character string `alpha`.  See [csi_model].
     phi_names = "alpha",
     #' @description Increment autocorrelation function.
     #'

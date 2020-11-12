@@ -99,6 +99,14 @@ csi_model <- R6::R6Class(
     #' @return A vector of `N` autocorrelations.
     acf = function(phi, dt, N) stop(undef_msg("acf()")),
 
+    ## acf = function(phi, dt, N) {
+    ##   if(is.null(private$acf_impl)) {
+    ##     stop(undef_msg("acf()"))
+    ##   } else {
+    ##     private$acf_impl(phi, dt, N)
+    ##   }
+    ## },
+
     #' @description Increment autocorrelation function.
     #'
     #' @param phi Kernel parameters in the original basis.
@@ -252,7 +260,7 @@ csi_model <- R6::R6Class(
         private$n_drift <- n_drift
       }
       # kernel parameters
-      if(is.na(self$phi_names)) stop(undef_msg("phi_names")) # must have already been set
+      if(anyNA(self$phi_names)) stop(undef_msg("phi_names")) # must have already been set
       private$n_phi <- length(self$phi_names)
       # computational parameter names
       private$eta_names <- get_eta_names(n_dims = private$n_dims,

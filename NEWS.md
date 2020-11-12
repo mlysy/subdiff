@@ -10,3 +10,12 @@
 	```
 	In particular, the Toeplitz object `Tz` can no longer be supplied, one can now choose the type of drift, and `var_calc` is renamed to `vcov`.
 
+- Model objects (`fbm_model`, `farma_model`, etc) now use R6 instead of S3 classes and inherit from base class `csi_model`.  Thus they are instantiated via `$new()` instead of just e.g., `fbm_model()`.
+
+- Fitting functions (`fbm_fit()`, etc.) output parameter names in a (standardized) computational basis. 
+
+## New features
+
+- Model objects are formalized via R6 classes.  The main purpose is to provide a simple and flexible framework for adding user-defined models, parameter estimation routines, etc.
+
+- `farma_model` (and `farma_acf()`, etc) now supports arbitrary order for the autoregressive component.

@@ -4,7 +4,7 @@
 \alias{farma_fit}
 \title{Fit the farma model.}
 \usage{
-farma_fit(dX, dt, order, Tz, vcov = TRUE)
+farma_fit(dX, dt, order, drift = c("linear", "none", "quadratic"), vcov = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
@@ -13,7 +13,7 @@ farma_fit(dX, dt, order, Tz, vcov = TRUE)
 
 \item{order}{A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.}
 
-\item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
+\item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
@@ -25,7 +25,7 @@ A vector of estimated parameters on transformed scale (See \code{\link[=farma_mo
 }
 }
 \description{
-Fit a farma(p,q) model to a multi-dimensional CSI process (See \strong{Details}).
+Fit a fARMA(p,q) model to a multi-dimensional CSI process (See 'Details').
 }
 \details{
 The farma(p,q) model is of following form:
@@ -36,7 +36,7 @@ Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-
 }
 where \eqn{X_n} is an \verb{q = 1,2} dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
 
-Optimization is done by \code{stats::optimize}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=farma_model]{farma_model()}}).
+Optimization is done by \code{\link[stats:optim]{stats::optim()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=farma_model]{farma_model()}}).
 }
 \examples{
 # generating 2-d stationary time series

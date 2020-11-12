@@ -1,21 +1,17 @@
-#' Calculate the ACF for the fBM model.
+#' Calculate the autocorrelation of the fBM model.
 #'
-#' Compute the autocovariance of fBM increments of equally-spaced observations (see **Details**).
+#' Compute the autocorrelation of fractional Brownian motion (fBM) increments at equally-spaced time points (see 'Details').
 #'
-#' @param alpha Power law exponent. A scalar between 0 and 2.
+#' @param alpha Subdiffusion exponent. A scalar between 0 and 2.
 #' @template args-dt
 #' @template args-N
 #'
 #' @template ret-acf
 #'
-#' @details The autocovariance of fBM increments at lag \eqn{h} is given by
-#' \deqn{
-#' \textrm{acf}(h) = \Delta t^\alpha/2 \times \left(|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha\right).
-#' }{
-#' acf(h) = \Delta t^\alpha/2 * (|h+1|^\alpha + |h-1|^\alpha - 2|h|^\alpha).
-#' }
-#'
-#' This function returns the autocovariance function of increments of fBM process.
+#' @details Let `X_t` denote an fBM process and `dX_n = X_{dt * (n+1)} - X_{dt * n}` denote the `n`th increment of `X_t` with interobservation time `dt`.  The autocorrelation of the fBM increment process `dX_n` is given by
+#' ```
+#' acf_dX(n) = 0.5 * dt^alpha * (|n+1|^alpha + |n-1|^alpha - 2|n|^\alpha).
+#' ```
 #'
 #' @example examples/acf_setup.R
 #' @example examples/fbm_acf.R

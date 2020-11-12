@@ -34,7 +34,7 @@ X[t] = \mu t + \Sigma^{1/2} Z[t],
 }
 where \eqn{Z[t]} consists of \verb{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
 
-Optimization is done by \code{\link[=optim]{optim()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fbm_model]{fbm_model()}}).
+Optimization is done by \code{\link[stats:optimize]{stats::optimize()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fbm_model]{fbm_model()}}).
 }
 \examples{
 # generating 2-d stationary time series

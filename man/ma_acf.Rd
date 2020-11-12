@@ -18,6 +18,6 @@ A vector of length \code{N} giving the autocorrelation of the filtered process.
 Calculate the autocorrelation of an \code{MA(q)} filter applied to a stationary process.
 }
 \details{
-Let \code{X[n]} denote the observation of the original process at time \code{n}, and \code{Y[n]} denote the corresponding observation of the filtered process.  The \code{MA(q)} filter model is defined as\preformatted{Y[n] = X[n] + sum_\{j=1\}^q rho[j] X[n-j].
+Let \code{X_n} denote the observation of the original process at time \code{n}, and \code{Y_n} denote the corresponding observation of the filtered process.  The MA(q) filter model is defined as\preformatted{Y_n = X_n + sum_\{j=1\}^q rho_j X_\{n-j\}.
 }
 }

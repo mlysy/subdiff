@@ -20,7 +20,7 @@
 #' }
 #' where \eqn{Z[t]} consists of `q = 1,2` iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
 #'
-#' Optimization is done by [optim()]. It works better when parameters are re-parametrized into unrestricted form (See [fbm_model()]).
+#' Optimization is done by [stats::optimize()]. It works better when parameters are re-parametrized into unrestricted form (See [fbm_model()]).
 #'
 #' @example examples/fit_setup.R
 #' @example examples/fbm_fit.R
@@ -31,6 +31,7 @@ fbm_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
   ## model <- fbm_model()
   ## ans <- csi_fit(model, dX, dt, Tz, vcov)
   ## ans
-  mobj <- fbm_model$new(dX = dX, dt = dt, drift = drift)
-  mobj$fit(phi0 = c(.001, 1.999), vcov = vcov)
+  drift <- match.arg(drift)
+  model <- fbm_model$new(dX = dX, dt = dt, drift = drift)
+  model$fit(phi0 = c(.001, 1.999), vcov = vcov)
 }

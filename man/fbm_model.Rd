@@ -2,7 +2,7 @@
 % Please edit documentation in R/fbm_model.R
 \name{fbm_model}
 \alias{fbm_model}
-\title{Constructor of fBM model object.}
+\title{Constructor for fBM model objects.}
 \value{
 An list of class \code{csi_class} with components:
 \describe{
@@ -14,10 +14,13 @@ An list of class \code{csi_class} with components:
 }
 }
 \description{
-Constructor of fBM model object.
+Constructor for fBM model objects.
 }
 \details{
-Constructor function that generates a list of fBM model for purpose of fitting.
+Fractional Brownian motion \code{X_t} is the only (zero-mean) continuous stationary increments (CSI) Gaussian process having mean square displacement (MSD) function given by the power law\preformatted{E[(X_t-X_0)^2] = t^alpha,
+}
+
+with subdiffusion exponent \verb{0 < alpha < 2}.
 }
 \examples{
 # --- FIXME ---
@@ -33,7 +36,7 @@ Constructor function that generates a list of fBM model for purpose of fitting.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{phi_names}}{See \link{csi_model}.}
+\item{\code{phi_names}}{Kernel parameter names. In this case, the character string \code{alpha}.  See \link{csi_model}.}
 }
 \if{html}{\out{</div>}}
 }

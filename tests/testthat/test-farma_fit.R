@@ -33,6 +33,7 @@ test_that("MLE is at the mode of the projection plots.", {
     dX <- as.matrix(rnormtz(n = ndims,
                             acf = fbm_acf(alpha, dt, N+1)))
     dX <- (1-rho) * dX[-1,,drop=FALSE] + rho * dX[1:N,,drop=FALSE]
+    model <- farma_model$new(dX, dt, p = 1, q = 1)
     theta_hat <- farma_fit(dX, dt, order = c(1,1), vcov = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
