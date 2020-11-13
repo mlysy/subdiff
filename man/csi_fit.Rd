@@ -7,7 +7,7 @@
 csi_fit(model, dX, dt, Tz, vcov)
 }
 \arguments{
-\item{model}{An list of class \code{csi_class} (see \code{\link[=fbm_model]{fbm_model()}}, \code{\link[=floc_model]{floc_model()}}, \code{\link[=farma_model]{farma_model()}}).}
+\item{model}{An list of class \code{csi_class} (see \code{\link[=fbm_model]{fbm_model()}}, \code{\link[=fsd_model]{fsd_model()}}, \code{\link[=farma_model]{farma_model()}}).}
 
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 

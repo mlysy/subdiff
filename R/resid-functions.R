@@ -48,7 +48,7 @@ farma_resid <- function(theta, dX, dt, order) {
 
 #' @rdname subdiff-resid
 #' @export
-floc_resid <- function(theta, dX, dt) {
+fsd_resid <- function(theta, dX, dt) {
   qq <- ncol(dX) # problem dimensions
   N <- nrow(dX)
   nq <- if(qq == 1) 1 else 3
@@ -57,7 +57,7 @@ floc_resid <- function(theta, dX, dt) {
   sigma2 <- exp(2*theta[3])
   mu <- theta[3+1:qq]
   Sigma <- itrans_Sigma(theta[qq+3+1:nq])
-  acf1 <- floc_acf(alpha, tau, sigma2, dt, N)
+  acf1 <- fsd_acf(alpha, tau, sigma2, dt, N)
   res <- csi_resid(dX, dt, mu, acf1, Sigma)
   res
 }

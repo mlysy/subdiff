@@ -2,7 +2,7 @@
 #'
 #' Estimate the coefficients and their covariance for parameters in location-scale model where target data follows Gaussian CSI process (See **Details**).
 #'
-#' @param model An list of class `csi_class` (see [fbm_model()], [floc_model()], [farma_model()]).
+#' @param model An list of class `csi_class` (see [fbm_model()], [fsd_model()], [farma_model()]).
 #' @template args-dX
 #' @template args-dt
 #' @template args-Tz

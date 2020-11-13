@@ -1,22 +1,22 @@
-#' Constructor of fLOC model object.
+#' Constructor of fsd model object.
 #'
-#' @details Constructor function that generates a list of floc model for purpose of fitting.
+#' @details Constructor function that generates a list of fsd model for purpose of fitting.
 #' @template ret-csi_class
 #'
-#' @example examples/floc_model.R
+#' @example examples/fsd_model.R
 #'
 #' @export
-floc_model <- function() {
+fsd_model <- function() {
   # parameter name
-  floc_theta <- c("alpha", "tau", "sigma2")
+  fsd_theta <- c("alpha", "tau", "sigma2")
 
   # ACF function
-  .floc_acf <- function(theta, dt, N) {
-    floc_acf(theta[1], theta[2], theta[3], dt, N)
+  .fsd_acf <- function(theta, dt, N) {
+    fsd_acf(theta[1], theta[2], theta[3], dt, N)
   }
 
   # transformation, from original scale (theta) to unrestricted scale (gamma)
-  floc_trans <- function(theta) {
+  fsd_trans <- function(theta) {
     gamma <- theta
     # alpha
     gamma[1] <- logit(theta[1], min = 0, max = 2)
@@ -28,7 +28,7 @@ floc_model <- function() {
   }
 
   # inverse transformation, from unrestricted scale (gamma) to original scale (theta)
-  floc_itrans <- function(gamma) {
+  fsd_itrans <- function(gamma) {
     theta <- gamma
     # alpha
     theta[1] <- ilogit(gamma[1], min = 0, max = 2)
@@ -40,27 +40,27 @@ floc_model <- function() {
   }
 
   # penalty function on transformed scale
-  floc_penalty <- function(gamma) {
+  fsd_penalty <- function(gamma) {
     log1pe(gamma[2]) + log1pe(-gamma[2]) - gamma[3]
   }
 
   # plug-in values
-  # floc_plugin <- names_plugin <- NULL
+  # fsd_plugin <- names_plugin <- NULL
   # if(!missing(tau)) {
-  #   floc_plugin <- c(floc_plugin, tau)
+  #   fsd_plugin <- c(fsd_plugin, tau)
   #   names_plugin <- c(names_plugin, "tau")
   # }
   # if(!missing(sigma2)) {
-  #   floc_plugin <- c(floc_plugin, sigma2)
+  #   fsd_plugin <- c(fsd_plugin, sigma2)
   #   names_plugin <- c(names_plugin, "sigma2")
   # }
-  # names(floc_plugin) <- names_plugin
+  # names(fsd_plugin) <- names_plugin
 
-  model <- list(theta_names = floc_theta,
-                acf = .floc_acf,
-                theta_trans = floc_trans,
-                theta_itrans = floc_itrans,
-                penalty = floc_penalty)
+  model <- list(theta_names = fsd_theta,
+                acf = .fsd_acf,
+                theta_trans = fsd_trans,
+                theta_itrans = fsd_itrans,
+                penalty = fsd_penalty)
   class(model) <- "csi_model"
   model
 }

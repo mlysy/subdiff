@@ -1,8 +1,8 @@
 
-context("floc_acf")
+context("fsd_acf")
 
 ntest <- 10
-test_that("floc_acf formula is correct.", {
+test_that("fsd_acf formula is correct.", {
   replicate(ntest, {
     # parameters
     N <- sample(10:20, 1)
@@ -11,7 +11,7 @@ test_that("floc_acf formula is correct.", {
     M <- 50 # resolution
     alpha <- runif(1, 0, 2)
     # simplified formula
-    acf1 <- floc_acf(alpha, tau, 0, dt, N)
+    acf1 <- fsd_acf(alpha, tau, 0, dt, N)
     # long formula
     acf_2 <- fbm_acf(alpha, dt*tau, N*M/tau)
     trans_mat <- function(N, M, tau) {

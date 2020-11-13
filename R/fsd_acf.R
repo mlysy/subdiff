@@ -1,4 +1,4 @@
-#' Calculate the ACF for the fLOC model.
+#' Calculate the ACF for the fsd model.
 #'
 #' Compute the autocovariance for the increments of Savin & Doyle's localization model with fBM process (see **Details**).
 #'
@@ -10,7 +10,7 @@
 #'
 #' @template ret-acf
 #'
-#' @details The Savin & Doyle's localization error model with fBM process (floc model) is of following form:
+#' @details The Savin & Doyle's localization error model with fBM process (fsd model) is of following form:
 #' \deqn{
 #' Y_n = 1/\tau \int_0^\tau X_{n  \Delta t+s} ds + \sigma e_{n}
 #' }{
@@ -26,10 +26,10 @@
 #' @references Savin, T., and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 #'
 #' @example examples/acf_setup.R
-#' @example examples/floc_acf.R
+#' @example examples/fsd_acf.R
 #'
 #' @export
-floc_acf <- function(alpha, tau, sigma2, dt, N) {
+fsd_acf <- function(alpha, tau, sigma2, dt, N) {
   if(!tau) {
     acf1 <- fbm_acf(alpha, dt, N)
   } else {

@@ -14,6 +14,8 @@
 
 - Fitting functions (`fbm_fit()`, etc.) output parameter names in a (standardized) computational basis. 
 
+- The `floc` prefix (`floc_model()`, `floc_acf()`, `floc_fit()`, etc.) has been changed to `fsd`, which stands for fractional Savin-Doyle.
+
 ## New features
 
 - Model objects are formalized via R6 classes.  The main purpose is to provide a simple and flexible framework for adding user-defined models, parameter estimation routines, etc.

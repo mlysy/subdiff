@@ -1,9 +1,9 @@
 
-context("floc_fit")
+context("fsd_fit")
 
 source("fit-functions.R")
 
-# floc loglikelihood
+# fsd loglikelihood
 loglik_loc <- function(theta, dX, dt, Tz) {
   N <- nrow(dX)
   nd <- ncol(dX)
@@ -13,7 +13,7 @@ loglik_loc <- function(theta, dX, dt, Tz) {
   sigma2 <- exp(theta[3])
   mu <- theta[3+1:nd]
   Sigma <- itrans_Sigma(theta[3+nd+1:nq]) # default: log(D)
-  acf1 <- floc_acf(alpha, tau, sigma2, dt, N)
+  acf1 <- fsd_acf(alpha, tau, sigma2, dt, N)
   Tz$set_acf(acf1)
   suff <- lmn_suff(Y = dX, X = dt, V = Tz, Vtype = "acf")
   ll <- lmn_loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
@@ -34,11 +34,11 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
     tau <- runif(1, 0, 1)
     sig <- runif(1, 0, 0.05)
     ndims <- sample(1:2, 1)
-    acf1 <- floc_acf(alpha, tau, sig^2, dt, N)
+    acf1 <- fsd_acf(alpha, tau, sig^2, dt, N)
     dX <- as.matrix(rnormtz(n = ndims, fft = FALSE, acf = acf1))
 
-    # floc
-    theta_hat <- floc_fit(dX, dt, vcov = FALSE) # fit MLE
+    # fsd
+    theta_hat <- fsd_fit(dX, dt, vcov = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
     ocheck <- optim_proj(xsol = theta_hat,
@@ -58,7 +58,7 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
 #   tau <- itrans_tau(theta[2])
 #   mu <- theta[2+1:nd]
 #   Sigma <- itrans_Sigma(theta[2+nd+1:nq]) # default: log(D)
-#   acf1 <- floc_acf(alpha, tau, sig^2, dt, N)
+#   acf1 <- fsd_acf(alpha, tau, sig^2, dt, N)
 #   Tz$setAcf(acf1)
 #   suff <- lmn.suff(Y = dX, X = dt, acf = Tz)
 #   ll <- lmn.loglik(Beta = t(mu), Sigma = Sigma, suff = suff)
@@ -177,7 +177,7 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
 #     tau <- runif(1, 0, 1)
 #     sig <- runif(1, 0, 0.05)
 #     ndims <- sample(1:2, 1)
-#     acf1 <- floc_acf(alpha, tau, sig^2, dt, N)
+#     acf1 <- fsd_acf(alpha, tau, sig^2, dt, N)
 #     dX <- as.matrix(rSnorm(n = ndims, fft = FALSE, acf = acf1))
 #
 #     # fdl

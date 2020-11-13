@@ -4,14 +4,14 @@
 \alias{subdiff-resid}
 \alias{fbm_resid}
 \alias{farma_resid}
-\alias{floc_resid}
+\alias{fsd_resid}
 \title{Model-based residual calculations.}
 \usage{
 fbm_resid(theta, dX, dt)
 
 farma_resid(theta, dX, dt, order)
 
-floc_resid(theta, dX, dt)
+fsd_resid(theta, dX, dt)
 }
 \arguments{
 \item{theta}{Vector of parameter values on the transformed scale returned by the corresponding \code{model_fit} procedure (see Details).}
