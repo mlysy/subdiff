@@ -45,21 +45,10 @@ fsd_model <- R6::R6Class(
       c(ilogit(psi[1], min = 0, max = 2), # alpha
         ilogit(psi[2], min = 0, max = 1), # tau
         exp(psi[3])) # sigma2
-    },
-
-    #' @description Penalty function.
-    #'
-    #' @param psi Kernel parameters in the computational basis
-    #' @return Scalar value of the penalty.
-    #'
-    #' @details The penalty function is
-    #' ```
-    #' penalty(psi) = log(1+exp(psi2)) + log(1+exp(-psi2)) - psi3.
-    #' ```
-    penalty = function(psi) {
-      log1pe(psi[2]) + log1pe(-psi[2]) - psi[3]
     }
+
   )
+
 )
 
 ## fsd_model <- function() {

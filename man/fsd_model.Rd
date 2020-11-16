@@ -31,7 +31,6 @@ model$theta_names[1] <- "gamma"
 \item \href{#method-acf}{\code{fsd_model$acf()}}
 \item \href{#method-trans}{\code{fsd_model$trans()}}
 \item \href{#method-itrans}{\code{fsd_model$itrans()}}
-\item \href{#method-penalty}{\code{fsd_model$penalty()}}
 \item \href{#method-clone}{\code{fsd_model$clone()}}
 }
 }
@@ -106,31 +105,6 @@ Transform kernel parameters from computational to regular basis.
 \item{\code{psi}}{See \link{csi_model}.}
 }
 \if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-penalty"></a>}}
-\if{latex}{\out{\hypertarget{method-penalty}{}}}
-\subsection{Method \code{penalty()}}{
-Penalty function.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{fsd_model$penalty(psi)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{psi}}{Kernel parameters in the computational basis}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Details}{
-The penalty function is\preformatted{penalty(psi) = log(1+exp(psi2)) + log(1+exp(-psi2)) - psi3.
-}
-}
-
-\subsection{Returns}{
-Scalar value of the penalty.
 }
 }
 \if{html}{\out{<hr>}}
