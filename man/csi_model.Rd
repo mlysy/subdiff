@@ -29,12 +29,14 @@ Base class for CSI models.
 \item \href{#method-itrans}{\code{csi_model$itrans()}}
 \item \href{#method-acf}{\code{csi_model$acf()}}
 \item \href{#method-drift}{\code{csi_model$drift()}}
+\item \href{#method-get_eta}{\code{csi_model$get_eta()}}
 \item \href{#method-trans_full}{\code{csi_model$trans_full()}}
 \item \href{#method-itrans_full}{\code{csi_model$itrans_full()}}
 \item \href{#method-nlp}{\code{csi_model$nlp()}}
 \item \href{#method-muSigma_hat}{\code{csi_model$muSigma_hat()}}
 \item \href{#method-loglik}{\code{csi_model$loglik()}}
 \item \href{#method-fisher}{\code{csi_model$fisher()}}
+\item \href{#method-get_vcov}{\code{csi_model$get_vcov()}}
 \item \href{#method-fit}{\code{csi_model$fit()}}
 \item \href{#method-new}{\code{csi_model$new()}}
 \item \href{#method-clone}{\code{csi_model$clone()}}
@@ -126,6 +128,26 @@ Increment autocorrelation function.
 }
 \subsection{Returns}{
 An \verb{N x n_drift} matrix of drift basis functions.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_eta"></a>}}
+\if{latex}{\out{\hypertarget{method-get_eta}{}}}
+\subsection{Method \code{get_eta()}}{
+Combine kernel parameters with conditional MLE of \code{mu} and \code{Sigma}.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$get_eta(psi)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{psi}}{Kernel parameters in the computational basis.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Named vector of full parameter set in the computational basis.
 }
 }
 \if{html}{\out{<hr>}}
@@ -257,18 +279,38 @@ The \verb{n_eta x n_eta} observed Fisher information matrix.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-fit}{}}}
-\subsection{Method \code{fit()}}{
-Calculate the maximum likelihood parameter values.
+\if{html}{\out{<a id="method-get_vcov"></a>}}
+\if{latex}{\out{\hypertarget{method-get_vcov}{}}}
+\subsection{Method \code{get_vcov()}}{
+Convert a Fisher information matrix to a variance matrix.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{csi_model$fit(phi0, vcov = TRUE, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$get_vcov(fi)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{phi0}}{Vector of kernel parameter values (on the regular scale) to initialize the optimization if \code{n_phi > 1}.  If \code{n_phi == 1}, a vector of length 2 giving the range in which to perform the optimum search.}
+\item{\code{fi}}{Fisher information matrix of size \verb{n_eta x n_eta} with parameters in the computational basis.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Variance matrix of size \verb{n_eta x n_eta} with parameters in the computational basis.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-fit}{}}}
+\subsection{Method \code{fit()}}{
+Calculate the maximum likelihood parameter values.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$fit(psi0, vcov = TRUE, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{psi0}}{Vector of kernel parameter values (on the computational scale) to initialize the optimization if \code{n_phi > 1}.  If \code{n_phi == 1}, a vector of length 2 giving the range in which to perform the optimum search.}
 
 \item{\code{vcov}}{Whether to also calculate the MLE variance estimate.}
 

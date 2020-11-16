@@ -2,22 +2,9 @@
 % Please edit documentation in R/fsd_model.R
 \name{fsd_model}
 \alias{fsd_model}
-\title{Constructor of fsd model object.}
-\usage{
-fsd_model()
-}
-\value{
-An list of class \code{csi_class} with components:
-\describe{
-\item{\code{theta_names}}{A vector of parameter names.}
-\item{\code{acf}}{An ACF function with three arguments: vector of parameters; interobservation time \eqn{\Delta t}; length \code{N}.}
-\item{\code{theta_trans}}{Transformation function that converts original ACF parameter into unrestricted parameters.}
-\item{\code{theta_itrans}}{Inverse Transformation function that converts unrestricted parameters into original ACF parameter.}
-\item{\code{penalty}}{Penalty function for unrestricted parameters.}
-}
-}
+\title{Class definition for the fSD model.}
 \description{
-Constructor of fsd model object.
+Class definition for the fSD model.
 }
 \details{
 Constructor function that generates a list of fsd model for purpose of fitting.
@@ -27,4 +14,140 @@ Constructor function that generates a list of fsd model for purpose of fitting.
 model <- fsd_model()
 # we can modify the elements of generated object
 model$theta_names[1] <- "gamma"
+}
+\section{Super class}{
+\code{\link[subdiff:csi_model]{subdiff::csi_model}} -> \code{fsd_model}
+}
+\section{Public fields}{
+\if{html}{\out{<div class="r6-fields">}}
+\describe{
+\item{\code{phi_names}}{Kernel parameter names.  A subset of \verb{(alpha, tau, sigma2)} (see \link{csi_model} and \code{fsd_model$initialize()}).}
+}
+\if{html}{\out{</div>}}
+}
+\section{Methods}{
+\subsection{Public methods}{
+\itemize{
+\item \href{#method-acf}{\code{fsd_model$acf()}}
+\item \href{#method-trans}{\code{fsd_model$trans()}}
+\item \href{#method-itrans}{\code{fsd_model$itrans()}}
+\item \href{#method-penalty}{\code{fsd_model$penalty()}}
+\item \href{#method-clone}{\code{fsd_model$clone()}}
+}
+}
+\if{html}{
+\out{<details ><summary>Inherited methods</summary>}
+\itemize{
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="drift">}\href{../../subdiff/html/csi_model.html#method-drift}{\code{subdiff::csi_model$drift()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fisher">}\href{../../subdiff/html/csi_model.html#method-fisher}{\code{subdiff::csi_model$fisher()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fit">}\href{../../subdiff/html/csi_model.html#method-fit}{\code{subdiff::csi_model$fit()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_eta">}\href{../../subdiff/html/csi_model.html#method-get_eta}{\code{subdiff::csi_model$get_eta()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_vcov">}\href{../../subdiff/html/csi_model.html#method-get_vcov}{\code{subdiff::csi_model$get_vcov()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="initialize">}\href{../../subdiff/html/csi_model.html#method-initialize}{\code{subdiff::csi_model$initialize()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="itrans_full">}\href{../../subdiff/html/csi_model.html#method-itrans_full}{\code{subdiff::csi_model$itrans_full()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="loglik">}\href{../../subdiff/html/csi_model.html#method-loglik}{\code{subdiff::csi_model$loglik()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="muSigma_hat">}\href{../../subdiff/html/csi_model.html#method-muSigma_hat}{\code{subdiff::csi_model$muSigma_hat()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nlp">}\href{../../subdiff/html/csi_model.html#method-nlp}{\code{subdiff::csi_model$nlp()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="trans_full">}\href{../../subdiff/html/csi_model.html#method-trans_full}{\code{subdiff::csi_model$trans_full()}}\out{</span>}
+}
+\out{</details>}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-acf"></a>}}
+\if{latex}{\out{\hypertarget{method-acf}{}}}
+\subsection{Method \code{acf()}}{
+Increment autocorrelation function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fsd_model$acf(phi, dt, N)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{phi, dt, N}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-trans"></a>}}
+\if{latex}{\out{\hypertarget{method-trans}{}}}
+\subsection{Method \code{trans()}}{
+Transform kernel parameters from regular to computational basis.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fsd_model$trans(phi)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{phi}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+The transformation function is\preformatted{psi = (psi1 = logit(alpha/2), psi2 = logit(tau), psi3 = log(sigma2)).
+}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-itrans"></a>}}
+\if{latex}{\out{\hypertarget{method-itrans}{}}}
+\subsection{Method \code{itrans()}}{
+Transform kernel parameters from computational to regular basis.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fsd_model$itrans(psi)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{psi}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-penalty"></a>}}
+\if{latex}{\out{\hypertarget{method-penalty}{}}}
+\subsection{Method \code{penalty()}}{
+Penalty function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fsd_model$penalty(psi)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{psi}}{Kernel parameters in the computational basis}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+The penalty function is\preformatted{penalty(psi) = log(1+exp(psi2)) + log(1+exp(-psi2)) - psi3.
+}
+}
+
+\subsection{Returns}{
+Scalar value of the penalty.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-clone}{}}}
+\subsection{Method \code{clone()}}{
+The objects of this class are cloneable with this method.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fsd_model$clone(deep = FALSE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{deep}}{Whether to make a deep clone.}
+}
+\if{html}{\out{</div>}}
+}
+}
 }

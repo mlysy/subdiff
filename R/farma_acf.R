@@ -1,6 +1,6 @@
 #' Calculate the autocorrelation of the fARMA model.
 #'
-#' Compute the autocorrelation of fARMA(p,q) increments at equally-spaced time pionts (see 'Details').
+#' Compute the autocorrelation of fARMA(p,q) process increments at equally-spaced time points (see 'Details').
 #'
 #' @param alpha Subdiffusion exponent of the underlying fBM process. A scalar between 0 and 2.
 #' @param phi A vector of `p >= 0` autoregressive (AR) coefficients.

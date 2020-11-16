@@ -36,7 +36,6 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
     ndims <- sample(1:2, 1)
     acf1 <- fsd_acf(alpha, tau, sig^2, dt, N)
     dX <- as.matrix(rnormtz(n = ndims, fft = FALSE, acf = acf1))
-
     # fsd
     theta_hat <- fsd_fit(dX, dt, vcov = FALSE) # fit MLE
     # projection plots

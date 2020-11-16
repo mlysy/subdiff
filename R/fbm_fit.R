@@ -33,5 +33,5 @@ fbm_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
   ## ans
   drift <- match.arg(drift)
   model <- fbm_model$new(dX = dX, dt = dt, drift = drift)
-  model$fit(phi0 = c(.001, 1.999), vcov = vcov)
+  model$fit(psi0 = c(-5, 5), vcov = vcov)
 }

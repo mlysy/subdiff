@@ -2,19 +2,9 @@
 % Please edit documentation in R/fbm_model.R
 \name{fbm_model}
 \alias{fbm_model}
-\title{Constructor for fBM model objects.}
-\value{
-An list of class \code{csi_class} with components:
-\describe{
-\item{\code{theta_names}}{A vector of parameter names.}
-\item{\code{acf}}{An ACF function with three arguments: vector of parameters; interobservation time \eqn{\Delta t}; length \code{N}.}
-\item{\code{theta_trans}}{Transformation function that converts original ACF parameter into unrestricted parameters.}
-\item{\code{theta_itrans}}{Inverse Transformation function that converts unrestricted parameters into original ACF parameter.}
-\item{\code{penalty}}{Penalty function for unrestricted parameters.}
-}
-}
+\title{Class definition for the fBM model.}
 \description{
-Constructor for fBM model objects.
+Class definition for the fBM model.
 }
 \details{
 Fractional Brownian motion \code{X_t} is the only (zero-mean) continuous stationary increments (CSI) Gaussian process having mean square displacement (MSD) function given by the power law\preformatted{E[(X_t-X_0)^2] = t^alpha,
@@ -55,6 +45,8 @@ with subdiffusion exponent \verb{0 < alpha < 2}.
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="drift">}\href{../../subdiff/html/csi_model.html#method-drift}{\code{subdiff::csi_model$drift()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fisher">}\href{../../subdiff/html/csi_model.html#method-fisher}{\code{subdiff::csi_model$fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fit">}\href{../../subdiff/html/csi_model.html#method-fit}{\code{subdiff::csi_model$fit()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_eta">}\href{../../subdiff/html/csi_model.html#method-get_eta}{\code{subdiff::csi_model$get_eta()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_vcov">}\href{../../subdiff/html/csi_model.html#method-get_vcov}{\code{subdiff::csi_model$get_vcov()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="initialize">}\href{../../subdiff/html/csi_model.html#method-initialize}{\code{subdiff::csi_model$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="itrans_full">}\href{../../subdiff/html/csi_model.html#method-itrans_full}{\code{subdiff::csi_model$itrans_full()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="loglik">}\href{../../subdiff/html/csi_model.html#method-loglik}{\code{subdiff::csi_model$loglik()}}\out{</span>}

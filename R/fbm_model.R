@@ -1,4 +1,4 @@
-#' Constructor for fBM model objects.
+#' Class definition for the fBM model.
 #'
 #' @name fbm_model
 #'
@@ -7,7 +7,6 @@
 #' E[(X_t-X_0)^2] = t^alpha,
 #' ```
 #' with subdiffusion exponent `0 < alpha < 2`.
-#' @template ret-csi_class
 #'
 #' @example examples/fbm_model.R
 NULL

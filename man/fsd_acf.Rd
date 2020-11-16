@@ -2,16 +2,16 @@
 % Please edit documentation in R/fsd_acf.R
 \name{fsd_acf}
 \alias{fsd_acf}
-\title{Calculate the ACF for the fsd model.}
+\title{Calculate the autocorrelation of the fSD model.}
 \usage{
 fsd_acf(alpha, tau, sigma2, dt, N)
 }
 \arguments{
-\item{alpha}{Power law exponent of fBM process. A scalar between 0 and 2.}
+\item{alpha}{Subdiffusion exponent of the underlying fBM process. A scalar between 0 and 2.}
 
-\item{tau}{The ratio between camera shutter open time and interobservation time \code{dt} (see \strong{Details}). A scalar between 0 and 1.}
+\item{tau}{The ratio between camera shutter open time and interobservation time \code{dt} (see 'Details'). A scalar between 0 and 1.}
 
-\item{sigma2}{The Magnitude of static errors (see \strong{Details}). A positive scalar.}
+\item{sigma2}{The magnitude of the static error (see 'Details'). A positive scalar.}
 
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
@@ -21,21 +21,15 @@ fsd_acf(alpha, tau, sigma2, dt, N)
 A vector of \code{N} autocorrelation values.
 }
 \description{
-Compute the autocovariance for the increments of Savin & Doyle's localization model with fBM process (see \strong{Details}).
+Compute the autocorrelation of the Savin & Doyle (2005) localization error model with fBM increments (see 'Details').
 }
 \details{
-The Savin & Doyle's localization error model with fBM process (fsd model) is of following form:
-\deqn{
-Y_n = 1/\tau \int_0^\tau X_{n  \Delta t+s} ds + \sigma e_{n}
-}{
-Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t+s} ds + \sigma e[n]
+Let \code{X_t} denote the position of an fBM process at time \code{t}.  The Savin-Doyle localization error model describes the observed position \code{Y_n} at time \code{t = n * dt} as\preformatted{Y_n = sigma * eps_n + 1/tau * int_0^tau X_\{n*dt + s\} ds,
 }
-where \eqn{X_n} is an fBM process.
 
-The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
-\eqn{e[n]} is a standard white noise, and this term is called static error.
+where \verb{eps_n ~iid N(0,1)} is a Gaussian white noise process.
 
-This function returns the autocovariance function of increments of \eqn{Y[n]}.
+This function returns the autocorrelation of the stationary process \verb{dY_n = Y_\{n+1\} - Y_n}.
 }
 \examples{
 # ACF parameters

@@ -23,7 +23,7 @@ farma_acf(alpha, phi = numeric(), rho = numeric(), dt, N, m = 50)
 A vector of \code{N} autocorrelation values.
 }
 \description{
-Compute the autocorrelation of fARMA(p,q) increments at equally-spaced time pionts (see 'Details').
+Compute the autocorrelation of fARMA(p,q) process increments at equally-spaced time points (see 'Details').
 }
 \details{
 Let \code{X_n} denote the position of an fBM process at time \code{t = n * dt}. The fARMA(p,q) process \code{Y_n} is then defined as\preformatted{Y_n = rho_0 X_n + sum_\{i=1\}^p phi_i Y_\{n-i\} + sum_\{j=1\}^q + rho_j X_\{n-j\}.

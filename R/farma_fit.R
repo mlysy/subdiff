@@ -38,7 +38,7 @@ farma_fit <- function(dX, dt, order, drift = c("linear", "none", "quadratic"),
   }
   model <- farma_model$new(dX = dX, dt = dt, drift = drift,
                            p = order[1], q = order[2], m = 50)
-  model$fit(phi0 = model$itrans(rep(0, length(model$phi_names))),
+  model$fit(psi0 = rep(0, length(model$phi_names)),
             vcov = vcov)
   ## ans <- csi_fit(model, dX, dt, Tz, vcov)
   ## ans

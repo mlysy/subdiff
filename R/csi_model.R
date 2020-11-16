@@ -124,6 +124,16 @@ csi_model <- R6::R6Class(
     #' @field phi_names Vector of kernel parameter names (on the original scale).  Setting to `NULL` means there are no kernel parameters (`n_phi = 0`).
     phi_names = NA,
 
+    #' @description Combine kernel parameters with conditional MLE of `mu` and `Sigma`.
+    #'
+    #' @param psi Kernel parameters in the computational basis.
+    #' @return Named vector of full parameter set in the computational basis.
+    get_eta = function(psi) {
+      nu <- self$muSigma_hat(self$itrans(psi)) # nuisance terms
+      setNames(c(psi, nu$mu, trans_Sigma(nu$Sigma)),
+                      nm = private$eta_names)
+    },
+
     #' @description Convert from original to computational basis.
     #'
     #' @param phi Kernel parameters in the original basis.
@@ -196,35 +206,47 @@ csi_model <- R6::R6Class(
       })
     },
 
+    #' @description Convert a Fisher information matrix to a variance matrix.
+    #'
+    #' @param fi Fisher information matrix of size `n_eta x n_eta` with parameters in the computational basis.
+    #' @return Variance matrix of size `n_eta x n_eta` with parameters in the computational basis.
+    get_vcov = function(fi) {
+      # invert to get variance estimate
+      var_hat <- chol2inv(chol(fi))
+      colnames(var_hat) <- rownames(var_hat) <- private$eta_names
+      var_hat
+    },
+
     #' @description Calculate the maximum likelihood parameter values.
     #'
-    #' @param phi0 Vector of kernel parameter values (on the regular scale) to initialize the optimization if `n_phi > 1`.  If `n_phi == 1`, a vector of length 2 giving the range in which to perform the optimum search.
+    #' @param psi0 Vector of kernel parameter values (on the computational scale) to initialize the optimization if `n_phi > 1`.  If `n_phi == 1`, a vector of length 2 giving the range in which to perform the optimum search.
     #' @param vcov Whether to also calculate the MLE variance estimate.
     #' @param ... Additional arguments to [stats::optim()] or [stats::optimize()] for `n_phi == 1`.
     #'
     #' @return A list with elements `coef` and optionally `vcov` containing the MLE in the computational basis and its variance estimate.
-    fit = function(phi0, vcov = TRUE, ...) {
+    fit = function(psi0, vcov = TRUE, ...) {
       # calculate MLE
       if(private$n_phi > 1) {
-        opt <- optim(par = self$trans(phi0),
+        opt <- optim(par = psi0,
                      fn = self$nlp, ...)
         if(opt$convergence != 0) warning("`optim()` did not converge.")
         psi_hat <- opt$par
       } else {
-        psi0 <- c(self$trans(phi0[1]), self$trans(phi0[2]))
         psi_hat <- optimize(f = self$nlp, interval = psi0, ...)$minimum
       }
-      phi_hat <- self$itrans(psi_hat)
-      # nuisance terms
-      nu <- self$muSigma_hat(phi_hat)
-      eta_hat <- c(psi_hat, nu$mu, trans_Sigma(nu$Sigma))
-      names(eta_hat) <- private$eta_names
+      eta_hat <- self$get_eta(psi_hat)
+      ## phi_hat <- self$itrans(psi_hat)
+      ## # nuisance terms
+      ## nu <- self$muSigma_hat(phi_hat)
+      ## eta_hat <- c(psi_hat, nu$mu, trans_Sigma(nu$Sigma))
+      ## names(eta_hat) <- private$eta_names
       if(vcov) {
         # fisher information
         fi <- self$fisher(eta_hat)
         # invert to get variance estimate
-        var_hat <- chol2inv(chol(fi))
-        colnames(var_hat) <- rownames(var_hat) <- private$eta_names
+        var_hat <- self$get_vcov(fi)
+        ## var_hat <- chol2inv(chol(fi))
+        ## colnames(var_hat) <- rownames(var_hat) <- private$eta_names
         out <- list(coef = eta_hat, vcov = var_hat)
       } else out <- eta_hat
       out

@@ -52,6 +52,8 @@ Constructor function that generates a list of farma(p,q) model for purpose of fi
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="drift">}\href{../../subdiff/html/csi_model.html#method-drift}{\code{subdiff::csi_model$drift()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fisher">}\href{../../subdiff/html/csi_model.html#method-fisher}{\code{subdiff::csi_model$fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fit">}\href{../../subdiff/html/csi_model.html#method-fit}{\code{subdiff::csi_model$fit()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_eta">}\href{../../subdiff/html/csi_model.html#method-get_eta}{\code{subdiff::csi_model$get_eta()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_vcov">}\href{../../subdiff/html/csi_model.html#method-get_vcov}{\code{subdiff::csi_model$get_vcov()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="itrans_full">}\href{../../subdiff/html/csi_model.html#method-itrans_full}{\code{subdiff::csi_model$itrans_full()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="loglik">}\href{../../subdiff/html/csi_model.html#method-loglik}{\code{subdiff::csi_model$loglik()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="muSigma_hat">}\href{../../subdiff/html/csi_model.html#method-muSigma_hat}{\code{subdiff::csi_model$muSigma_hat()}}\out{</span>}

@@ -2,16 +2,16 @@
 % Please edit documentation in R/fsd_fit.R
 \name{fsd_fit}
 \alias{fsd_fit}
-\title{Fit the fsd model.}
+\title{Fit the fSD model.}
 \usage{
-fsd_fit(dX, dt, Tz, vcov = TRUE)
+fsd_fit(dX, dt, drift = c("linear", "none", "quadratic"), vcov = TRUE)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{Tz}{Optional object of class \code{Toeplitz} for intermediate calculations (See \code{\link[SuperGauss:Toeplitz]{SuperGauss::Toeplitz()}}).}
+\item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
@@ -23,9 +23,12 @@ A vector of estimated parameters on transformed scale (See \code{\link[=fsd_mode
 }
 }
 \description{
-Fit the Savin & Doyle's localization error model with fBM process (See \strong{Details}).
+Fit Savin & Doyle's localization error model with fBM process (See 'Details').
 }
 \details{
+To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term\preformatted{penalty(psi) = log(1+exp(psi2)) + log(1+exp(-psi2)) - psi3.
+}
+
 The Savin & Doyle's localization error model with fBM process (fsd model) has the following form:
 \deqn{
 Y_n = 1/\tau \int_0^\tau X_{n \Delta t +s} ds + \sigma e_{n}
@@ -56,5 +59,5 @@ Tz <- Toeplitz(n = N)
 fsd_fit(dX, dt, Tz, vcov = TRUE)
 }
 \references{
-Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical journal 88.1 (2005): 623-638.
+Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 }
