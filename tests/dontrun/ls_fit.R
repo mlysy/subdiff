@@ -126,3 +126,34 @@ ls_var <- function(alpha, tau, N) {
 ##   v5 <- abs(iseq2 - sqrt(tau2/tau1))^alpha
 ##   sum(v1 * (v2 - v3 - v4 + v5)^2) / 2
 ## }
+
+ls_var2 <- function(alpha, tau, N) {
+  tprod <- 1/sqrt(tau %o% tau)
+  t1ov2 <- sqrt(tau %o% (1/tau))
+  t2ov1 <- 1/t1ov2
+  # ii = 0
+  Vt <- abs(t1ov2)^alpha
+  Vt <- Vt + t(Vt) - abs(t1ov2 - t2ov1)^alpha
+  V <- Vt^2
+  for(ii in 1:(N-1)) {
+    Vt <- abs(ii * tprod + t1ov2)^alpha
+    Vt <- Vt - abs(ii * tprod + t1ov2 - t2ov1)^alpha
+    Vt <- Vt - abs(ii * tprod)^alpha
+    Vt <- Vt + abs(ii * tprod - t2ov1)^alpha
+    Vt <- Vt^2
+    V <- V + (1-abs(ii)/N) * (Vt + t(Vt))
+  }
+  .5 * V/N
+}
+
+
+## Rcpp::sourceCpp("ls_var.cpp")
+
+ntau <- 100
+alpha <- runif(1) * 2
+tau <- sort(runif(ntau))
+N <- 1000
+system.time(V1 <- ls_var(alpha, tau, N))
+system.time(V2 <- ls_var2(alpha, tau, N))
+range(V1 - V2)
+range((V1 - V2)/V1)
