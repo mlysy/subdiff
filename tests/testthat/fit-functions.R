@@ -86,3 +86,17 @@ farma_acf2 <- function(alpha, phi, rho, dt, N, m = 30) {
   acf2
 }
 
+ls_var_r <- function(alpha, tau, N) {
+  tprod <- 1/sqrt(tau %o% tau)
+  t1ov2 <- sqrt(tau %o% (1/tau))
+  t2ov1 <- 1/t1ov2
+  V <- 0
+  for(ii in (-N+1):(N-1)) {
+    Vt <- abs(ii * tprod + t1ov2)^alpha
+    Vt <- Vt - abs(ii * tprod + t1ov2 - t2ov1)^alpha
+    Vt <- Vt - abs(ii * tprod)^alpha
+    Vt <- Vt + abs(ii * tprod - t2ov1)^alpha
+    V <- V + (1-abs(ii)/N) * Vt^2
+  }
+  .5 * V/N
+}

@@ -10,7 +10,7 @@ Description: Tools for implementing various models for particle subdiffusion in 
 License: GPL-3
 Depends: R (>= 2.10), LMN, SuperGauss
 Imports: Rcpp (>= 0.12.12), R6, numDeriv, fftw, stats
-LinkingTo: Rcpp
+LinkingTo: Rcpp, RcppEigen
 LazyData: true
 RoxygenNote: 7.1.1
 Encoding: UTF-8

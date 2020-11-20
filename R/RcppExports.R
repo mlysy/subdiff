@@ -13,6 +13,10 @@ log1pe <- function(x) {
     .Call(`_subdiff_log1pexp_wrapper`, x)
 }
 
+ls_var <- function(alpha, tau, N) {
+    .Call(`_subdiff_ls_var`, alpha, tau, N)
+}
+
 ma1_resid <- function(Xt, rho) {
     .Call(`_subdiff_ma1Resid`, Xt, rho)
 }

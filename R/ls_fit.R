@@ -1,15 +1,17 @@
 #' Fit least-squares estimate.
 #'
-#' @param dX Matrix of trajectiory increments where each row is an observation and each column is an observed dimension.
-#' @param dt Interobservation time.
-#' @param lags Integer vector of lags to use in the fit.
+#' @template args-dX
+#' @template args-dt
+#' @param lags Integer vector of lags to use in the fit, such that the timepoints used in the fit are `tau = dt * lags`.
 #' @param type Either "standard" for the usual LS estimator, or "improved" for the version of Zhang et al (2018).
 #' @param vcov If `TRUE`, calculates the variance matrix of `(alpha, logD)`.
 #'
 #' @return If `vcov = FALSE`, vector of length 2 with estimates of `(alpha, logD)`.  Otherwise, a list with elements `coef` and `vcov`, where the former is the estimate and the latter is the corresponding variance estimator.
 #'
 #' @note Uses the **subdiff** convention for `D`.
+#'
 #' @references Zhang, K., Crizer, K.P.R., Schoenfisch, M.H., Hill, B.D., Didier, G. (2018) "Fluid heterogeneity detection based on the asymptotic distribution of the time-averaged mean squared displacement in single particle tracking experiments". *Journal of Physics A: Mathematical and Theoretical*, 51, pp 445601(44).
+#' @export
 ls_fit <- function(dX, dt, lags,
                    type = c("standard", "improved"), vcov = TRUE) {
   type <- match.arg(type)
@@ -88,72 +90,5 @@ ls_bias <- function(alpha, tau, N) {
 #' @param tau Vector of length `ntau`.
 #' @param N Scalar.
 #' @return Variance matrix of size `ntau x ntau`.
-#' @details Returns exactly the term `Upsilon(alpha)` in formula (27) of Zhang et al (2018).
+#' @details Returns exactly the term `Upsilon(alpha)` in formula (27) of Zhang et al (2018).  This function is now implemented in `src/ls_var.cpp`.  For the R version, see `ls_var_r` in `tests/testthat/fit-functions.R`.
 #' @noRd
-ls_var <- function(alpha, tau, N) {
-  tprod <- 1/sqrt(tau %o% tau)
-  t1ov2 <- sqrt(tau %o% (1/tau))
-  t2ov1 <- 1/t1ov2
-  V <- 0
-  for(ii in (-N+1):(N-1)) {
-    Vt <- abs(ii * tprod + t1ov2)^alpha
-    Vt <- Vt - abs(ii * tprod + t1ov2 - t2ov1)^alpha
-    Vt <- Vt - abs(ii * tprod)^alpha
-    Vt <- Vt + abs(ii * tprod - t2ov1)^alpha
-    V <- V + (1-abs(ii)/N) * Vt^2
-  }
-  .5 * V/N
-}
-
-#--- scratch -------------------------------------------------------------------
-
-## ls_bias <- function(alpha, tau, N) {
-##   iseq <- (-N+1):(N-1)
-##   v1 <- 1 - abs(iseq)/N
-##   v2 <- abs(iseq/tau+1)^alpha
-##   v3 <- abs(iseq/tau)^alpha
-##   v3 <- abs(iseq/tau-1)^alpha
-##   sum(v1 * (v2 - 2*v3 + v4)^2) / 4*tau
-## }
-
-## ls_var <- function(alpha, tau1, tau2, N) {
-##   iseq <- (-N+1):(N-1)
-##   iseq2 <- iseq/sqrt(tau1*tau2)
-##   v1 <- 1 - abs(iseq)/N
-##   v2 <- abs(iseq2 + sqrt(tau1/tau2))^alpha
-##   v3 <- abs(iseq2 + sqrt(tau1/tau2) - sqrt(tau2/tau1))^alpha
-##   v4 <- abs(iseq2)^alpha
-##   v5 <- abs(iseq2 - sqrt(tau2/tau1))^alpha
-##   sum(v1 * (v2 - v3 - v4 + v5)^2) / 2
-## }
-
-ls_var2 <- function(alpha, tau, N) {
-  tprod <- 1/sqrt(tau %o% tau)
-  t1ov2 <- sqrt(tau %o% (1/tau))
-  t2ov1 <- 1/t1ov2
-  # ii = 0
-  Vt <- abs(t1ov2)^alpha
-  Vt <- Vt + t(Vt) - abs(t1ov2 - t2ov1)^alpha
-  V <- Vt^2
-  for(ii in 1:(N-1)) {
-    Vt <- abs(ii * tprod + t1ov2)^alpha
-    Vt <- Vt - abs(ii * tprod + t1ov2 - t2ov1)^alpha
-    Vt <- Vt - abs(ii * tprod)^alpha
-    Vt <- Vt + abs(ii * tprod - t2ov1)^alpha
-    Vt <- Vt^2
-    V <- V + (1-abs(ii)/N) * (Vt + t(Vt))
-  }
-  .5 * V/N
-}
-
-
-## Rcpp::sourceCpp("ls_var.cpp")
-
-ntau <- 100
-alpha <- runif(1) * 2
-tau <- sort(runif(ntau))
-N <- 1000
-system.time(V1 <- ls_var(alpha, tau, N))
-system.time(V2 <- ls_var2(alpha, tau, N))
-range(V1 - V2)
-range((V1 - V2)/V1)

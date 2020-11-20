@@ -14,7 +14,7 @@ using namespace Eigen;
 /// @return Variance matrix of size `ntau x ntau`.
 /// @details Returns exactly the term `Upsilon(alpha)` in formula (27) of Zhang et al (2018).
 // [[Rcpp::export]]
-Eigen::MatrixXd ls_var_cpp(double alpha, Eigen::VectorXd tau, int N) {
+Eigen::MatrixXd ls_var(double alpha, Eigen::VectorXd tau, int N) {
   int ntau = tau.size();
   // intermediate variables
   MatrixXd tprod = tau * tau.transpose();
