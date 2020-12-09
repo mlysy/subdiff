@@ -26,7 +26,7 @@ rouse_sub <- function(alpha, tau, K, est_alpha = TRUE, ...) {
   nPrec <- 5e3 # for fitting D_eff and alpha_eff
   lambda <- ((1:K)/K)^(1/alpha)/tau
   # Rouse coefficients
-  rC <- prony_coeff(lambda, ...)
+  rC <- prony_coeff(lambda = lambda, nu = 1/K, ...)
   r <- rC$r
   C <- rC$C
   # subdiffusive timescale

@@ -15,7 +15,7 @@ rouse_msd(t, alpha, tau, K, ...)
 
 \item{K}{Number of relaxation modes.}
 
-\item{...}{Additional arguments to pass to \code{prony.msd}.}
+\item{...}{Additional arguments to pass to \code{\link[=prony_msd]{prony_msd()}}.}
 }
 \value{
 Vector of mean square displacements.

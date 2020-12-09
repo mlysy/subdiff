@@ -4,10 +4,10 @@
 #' @param nlag Number of MSD lags to calculate.
 #' @param demean Logical; whether or not to remove the mean of `Xt` as estimated by linear drift.
 #' @return Sample MSD vector of length `nlag`.
-#' 
+#'
 #' @example examples/Xt_setup.R
 #' @example examples/msd_fit.R
-#' 
+#'
 #' @export
 msd_fit <- function(Xt, nlag, demean = TRUE) {
   Xt <- as.matrix(Xt)
@@ -19,5 +19,5 @@ msd_fit <- function(Xt, nlag, demean = TRUE) {
   if(missing(nlag)) nlag <- floor(10 * (log10(N) - log10(ncol(Xt))))
   nlag <- min(nlag, N-1)
   # output
-  .SampleMSD(Xt, nlag)
+  msd_empirical(Xt, nlag)
 }

@@ -4,14 +4,16 @@
 \alias{prony_coeff}
 \title{Coefficients of position-process representation of the Prony-GLE.}
 \usage{
-prony_coeff(lambda, r, C, nsteps = 100, tol = 0)
+prony_coeff(lambda, nu, r, C, nsteps = 100, tol = 0)
 }
 \arguments{
-\item{lambda}{Vector of inverse decorrelation times of the GLE force term.}
+\item{lambda}{Vector of length \code{K} giving the inverse decorrelation times of the exponential decay terms.}
+
+\item{nu}{Autocorrelation scaling factor.}
 
 \item{r}{Optional vector of pre-computed OU mean-reversion parameters.  Avoids calling the mode-finding routine.}
 
-\item{C}{Optional vector of pre-computed OU scale coefficients.  Can't pass \code{C} without \code{r}.  When both \code{r} and \code{C} are supplied the function does nothign.  This is mainly for the convenience of calling \code{\link[=prony_coeff]{prony_coeff()}} from other functions.}
+\item{C}{Optional vector of pre-computed OU scale coefficients.  Can't pass \code{C} without \code{r}.  When both \code{r} and \code{C} are supplied the function does nothign.  This is mainly for the convenience of calling \code{prony_coeff()} from other functions.}
 
 \item{nsteps}{Number of steps in mode-finding golden search algorithm.}
 
@@ -22,4 +24,22 @@ A list with elements \code{r} and \code{C}, containing the \code{length(lambda)-
 }
 \description{
 Coefficients of position-process representation of the Prony-GLE.
+}
+\details{
+The Prony-GLE model satisfies the integro-differential equation
+\deqn{
+F_t - \int_{-\infty}^t \kappa(t-s) \dot X_s ds = 0, \qquad ACF_F(t) = k_B T \kappa(t),
+}
+where \eqn{T} is temperature, \eqn{k_B} is Boltzmann's constant, and the memory kernel is a sum of exponentials:
+\deqn{
+\kappa(t) = \nu sum_{k=1}^K exp(-\lambda_k t).
+}
+The solution process is of the form
+\deqn{
+X_t = C_0 B_t + \sum_{i=1}^{K-1} C_i W_{it},
+}
+where \eqn{B_t} is Brownian motion and \eqn{d W_{it} = -\rho_i W_{it} dt + d B_{it}} are Ornstein-Uhlenbeck processes all independent of each other and of \eqn{B_t}.
+}
+\note{
+Since temperature is not provide, \code{C} is only proportional to the true vector \code{C_true}, such that \verb{C_true = sqrt(k_B T) * C}.
 }

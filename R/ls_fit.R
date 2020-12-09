@@ -22,22 +22,20 @@ ls_fit <- function(dX, dt, lags,
     stop("max(lags) must be smaller than nrow(dX)-1.")
   }
   msd <- msd_fit(Xt = apply(dX, 2, cumsum), nlag = max(lags))
-  tau <- dt * lags
-  if(type == "standard" || vcov) {
-    # need the standard estimator
-    y <- log(msd[lags])
-    X <- cbind(1, log(tau))
-    qX <- qr(X)
-    theta_stand <- solve(qX, y)
-    alpha_stand <- theta_stand[2]
-  }
+  ## tau <- dt * lags
+  # need the standard estimator
+  y <- log(msd[lags])
+  X <- cbind(log(dt * lags), 1)
+  qX <- qr(X)
+  theta_stand <- solve(qX, y)
+  alpha_stand <- theta_stand[1]
   if(type == "improved" || vcov) {
     # variance matrix
-    V <- ls_var(alpha_stand, tau, N)
+    V <- ls_var(alpha_stand, lags, N)
   }
   if(type == "improved") {
     # account for bias
-    bias <- ls_bias(alpha_stand, tau, N)
+    bias <- ls_bias(alpha_stand, lags, N)
     suff <- LMN::lmn_suff(Y = as.matrix(y + bias), X = X, V = V)
     theta_hat <- suff$Bhat[,1]
     if(vcov) {
@@ -65,20 +63,20 @@ ls_fit <- function(dX, dt, lags,
 #' MSD bias vector.
 #'
 #' @param alpha Scalar.
-#' @param tau Vector of length `ntau`.
+#' @param lags Integer vector of length `nlags`.
 #' @param N Scalar.
-#' @return Bias vector of length `ntau`.
+#' @return Bias vector of length `nlags`.
 #' @details Output is proportional to formula (18) in Zhang et al (2018), such that
 #' ```
-#' ls_bias(alpha, tau, N) = tau/N beta_N(alpha, tau).
+#' ls_bias(alpha, lags, N) = lags/N beta_N(alpha, lags).
 #' ```
 #' @noRd
-ls_bias <- function(alpha, tau, N) {
+ls_bias <- function(alpha, lags, N) {
   bias <- 0
   for(ii in (-N+1):(N-1)) {
-    bt <- abs(ii/tau + 1)^alpha
-    bt <- bt - 2 * abs(ii/tau)^alpha
-    bt <- bt + abs(ii/tau - 1)^alpha
+    bt <- abs(ii/lags + 1)^alpha
+    bt <- bt - 2 * abs(ii/lags)^alpha
+    bt <- bt + abs(ii/lags - 1)^alpha
     bias <- bias + (1-abs(ii)/N) * bt^2
   }
   .25 * bias/N
@@ -87,8 +85,22 @@ ls_bias <- function(alpha, tau, N) {
 #' Log-MSD variance matrix.
 #'
 #' @param alpha Scalar.
-#' @param tau Vector of length `ntau`.
+#' @param lags Integer vector of length `nlags`.
 #' @param N Scalar.
-#' @return Variance matrix of size `ntau x ntau`.
-#' @details Returns exactly the term `Upsilon(alpha)` in formula (27) of Zhang et al (2018).  This function is now implemented in `src/ls_var.cpp`.  For the R version, see `ls_var_r` in `tests/testthat/fit-functions.R`.
+#' @return Variance matrix of size `nlags x nlags`.
+#' @details Returns exactly the term `Upsilon(alpha)` in formula (27) of Zhang et al (2018).  This function is now implemented in `src/ls_var.cpp`.
 #' @noRd
+## ls_var <- function(alpha, lags, N) {
+##   tprod <- 1/sqrt(lags %o% lags)
+##   t1ov2 <- sqrt(lags %o% (1/lags))
+##   t2ov1 <- 1/t1ov2
+##   V <- 0
+##   for(ii in (-N+1):(N-1)) {
+##     Vt <- abs(ii * tprod + t1ov2)^alpha
+##     Vt <- Vt - abs(ii * tprod + t1ov2 - t2ov1)^alpha
+##     Vt <- Vt - abs(ii * tprod)^alpha
+##     Vt <- Vt + abs(ii * tprod - t2ov1)^alpha
+##     V <- V + (1-abs(ii)/N) * Vt^2
+##   }
+##   .5 * V/N
+## }

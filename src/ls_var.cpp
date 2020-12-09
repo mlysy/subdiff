@@ -8,23 +8,23 @@ using namespace Eigen;
 /// Log-MSD variance matrix.
 ///
 /// @param[in] alpha Scalar.
-/// @param[in] tau Vector of length `ntau`.
+/// @param[in] lags Integer vector of length `nlags`.  Stored as doubles though.
 /// @param[in] N Scalar.
 ///  
-/// @return Variance matrix of size `ntau x ntau`.
+/// @return Variance matrix of size `nlags x nlags`.
 /// @details Returns exactly the term `Upsilon(alpha)` in formula (27) of Zhang et al (2018).
 // [[Rcpp::export]]
-Eigen::MatrixXd ls_var(double alpha, Eigen::VectorXd tau, int N) {
-  int ntau = tau.size();
+Eigen::MatrixXd ls_var(double alpha, Eigen::VectorXd lags, int N) {
+  int nlags = lags.size();
   // intermediate variables
-  MatrixXd tprod = tau * tau.transpose();
+  MatrixXd tprod = lags * lags.transpose();
   tprod = tprod.cwiseSqrt().cwiseInverse();
-  VectorXd itau = tau.cwiseInverse();
-  MatrixXd t1ov2 = tau * itau.transpose();
+  VectorXd ilags = lags.cwiseInverse();
+  MatrixXd t1ov2 = lags * ilags.transpose();
   t1ov2 = t1ov2.cwiseSqrt();
   MatrixXd t2ov1 = t1ov2.transpose();
-  MatrixXd Vt = MatrixXd(ntau, ntau);
-  MatrixXd V = MatrixXd(ntau, ntau);
+  MatrixXd Vt = MatrixXd(nlags, nlags);
+  MatrixXd V = MatrixXd(nlags, nlags);
   // ii = 0
   // Note: X.array() += X.transpose().array() loses the upper half of the matrix every time due to aliasing.
   // so at the end of the calculation need to copy the lower half into the upper half.
@@ -55,6 +55,10 @@ Eigen::MatrixXd ls_var(double alpha, Eigen::VectorXd tau, int N) {
   V *= .5/N;
   return V;
 }
+
+
+// --- scratch -----------------------------------------------------------------
+
 
 // Eigen::MatrixXd ls_var_cpp(double alpha, Eigen::VectorXd tau, int N) {
 //   int ntau = tau.size();

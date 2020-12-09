@@ -14,6 +14,10 @@
 
 7. [ ] `msd_fit` and `msd_subdiff` should compare true MSD to estimate.  Also, should use GLE model.
 
+8. [ ] Check `rouse_sub()`.
+
+9. [ ] Use regression method for `msd_fit(demean = TRUE)`.
+
 # Formatting
 
 - [ ] Use roxygen markdown for all documentation.

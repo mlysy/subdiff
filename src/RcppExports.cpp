@@ -6,103 +6,61 @@
 
 using namespace Rcpp;
 
-// ModePoly
-NumericVector ModePoly(NumericVector roots, int nIter, double tol);
-RcppExport SEXP _subdiff_ModePoly(SEXP rootsSEXP, SEXP nIterSEXP, SEXP tolSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type roots(rootsSEXP);
-    Rcpp::traits::input_parameter< int >::type nIter(nIterSEXP);
-    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    rcpp_result_gen = Rcpp::wrap(ModePoly(roots, nIter, tol));
-    return rcpp_result_gen;
-END_RCPP
-}
-// SampleMSD
-NumericVector SampleMSD(NumericMatrix X, int nLags);
-RcppExport SEXP _subdiff_SampleMSD(SEXP XSEXP, SEXP nLagsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< int >::type nLags(nLagsSEXP);
-    rcpp_result_gen = Rcpp::wrap(SampleMSD(X, nLags));
-    return rcpp_result_gen;
-END_RCPP
-}
-// log1pexp_wrapper
-NumericVector log1pexp_wrapper(NumericVector x);
-RcppExport SEXP _subdiff_log1pexp_wrapper(SEXP xSEXP) {
+// log1pe
+NumericVector log1pe(NumericVector x);
+RcppExport SEXP _subdiff_log1pe(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(log1pexp_wrapper(x));
+    rcpp_result_gen = Rcpp::wrap(log1pe(x));
     return rcpp_result_gen;
 END_RCPP
 }
 // ls_var
-Eigen::MatrixXd ls_var(double alpha, Eigen::VectorXd tau, int N);
-RcppExport SEXP _subdiff_ls_var(SEXP alphaSEXP, SEXP tauSEXP, SEXP NSEXP) {
+Eigen::MatrixXd ls_var(double alpha, Eigen::VectorXd lags, int N);
+RcppExport SEXP _subdiff_ls_var(SEXP alphaSEXP, SEXP lagsSEXP, SEXP NSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    Rcpp::traits::input_parameter< Eigen::VectorXd >::type tau(tauSEXP);
+    Rcpp::traits::input_parameter< Eigen::VectorXd >::type lags(lagsSEXP);
     Rcpp::traits::input_parameter< int >::type N(NSEXP);
-    rcpp_result_gen = Rcpp::wrap(ls_var(alpha, tau, N));
+    rcpp_result_gen = Rcpp::wrap(ls_var(alpha, lags, N));
     return rcpp_result_gen;
 END_RCPP
 }
-// ma1Resid
-NumericMatrix ma1Resid(NumericMatrix Xt, double rho);
-RcppExport SEXP _subdiff_ma1Resid(SEXP XtSEXP, SEXP rhoSEXP) {
+// mode_poly
+NumericVector mode_poly(NumericVector roots, int n_iter, double tol);
+RcppExport SEXP _subdiff_mode_poly(SEXP rootsSEXP, SEXP n_iterSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type roots(rootsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_iter(n_iterSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    rcpp_result_gen = Rcpp::wrap(mode_poly(roots, n_iter, tol));
+    return rcpp_result_gen;
+END_RCPP
+}
+// msd_empirical
+NumericVector msd_empirical(NumericMatrix Xt, int n_lag);
+RcppExport SEXP _subdiff_msd_empirical(SEXP XtSEXP, SEXP n_lagSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type Xt(XtSEXP);
-    Rcpp::traits::input_parameter< double >::type rho(rhoSEXP);
-    rcpp_result_gen = Rcpp::wrap(ma1Resid(Xt, rho));
-    return rcpp_result_gen;
-END_RCPP
-}
-// ma2Resid
-NumericMatrix ma2Resid(NumericMatrix Xt, double rho1, double rho2);
-RcppExport SEXP _subdiff_ma2Resid(SEXP XtSEXP, SEXP rho1SEXP, SEXP rho2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xt(XtSEXP);
-    Rcpp::traits::input_parameter< double >::type rho1(rho1SEXP);
-    Rcpp::traits::input_parameter< double >::type rho2(rho2SEXP);
-    rcpp_result_gen = Rcpp::wrap(ma2Resid(Xt, rho1, rho2));
-    return rcpp_result_gen;
-END_RCPP
-}
-// ma3Resid
-NumericMatrix ma3Resid(NumericMatrix Xt, double rho1, double rho2, double rho3);
-RcppExport SEXP _subdiff_ma3Resid(SEXP XtSEXP, SEXP rho1SEXP, SEXP rho2SEXP, SEXP rho3SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type Xt(XtSEXP);
-    Rcpp::traits::input_parameter< double >::type rho1(rho1SEXP);
-    Rcpp::traits::input_parameter< double >::type rho2(rho2SEXP);
-    Rcpp::traits::input_parameter< double >::type rho3(rho3SEXP);
-    rcpp_result_gen = Rcpp::wrap(ma3Resid(Xt, rho1, rho2, rho3));
+    Rcpp::traits::input_parameter< int >::type n_lag(n_lagSEXP);
+    rcpp_result_gen = Rcpp::wrap(msd_empirical(Xt, n_lag));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_subdiff_ModePoly", (DL_FUNC) &_subdiff_ModePoly, 3},
-    {"_subdiff_SampleMSD", (DL_FUNC) &_subdiff_SampleMSD, 2},
-    {"_subdiff_log1pexp_wrapper", (DL_FUNC) &_subdiff_log1pexp_wrapper, 1},
+    {"_subdiff_log1pe", (DL_FUNC) &_subdiff_log1pe, 1},
     {"_subdiff_ls_var", (DL_FUNC) &_subdiff_ls_var, 3},
-    {"_subdiff_ma1Resid", (DL_FUNC) &_subdiff_ma1Resid, 2},
-    {"_subdiff_ma2Resid", (DL_FUNC) &_subdiff_ma2Resid, 3},
-    {"_subdiff_ma3Resid", (DL_FUNC) &_subdiff_ma3Resid, 4},
+    {"_subdiff_mode_poly", (DL_FUNC) &_subdiff_mode_poly, 3},
+    {"_subdiff_msd_empirical", (DL_FUNC) &_subdiff_msd_empirical, 2},
     {NULL, NULL, 0}
 };
 

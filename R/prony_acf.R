@@ -1,26 +1,22 @@
-#' @title Prony Acf.
-#' @description GLE with 0 mass and 0 external potential.
-#' @details
-#' process `x` is defined as
-#' \code{vsigma * int_{-infty}^t gamma(t-s)  x_s d s = k_B T vsigma * F_t}
-#' where the force noise F_t is a sum of independent OU processes, ie,
-#' cov(F_s, F_{t+s}) = gamma(t) = exp(-alpha1 t) + ... + exp(-alphaK t).
-#' the resulting process is
-#' Y_t = C1 X_1t + ... + CK X_Kt,
-#' where X_1t = B_1t and X_it, i > 1 are OU processes,
-#' d X_it = -ri X_it dt + d B_it,
-#' and all B_it are independent.
-#' note that cov(X_i0, X_it) = (2*ri)^{-1} * exp(-ri * t).
-#' @param lambda coefficients of the sum of OU processes.
-#' @param N number of samples.
-#' @param dt interobservation time.
-#' @param ... Additional arguments to [prony_coeff()] for obtaining the BM-OU coefficients.
-#' @return Vector of autocorrelations.
+#' Autocorrelation of the Prony-GLE increment process.
+#'
+#' @template args-lambda
+#' @template args-nu
+#' @template args-dt
+#' @template args-N
+#' @param ... Additional arguments to [prony_coeff()].
+#'
+#' @template ret-acf
+#' @template details-prony_gle
+#' @note Since temperature is not provided, the result is only proportional to the desired ACF, such that
+#' ```
+#' ACF_dX(t) = k_B T * prony_acf(lambda, nu, N, dt)
+#' ```
 #' @export
-prony_acf <- function(lambda, N, dt, ...) {
+prony_acf <- function(lambda, nu = 1, dt, N, ...) {
   acf <- rep(0, N)
   # prony coefficients
-  rC <- prony_coeff(lambda, ...)
+  rC <- prony_coeff(lambda, nu, ...)
   r <- rC$r
   C <- rC$C
   K <- length(C) # number of modes
