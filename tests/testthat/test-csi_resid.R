@@ -36,7 +36,7 @@ test_that("Z == csi_resid(dX = csi_fwd(Z))", {
     Z1 <- matrix(rnorm(N*nd),N,nd)
     acf1 <- racf(N, dt, "fsd")
     dX <- csi_fwd(Z1, dt, mu, acf1, Sigma)
-    Z2 <- csi_resid(dX, dt, mu, acf1, Sigma)
+    Z2 <- csi_resid(dX, drift = rep(dt, N) %o% mu, acf = acf1, Sigma = Sigma)
     expect_equal(max(abs(Z1-Z2)), 0)
   })
 })

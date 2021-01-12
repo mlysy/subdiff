@@ -1,29 +1,24 @@
-#' Residuals of a Gaussian CSI process.
+#' Calculate the residuals of a CSI process.
 #'
 #' @template args-dX
-#' @template args-dt
-#' @param mu Vector of linear drift in each direction.
-#' @param acf Autocorrelation, a vector of length `nrow(dX)`.
+#' @param drift Matrix of the same size as `dX` of increment drift in each coordinate per timepoint (see 'Details').
+#' @param acf Autocorrelation vector of length `nrow(dX)` (see 'Details').
 #' @param Sigma Covariance matrix of size `ncol(dX) x ncol(dX)`.
 #' @return A residual matrix of the same size as `dX`.
 #' @details The residuals are calculated as
-#' \deqn{
-#' Z = T^{-1/2} (\Delta X - \mu \Delta T) \Sigma^{-1/2}
-#' }{
-#' Z = T^{-1/2} (\Delta X - \mu \Delta T) \Sigma^{-1/2}
-#' }
-#' where \eqn{T} is the Toeplitz matrix whose first column is `acf`.
-#'
-#' The "square roots" correspond to the Cholesky decomposition for the Toeplitz row-dependence matrix, and the eigen decomposition for the column-dependence matrix.
+#' ```
+#' Z = toeplitz(acf)^{-1/2} %*% (dX - drift) %*% Sigma^{-1/2},
+#' ```
+#' where the "square roots" correspond to the Cholesky decomposition for the row-dependence matrix `toeplitz(acf)`, and the eigen decomposition for the column-dependence matrix `Sigma`.
 #'
 #' @example examples/fit_setup.R
 #' @example examples/csi_resid.R
 #'
 #' @export
-csi_resid <- function(dX, dt, mu, acf, Sigma) {
+csi_resid <- function(dX, drift, acf, Sigma) {
   # time decorrelation
-  Z <- t(t(dX) - mu*dt)
-  Z <- cholXZ(X = Z, acf = acf)
+  ## Z <- t(t(dX) - mu*dt)
+  Z <- cholXZ(X = dX - drift, acf = acf)
   # spatial decorrelation
   ed <- eigen(Sigma)
   C <- t(t(ed$vec) * sqrt(1/ed$val))

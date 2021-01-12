@@ -2,18 +2,16 @@
 % Please edit documentation in R/csi_resid.R
 \name{csi_resid}
 \alias{csi_resid}
-\title{Residuals of a Gaussian CSI process.}
+\title{Calculate the residuals of a CSI process.}
 \usage{
-csi_resid(dX, dt, mu, acf, Sigma)
+csi_resid(dX, drift, acf, Sigma)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
 
-\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
+\item{drift}{Matrix of the same size as \code{dX} of increment drift in each coordinate per timepoint (see 'Details').}
 
-\item{mu}{Vector of linear drift in each direction.}
-
-\item{acf}{Autocorrelation, a vector of length \code{nrow(dX)}.}
+\item{acf}{Autocorrelation vector of length \code{nrow(dX)} (see 'Details').}
 
 \item{Sigma}{Covariance matrix of size \verb{ncol(dX) x ncol(dX)}.}
 }
@@ -21,18 +19,13 @@ csi_resid(dX, dt, mu, acf, Sigma)
 A residual matrix of the same size as \code{dX}.
 }
 \description{
-Residuals of a Gaussian CSI process.
+Calculate the residuals of a CSI process.
 }
 \details{
-The residuals are calculated as
-\deqn{
-Z = T^{-1/2} (\Delta X - \mu \Delta T) \Sigma^{-1/2}
-}{
-Z = T^{-1/2} (\Delta X - \mu \Delta T) \Sigma^{-1/2}
+The residuals are calculated as\preformatted{Z = toeplitz(acf)^\{-1/2\} \%*\% (dX - drift) \%*\% Sigma^\{-1/2\},
 }
-where \eqn{T} is the Toeplitz matrix whose first column is \code{acf}.
 
-The "square roots" correspond to the Cholesky decomposition for the Toeplitz row-dependence matrix, and the eigen decomposition for the column-dependence matrix.
+where the "square roots" correspond to the Cholesky decomposition for the row-dependence matrix \code{toeplitz(acf)}, and the eigen decomposition for the column-dependence matrix \code{Sigma}.
 }
 \examples{
 # generating 2-d stationary time series
@@ -46,5 +39,5 @@ Tz <- Toeplitz(n = N)
 mu <- c(1,2)
 Sigma <- diag(2)
 # compute the residuals
-csi_resid(dX, dt, mu, acf1, Sigma)
+csi_resid(dX, drift = rep(dt, N) \%o\% mu, acf1, Sigma)
 }
