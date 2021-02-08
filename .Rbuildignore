@@ -9,3 +9,4 @@
 ^vignettes/subdiff_files$
 ^subdiff-design\.md$
 ^install\.md$
+^inst/extdata/data$

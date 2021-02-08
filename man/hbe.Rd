@@ -13,6 +13,9 @@ A dataset containing 76 simulated 2D particle trajectories sampled at 60 Hz.  Th
 \item{\code{y}}{Particle position on \code{y}-axis at time \code{t} (in microns).}
 }
 }
+\source{
+Hill, D. B., Vasquez, P. A., Mellnik, J., McKinley, S. A., Vose, A., Mu, F., Henderson, A. G., Donaldson, S. H., Alexis, N. E., Boucher, R. C., and Forest, M. G. (2014), "A Biophysical Basis for Mucus Solids Concentration as a Candidate Biomarker for Airways Disease", PLoS ONE(9), e87681.
+}
 \usage{
 hbe
 }
