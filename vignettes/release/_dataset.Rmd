@@ -1,0 +1,24 @@
+## Dataset
+
+Throughout, we'll be using the `hbe` dataset included in the **subdiff** package, which consists of `r length(unique(hbe$id))` 2D trajectories of 1-micron tracer particles in 2.5 wt% mucus harvested from human bronchial epithelial (HBE) cell cultures, as detailed in @hill.etal14.  Each trajectory contains `r n_rng[1]`-`r n_rng[2]` observations recorded at a frequency of `r 1/dt`Hz.  The full dataset is displayed in Figure \@ref(fig:hbeplot).
+
+```{r ref.label = "hbe_info"}
+```
+
+```{r hbeplot, fig.show = "hold", out.width = "47.5%", fig.cap = "2D particle trajectories (left) and number of observation in each (right)."}
+# scatterplot of trajectories
+hbe %>%
+  ggplot(aes(x = x, y = y, group = id)) +
+  geom_line(aes(color = id)) +
+  xlab(expression("X Position ("*mu*m*")")) +
+  ylab(expression("Y Position ("*mu*m*")")) +
+  theme(legend.position = "none")
+# histogram of trajectory lengths
+hbe %>%
+  group_by(id) %>%
+  summarize(nobs = n(), .groups = "drop") %>%
+  ggplot(aes(x = nobs)) +
+  geom_histogram(bins = 30) +
+  xlab("Number of Observations") +
+  ylab("Counts")
+```

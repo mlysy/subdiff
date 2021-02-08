@@ -1,0 +1,86 @@
+# Semiparametric Modeling
+
+Let $\XX_n = \XX(t_n)$ denote the position of a givne particle at time $t_n = n \cdot \dt$, such that the data for the entire trajectory is given by $\XX = (\rv [0] {\XX} N)$.  The semi-parametric subdiffusion estimator consists of two steps:
+
+1.  Calculate the empirical MSD for each trajectory, defined as
+
+    \begin{equation}
+	\widehat{\msd}_{\XX}(t_n) = \frac 1 {\ndim(N-n+1)} \sum_{h=0}^{N-n} \Vert \XX_{h+n}-\XX_{h}\Vert^2.
+	(\#eq:msdemp)
+	\end{equation}
+		
+2.  Estimate $\aD$ by regressing $y_n = \log \widehat{\msd}_{\XX}(t_n)$ onto $x_n = \log t_n$, such that
+
+    $$
+    \hat \alpha = \frac{\sum_{n=0}^N(y_n - \bar y)(x_n - \bar x)}{\sum_{n=0}^N(x_n - \bar x)^2}, \qquad \hat D = \tfrac 1 2 \exp(\bar y - \hat \alpha \bar x),
+	$$
+	
+	where $\bar x$ and $\bar y$ are the samples means of $x_n$ and $y_n$.
+	
+Since particle trajectories are often contaminated with low-frequency drift, the empirical MSD is often calculated on the drift-subtracted observations, 
+
+$$
+\tilde{\XX}_n = \XX_n - \hat{\mmu} \cdot t_n,
+$$
+	
+where $\hat{\mmu} = (\hat \mu_1, \ldots, \hat \mu_{\ndim})$ is the vector of slope terms of the linear regression of $\XX$ onto $\bm{t} = (\rv [0] t N)$.  Morever, the empirical MSD is known to be biased at large lag times, such that only about 30-50% of the shortest lagtimes are usually kept for estimating $\aD$.
+
+Figure \@ref(fig:msdemp) displays the empirical MSD of the first 500 lags for each trajectory and the corresponding estimates of $\aD$.
+
+```{r msdemp, out.width = "47.5%", fig.show = "hold", fig.cap = paste0("Empirical MSDs for the ", npaths, " trajectories (left) and corresponding estimates of $\\aD$ (right).")}
+# calculate empirical MSDs
+ids <- unique(hbe$id)
+nlags <- 500 # number of lags
+dt <- 1/60 # interobservation time
+tseq <- 1:nlags*dt # time sequence
+msd_hat <- lapply(ids, function(id) {
+  Xt <- hbe %>%
+    filter(id == !!id) %>%
+    select(x, y)
+  tibble(id = id, t = tseq, msd = msd_fit(Xt = Xt, nlag = nlags))
+}) %>% bind_rows()
+
+# calculate mean MSD and its standard error
+msd_stats <- msd_hat %>%
+  group_by(t) %>%
+  summarize(est = mean(msd),
+            se = sd(msd) / sqrt(n()),
+            .groups = "drop")
+
+# plot msd's with mean +/- 1.96 se
+ggplot(data = msd_stats) +
+  # individual msd's
+  geom_line(data = msd_hat,
+            mapping = aes(x = t, y = msd, group = factor(id),
+                          color = "msd")) +
+  # +/- 1.96*se confidence band
+  geom_ribbon(mapping = aes(x = t,
+                            ymin = est-1.96*se, ymax = est+1.96*se,
+                            color = "se", fill = "se", alpha = "se")) +
+  # mean line
+  geom_line(aes(x = t, y = est, color = "est")) +
+  # set colors manually
+  scale_color_manual(values = c(msd = "lightblue", est = "black", se = NA)) +
+  scale_fill_manual(values = c(msd = NA, est = NA, se = "red")) +
+  scale_alpha_manual(values = c(msd = NA, est = NA, se = .5)) +
+  # axes names and log-scale
+  scale_x_continuous(name = expression("Time (s)"), trans = "log10") +
+  scale_y_continuous(name = expression("MSD ("*mu*m^2*")"), trans = "log10") +
+  # remove legend
+  theme(legend.position = "none")
+
+# estimate & plot subdiffusion parameters
+aD_hat <- lapply(ids, function(id) {
+  msd_id <- msd_hat %>%
+  filter(id == !!id)
+  msd_ls(msd = msd_id$msd, tseq = msd_id$t)
+}) %>% bind_rows()
+
+aD_hat %>%  
+  ggplot(aes(x = D, y = alpha)) +
+  geom_point() + 
+  xlab(expression("D")) +
+  ylab(expression(alpha)) +
+  scale_x_log10()
+```
+
