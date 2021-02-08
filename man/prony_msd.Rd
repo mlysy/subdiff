@@ -7,7 +7,7 @@
 prony_msd(t, lambda, nu = 1, ...)
 }
 \arguments{
-\item{t}{Vector of timepionts at which to calculate the MSD.}
+\item{t}{Vector of timepoints at which to calculate the MSD.}
 
 \item{lambda}{Vector of length \code{K} giving the inverse decorrelation times of the exponential decay terms.}
 

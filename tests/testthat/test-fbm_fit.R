@@ -4,7 +4,7 @@ context("fbm_fit")
 source("fit-functions.R")
 
 # fbm loglikelihood
-loglik <- function(eta, dX, dt, Tz,
+loglik <- function(omega, dX, dt, Tz,
                    drift = c("linear", "none", "quadratic")) {
   drift <- match.arg(drift)
   N <- nrow(dX)
@@ -15,7 +15,7 @@ loglik <- function(eta, dX, dt, Tz,
                linear = drift_linear(0, dt, N),
                quadratic = drift_quadratic(0, dt, N))
   mobj <- fbm_model$new(dX[1,,drop=FALSE], 1, drift = drift)
-  theta <- mobj$itrans_full(eta)
+  theta <- mobj$itrans_full(omega)
   ## alpha <- ilogit(theta[1], min = 0, max = 2)
   ## mu <- theta[1+1:nd]
   ## Sigma <- itrans_Sigma(theta[1+nd+1:nq]) # default: log(D)
@@ -33,18 +33,20 @@ test_that("MLE is at the mode of the projection plots.", {
   ntest <- nrow(test_cases)
   for(ii in 1:ntest) {
     # simulate data
-    N <- sample(100:200, 1)
+    N <- sample(500:1000, 1)
     dt <- runif(1)
     alpha <- runif(1, 0, 2)
+    D <- runif(1, .9, 1.1)
     ndims <- test_cases$ndims[ii]
     dX <- as.matrix(rnormtz(n = ndims,
-                            acf = fbm_acf(alpha, dt, N)))
+                            acf = D * fbm_acf(alpha, dt, N)))
     drift <- as.character(test_cases$drift[ii])
-    eta_hat <- fbm_fit(dX, dt, drift = drift, vcov = FALSE) # fit MLE
+    omega_hat <- fbm_fit(dX, dt, drift = drift,
+                         vcov = FALSE, ad_only = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
-    ocheck <- optim_proj(xsol = eta_hat,
-                         fun = function(eta) loglik(eta, dX, dt, Tz, drift),
+    ocheck <- optim_proj(xsol = omega_hat,
+                         fun = function(omega) loglik(omega, dX, dt, Tz, drift),
                          plot = FALSE, xrng = .05, npts = 20)
     expect_lt(max_xdiff(ocheck), .01)
   }

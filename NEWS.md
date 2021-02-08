@@ -16,8 +16,16 @@
 
 - The `floc` prefix (`floc_model()`, `floc_acf()`, `floc_fit()`, etc.) has been changed to `fsd`, which stands for fractional Savin-Doyle.
 
+- The functions `trans_Sigma()` and `itrans_Sigma()` have different meanings.
+
+- `csi_resid()` no longer has arguments `mu` and `dt`, in favor of an arbitrary drift term supplied by `drift`.
+
 ## New features
 
 - Model objects are formalized via R6 classes.  The main purpose is to provide a simple and flexible framework for adding user-defined models, parameter estimation routines, etc.
 
 - `farma_model` (and `farma_acf()`, etc) now supports arbitrary order for the autoregressive component.
+
+- `ls_fit()` now provides standard errors for `alpha` and `logD`.  Also, drift subtraction is performed much more accurately via linear regression than as previously via mean increment value.
+
+- `*_fit()` for subdiffusion models gives the option of returning estimates (and standard errors) for `alpha` and `logD` only.

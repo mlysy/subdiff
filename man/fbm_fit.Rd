@@ -4,7 +4,13 @@
 \alias{fbm_fit}
 \title{Fit the fBM model.}
 \usage{
-fbm_fit(dX, dt, drift = c("linear", "none", "quadratic"), vcov = TRUE)
+fbm_fit(
+  dX,
+  dt,
+  drift = c("linear", "none", "quadratic"),
+  vcov = TRUE,
+  ad_only = TRUE
+)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
@@ -12,6 +18,8 @@ fbm_fit(dX, dt, drift = c("linear", "none", "quadratic"), vcov = TRUE)
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
+
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }

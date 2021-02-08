@@ -1,6 +1,6 @@
 #' MSD of the Prony-GLE model.
 #'
-#' @param t Vector of timepionts at which to calculate the MSD.
+#' @param t Vector of timepoints at which to calculate the MSD.
 #' @template args-lambda
 #' @template args-nu
 #' @param ... Additional arguments to [prony_coeff()].

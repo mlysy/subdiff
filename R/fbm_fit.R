@@ -6,6 +6,7 @@
 #' @template args-dt
 #' @template args-drift_preset
 #' @template args-vcov
+#' @template args-ad_only
 #' @return A vector of estimated parameters on transformed scale (See [fbm_model()]). If `vcov`, a list with components:
 #' \describe{
 #' \item{coef}{A vector of estimated parameters on transformed scale.}
@@ -27,11 +28,32 @@
 #'
 #' @export
 fbm_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
-                    vcov = TRUE) {
+                    vcov = TRUE, ad_only = TRUE) {
   ## model <- fbm_model()
   ## ans <- csi_fit(model, dX, dt, Tz, vcov)
   ## ans
   drift <- match.arg(drift)
   model <- fbm_model$new(dX = dX, dt = dt, drift = drift)
-  model$fit(psi0 = c(-5, 5), vcov = vcov)
+  out <- model$fit(psi0 = c(-5, 5), vcov = vcov)
+  if(ad_only) out <- to_ad(out, model = model, vcov = vcov)
+  out
+}
+
+#--- helper functions ----------------------------------------------------------
+
+#' Convert an estimate of `omega` to an estimate of `ad`.
+#'
+#' @noRd
+to_ad <- function(omega, model, vcov) {
+  if(!vcov) {
+    ad_hat <- model$get_subdiff(omega)
+    return(ad_hat)
+  } else {
+    ad_hat <- model$get_subdiff(omega$coef)
+    # delta method
+    Jac <- numDeriv::jacobian(func = model$get_subdiff, x = omega$coef)
+    ad_vcov <- tcrossprod(Jac %*% omega$vcov, Jac)
+    colnames(ad_vcov) <- rownames(ad_vcov) <- names(ad_hat)
+    return(list(coef = ad_hat, vcov = ad_vcov))
+  }
 }

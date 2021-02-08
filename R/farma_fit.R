@@ -7,6 +7,7 @@
 #' @param order A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.
 #' @template args-drift_preset
 #' @template args-vcov
+#' @template args-ad_only
 #' @return A vector of estimated parameters on transformed scale (See [farma_model()]). If `vcov`, a list with components:
 #' \describe{
 #' \item{coef}{A vector of estimated parameters on transformed scale.}
@@ -27,8 +28,9 @@
 #' @example examples/farma_fit.R
 #'
 #' @export
-farma_fit <- function(dX, dt, order, drift = c("linear", "none", "quadratic"),
-                      vcov = TRUE) {
+farma_fit <- function(dX, dt, order,
+                      drift = c("linear", "none", "quadratic"),
+                      vcov = TRUE, ad_only = TRUE) {
   drift <- match.arg(drift)
   if((length(order) != 2) || !all(order - as.integer(order) == 0)) {
     stop("order must be a vector of 2 nonnegative integers.")
@@ -38,8 +40,10 @@ farma_fit <- function(dX, dt, order, drift = c("linear", "none", "quadratic"),
   }
   model <- farma_model$new(dX = dX, dt = dt, drift = drift,
                            p = order[1], q = order[2], m = 50)
-  model$fit(psi0 = rep(0, length(model$phi_names)),
-            vcov = vcov)
+  out <- model$fit(psi0 = rep(0, length(model$phi_names)),
+                   vcov = vcov)
+  if(ad_only) out <- to_ad(out, model, vcov)
+  out
   ## ans <- csi_fit(model, dX, dt, Tz, vcov)
   ## ans
 }

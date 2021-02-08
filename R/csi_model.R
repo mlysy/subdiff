@@ -14,7 +14,7 @@ csi_model <- R6::R6Class(
     n_dims = NULL, # internal number of dimensions.
     n_drift = NULL, # internal number of drift basis coefficients.
     n_phi = NULL, # internal number of drift + acf parameters.
-    eta_names = NULL, # Parameter names in the computational basis.
+    omega_names = NULL, # Parameter names in the computational basis.
 
     Tz_ = NULL, # Toeplitz matrix object.
 
@@ -99,6 +99,26 @@ csi_model <- R6::R6Class(
     #' @return A vector of `N` autocorrelations.
     acf = function(phi, dt, N) stop(undef_msg("acf()")),
 
+    #' @description Position mean square displacement function.
+    #'
+    #' @param phi Kernel parameters in the original basis.
+    #' @param t Vector of time points at which to calculate the MSD.
+    #' @return A vector of MSD values the same length as `t`.
+    #'
+    #' @details This function can be directly supplied by the derived class, or by default is derived automatically from a high-resolution evaluation of `super$acf()`.  That is, with `dt` being up to 10x smaller than `min(diff(sort(abs(t))))`.  Thus the default method is most efficient when `t` consists of evenly spaced timepoints, and most wasteful when two time points are much closer than any others.
+    #'
+    #' @note The MSD of some models (e.g., `fsd` and `farma`) is not defined in continuous time, and thus depends on the interobservation time `dt`.  This is completely overlooked in `csi_model$msd()` as it is presently coded, which is potentially misleading.  Need to think carefully about what the `msd()` method should do.
+    msd = function(phi, t) {
+      # method 1
+      # method 2
+      dt <- get_dt(t)
+      N <- max(abs(t)) %/% dt
+      acf <- self$acf(phi, dt = dt, N = N)
+      msd <- c(0, SuperGauss::acf2msd(acf))
+      # pair msd with corresponding elements of tseq
+      msd[abs(t) %/% dt + 1]
+    },
+
     ## acf = function(phi, dt, N) {
     ##   if(is.null(private$acf_impl)) {
     ##     stop(undef_msg("acf()"))
@@ -128,10 +148,10 @@ csi_model <- R6::R6Class(
     #'
     #' @param psi Kernel parameters in the computational basis.
     #' @return Named vector of full parameter set in the computational basis.
-    get_eta = function(psi) {
-      nu <- self$muSigma_hat(self$itrans(psi)) # nuisance terms
+    get_omega = function(psi) {
+      nu <- self$nu_hat(self$itrans(psi)) # nuisance terms
       setNames(c(psi, nu$mu, trans_Sigma(nu$Sigma)),
-                      nm = private$eta_names)
+                      nm = private$omega_names)
     },
 
     #' @description Convert from original to computational basis.
@@ -146,21 +166,21 @@ csi_model <- R6::R6Class(
 
     #' @description Convert from computational to original basis.
     #'
-    #' @param eta Vector of parameters in the computational basis.
+    #' @param omega Vector of parameters in the computational basis.
     #' @return List with elements `phi`, `mu`, and `Sigma`.
-    itrans_full = function(eta) {
+    itrans_full = function(omega) {
       n_phi <- private$n_phi
       n_drift <- private$n_drift
       n_dims <- private$n_dims
       # number of parameters in the log-cholesky factor
       n_chol <- n_dims * (n_dims+1) / 2
       if(n_phi > 0) {
-        phi <- self$itrans(eta[1:n_phi])
+        phi <- self$itrans(omega[1:n_phi])
       } else phi <- NULL
       if(n_drift > 0) {
-        mu <- matrix(eta[n_phi + 1:(n_drift*n_dims)], n_drift, n_dims)
+        mu <- matrix(omega[n_phi + 1:(n_drift*n_dims)], n_drift, n_dims)
       } else mu <- NULL
-      Sigma <- itrans_Sigma(eta[n_phi + n_drift*n_dims + 1:n_chol])
+      Sigma <- itrans_Sigma(omega[n_phi + n_drift*n_dims + 1:n_chol])
       list(phi = phi, mu = mu, Sigma = Sigma)
     },
 
@@ -178,7 +198,7 @@ csi_model <- R6::R6Class(
     #'
     #' @param phi Kernel parameters in the original basis.
     #' @return A list with elements `mu` and `Sigma`.
-    muSigma_hat = function(phi) {
+    nu_hat = function(phi) {
       suff <- private$get_suff(phi) # sufficient statistics
       list(mu = suff$Bhat, Sigma = suff$S/suff$n)
     },
@@ -196,24 +216,24 @@ csi_model <- R6::R6Class(
 
     #' @description Calculate the observed Fisher information matrix.
     #'
-    #' @param eta Vector of length `n_eta` of parameters in the computational basis.
-    #' @return The `n_eta x n_eta` observed Fisher information matrix.
-    fisher = function(eta) {
-      numDeriv::hessian(x = eta, func = function(eta) {
-        # convert eta to phi, mu, Sigma
-        theta <- self$itrans_full(eta)
+    #' @param omega Vector of length `n_omega` of parameters in the computational basis.
+    #' @return The `n_omega x n_omega` observed Fisher information matrix.
+    fisher = function(omega) {
+      numDeriv::hessian(x = omega, func = function(omega) {
+        # convert omega to phi, mu, Sigma
+        theta <- self$itrans_full(omega)
         -self$loglik(theta$phi, theta$mu, theta$Sigma)
       })
     },
 
     #' @description Convert a Fisher information matrix to a variance matrix.
     #'
-    #' @param fi Fisher information matrix of size `n_eta x n_eta` with parameters in the computational basis.
-    #' @return Variance matrix of size `n_eta x n_eta` with parameters in the computational basis.
+    #' @param fi Fisher information matrix of size `n_omega x n_omega` with parameters in the computational basis.
+    #' @return Variance matrix of size `n_omega x n_omega` with parameters in the computational basis.
     get_vcov = function(fi) {
       # invert to get variance estimate
       var_hat <- chol2inv(chol(fi))
-      colnames(var_hat) <- rownames(var_hat) <- private$eta_names
+      colnames(var_hat) <- rownames(var_hat) <- private$omega_names
       var_hat
     },
 
@@ -234,22 +254,35 @@ csi_model <- R6::R6Class(
       } else {
         psi_hat <- optimize(f = self$nlp, interval = psi0, ...)$minimum
       }
-      eta_hat <- self$get_eta(psi_hat)
+      omega_hat <- self$get_omega(psi_hat)
       ## phi_hat <- self$itrans(psi_hat)
       ## # nuisance terms
-      ## nu <- self$muSigma_hat(phi_hat)
-      ## eta_hat <- c(psi_hat, nu$mu, trans_Sigma(nu$Sigma))
-      ## names(eta_hat) <- private$eta_names
+      ## nu <- self$nu_hat(phi_hat)
+      ## omega_hat <- c(psi_hat, nu$mu, trans_Sigma(nu$Sigma))
+      ## names(omega_hat) <- private$omega_names
       if(vcov) {
         # fisher information
-        fi <- self$fisher(eta_hat)
+        fi <- self$fisher(omega_hat)
         # invert to get variance estimate
         var_hat <- self$get_vcov(fi)
         ## var_hat <- chol2inv(chol(fi))
-        ## colnames(var_hat) <- rownames(var_hat) <- private$eta_names
-        out <- list(coef = eta_hat, vcov = var_hat)
-      } else out <- eta_hat
+        ## colnames(var_hat) <- rownames(var_hat) <- private$omega_names
+        out <- list(coef = omega_hat, vcov = var_hat)
+      } else out <- omega_hat
       out
+    },
+
+    #' @description Calculate the model residuals.
+    #'
+    #' @param phi Kernel parameters in the original basis.
+    #' @param mu Drift coefficients.
+    #' @param Sigma Scale matrix.
+    #'
+    #' @return A matrix of residuals the same size as `dX` as calculated with [csi_resid()], upon using the model's `drift()` and `acf()` specifications.
+    resid = function(phi, mu, Sigma) {
+      dr <- self$drift(phi, dt = self$dt, N = private$N_) %*% mu
+      ac <- self$acf(phi, dt = self$dt, N = private$N_)
+      csi_resid(self$dX, drift = dr, acf = ac, Sigma = Sigma)
     },
 
     #' @description Model object constructor.
@@ -285,9 +318,9 @@ csi_model <- R6::R6Class(
       if(anyNA(self$phi_names)) stop(undef_msg("phi_names")) # must have already been set
       private$n_phi <- length(self$phi_names)
       # computational parameter names
-      private$eta_names <- get_eta_names(n_dims = private$n_dims,
-                                         n_drift = private$n_drift,
-                                         n_phi = private$n_phi)
+      private$omega_names <- get_omega_names(n_dims = private$n_dims,
+                                             n_drift = private$n_drift,
+                                             n_phi = private$n_phi)
     }
   )
 )
@@ -330,7 +363,7 @@ undef_msg <- function(name) {
 #' - `mu`: Double indexing from the matrix of size `n_drift x n_dims` in column-major order.
 #' - `lambda`: Double indexing from upper triangular matrix of size `n_dims x n_dims`.
 #' @noRd
-get_eta_names <- function(n_dims, n_drift, n_phi) {
+get_omega_names <- function(n_dims, n_drift, n_phi) {
   if(n_phi > 0) {
     psi_names <- paste0("psi", 1:n_phi)
   } else psi_names <- NULL
@@ -343,4 +376,25 @@ get_eta_names <- function(n_dims, n_drift, n_phi) {
   lambda_names <- matrix(lambda_names, n_dims, n_dims)
   lambda_names <- lambda_names[upper.tri(lambda_names, diag = TRUE)]
   c(psi_names, mu_names, lambda_names)
+}
+
+#' Pick a sampling frequency which is sufficiently close to each element of `t`.
+#'
+#' @param t Vector of positive time points.
+#' @param tol Tolerance (see 'Details').
+#' @param n Number of subdivisions between `tol` and `min(t)`
+#' @details `dt` will be such that `max(t modulo dt) < tol`.
+#' @noRd
+get_dt <- function(t, tol, n = 10) {
+  tseq <- sort(abs(t))
+  tseq <- tseq[tseq > .Machine$double.eps]
+  min_diff <- min(diff(c(0, tseq)))
+  if(missing(tol)) {
+    # pick a minimum tolerance
+    # fixme: what if tseq[1] == 0?
+    tol <- min_diff/10
+  }
+  dt_seq <- sort(seq(min_diff, tol, len = n))
+  dt_err <- sapply(dt_seq, function(dt) max(tseq %% dt))
+  dt_seq[which.max(dt_err < tol)]
 }

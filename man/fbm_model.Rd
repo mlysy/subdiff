@@ -36,6 +36,7 @@ with subdiffusion exponent \verb{0 < alpha < 2}.
 \item \href{#method-acf}{\code{fbm_model$acf()}}
 \item \href{#method-trans}{\code{fbm_model$trans()}}
 \item \href{#method-itrans}{\code{fbm_model$itrans()}}
+\item \href{#method-get_subdiff}{\code{fbm_model$get_subdiff()}}
 \item \href{#method-clone}{\code{fbm_model$clone()}}
 }
 }
@@ -45,13 +46,15 @@ with subdiffusion exponent \verb{0 < alpha < 2}.
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="drift">}\href{../../subdiff/html/csi_model.html#method-drift}{\code{subdiff::csi_model$drift()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fisher">}\href{../../subdiff/html/csi_model.html#method-fisher}{\code{subdiff::csi_model$fisher()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fit">}\href{../../subdiff/html/csi_model.html#method-fit}{\code{subdiff::csi_model$fit()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_eta">}\href{../../subdiff/html/csi_model.html#method-get_eta}{\code{subdiff::csi_model$get_eta()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_omega">}\href{../../subdiff/html/csi_model.html#method-get_omega}{\code{subdiff::csi_model$get_omega()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_vcov">}\href{../../subdiff/html/csi_model.html#method-get_vcov}{\code{subdiff::csi_model$get_vcov()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="initialize">}\href{../../subdiff/html/csi_model.html#method-initialize}{\code{subdiff::csi_model$initialize()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="itrans_full">}\href{../../subdiff/html/csi_model.html#method-itrans_full}{\code{subdiff::csi_model$itrans_full()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="loglik">}\href{../../subdiff/html/csi_model.html#method-loglik}{\code{subdiff::csi_model$loglik()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="muSigma_hat">}\href{../../subdiff/html/csi_model.html#method-muSigma_hat}{\code{subdiff::csi_model$muSigma_hat()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="msd">}\href{../../subdiff/html/csi_model.html#method-msd}{\code{subdiff::csi_model$msd()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nlp">}\href{../../subdiff/html/csi_model.html#method-nlp}{\code{subdiff::csi_model$nlp()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nu_hat">}\href{../../subdiff/html/csi_model.html#method-nu_hat}{\code{subdiff::csi_model$nu_hat()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="resid">}\href{../../subdiff/html/csi_model.html#method-resid}{\code{subdiff::csi_model$resid()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="trans_full">}\href{../../subdiff/html/csi_model.html#method-trans_full}{\code{subdiff::csi_model$trans_full()}}\out{</span>}
 }
 \out{</details>}
@@ -105,6 +108,26 @@ Transform kernel parameters from computational to regular basis.
 \item{\code{psi}}{See \link{csi_model}.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get_subdiff"></a>}}
+\if{latex}{\out{\hypertarget{method-get_subdiff}{}}}
+\subsection{Method \code{get_subdiff()}}{
+Transform parameters from computational basis to subdiffusion parameters.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{fbm_model$get_subdiff(omega)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{omega}}{See \link{csi_model}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Vector with named elements \code{alpha} and \code{logD}.
 }
 }
 \if{html}{\out{<hr>}}

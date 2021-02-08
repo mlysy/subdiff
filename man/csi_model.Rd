@@ -6,6 +6,9 @@
 \description{
 Base class for CSI models.
 }
+\note{
+The MSD of some models (e.g., \code{fsd} and \code{farma}) is not defined in continuous time, and thus depends on the interobservation time \code{dt}.  This is completely overlooked in \code{csi_model$msd()} as it is presently coded, which is potentially misleading.  Need to think carefully about what the \code{msd()} method should do.
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -28,16 +31,18 @@ Base class for CSI models.
 \item \href{#method-trans}{\code{csi_model$trans()}}
 \item \href{#method-itrans}{\code{csi_model$itrans()}}
 \item \href{#method-acf}{\code{csi_model$acf()}}
+\item \href{#method-msd}{\code{csi_model$msd()}}
 \item \href{#method-drift}{\code{csi_model$drift()}}
-\item \href{#method-get_eta}{\code{csi_model$get_eta()}}
+\item \href{#method-get_omega}{\code{csi_model$get_omega()}}
 \item \href{#method-trans_full}{\code{csi_model$trans_full()}}
 \item \href{#method-itrans_full}{\code{csi_model$itrans_full()}}
 \item \href{#method-nlp}{\code{csi_model$nlp()}}
-\item \href{#method-muSigma_hat}{\code{csi_model$muSigma_hat()}}
+\item \href{#method-nu_hat}{\code{csi_model$nu_hat()}}
 \item \href{#method-loglik}{\code{csi_model$loglik()}}
 \item \href{#method-fisher}{\code{csi_model$fisher()}}
 \item \href{#method-get_vcov}{\code{csi_model$get_vcov()}}
 \item \href{#method-fit}{\code{csi_model$fit()}}
+\item \href{#method-resid}{\code{csi_model$resid()}}
 \item \href{#method-new}{\code{csi_model$new()}}
 \item \href{#method-clone}{\code{csi_model$clone()}}
 }
@@ -107,6 +112,32 @@ A vector of \code{N} autocorrelations.
 }
 }
 \if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-msd"></a>}}
+\if{latex}{\out{\hypertarget{method-msd}{}}}
+\subsection{Method \code{msd()}}{
+Position mean square displacement function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$msd(phi, t)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{phi}}{Kernel parameters in the original basis.}
+
+\item{\code{t}}{Vector of time points at which to calculate the MSD.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+This function can be directly supplied by the derived class, or by default is derived automatically from a high-resolution evaluation of \code{super$acf()}.  That is, with \code{dt} being up to 10x smaller than \code{min(diff(sort(abs(t))))}.  Thus the default method is most efficient when \code{t} consists of evenly spaced timepoints, and most wasteful when two time points are much closer than any others.
+}
+
+\subsection{Returns}{
+A vector of MSD values the same length as \code{t}.
+}
+}
+\if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-drift"></a>}}
 \if{latex}{\out{\hypertarget{method-drift}{}}}
 \subsection{Method \code{drift()}}{
@@ -131,12 +162,12 @@ An \verb{N x n_drift} matrix of drift basis functions.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_eta"></a>}}
-\if{latex}{\out{\hypertarget{method-get_eta}{}}}
-\subsection{Method \code{get_eta()}}{
+\if{html}{\out{<a id="method-get_omega"></a>}}
+\if{latex}{\out{\hypertarget{method-get_omega}{}}}
+\subsection{Method \code{get_omega()}}{
 Combine kernel parameters with conditional MLE of \code{mu} and \code{Sigma}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{csi_model$get_eta(psi)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$get_omega(psi)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -180,13 +211,13 @@ Full parameter vector in the computational basis.
 \subsection{Method \code{itrans_full()}}{
 Convert from computational to original basis.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{csi_model$itrans_full(eta)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$itrans_full(omega)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{eta}}{Vector of parameters in the computational basis.}
+\item{\code{omega}}{Vector of parameters in the computational basis.}
 }
 \if{html}{\out{</div>}}
 }
@@ -215,12 +246,12 @@ Value of the negative profile loglikelihood (scalar).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-muSigma_hat"></a>}}
-\if{latex}{\out{\hypertarget{method-muSigma_hat}{}}}
-\subsection{Method \code{muSigma_hat()}}{
+\if{html}{\out{<a id="method-nu_hat"></a>}}
+\if{latex}{\out{\hypertarget{method-nu_hat}{}}}
+\subsection{Method \code{nu_hat()}}{
 Conditional MLE of nuisance parameters.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{csi_model$muSigma_hat(phi)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$nu_hat(phi)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -264,18 +295,18 @@ Value of the loglikelihood (scalar).
 \subsection{Method \code{fisher()}}{
 Calculate the observed Fisher information matrix.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{csi_model$fisher(eta)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$fisher(omega)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{eta}}{Vector of length \code{n_eta} of parameters in the computational basis.}
+\item{\code{omega}}{Vector of length \code{n_omega} of parameters in the computational basis.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The \verb{n_eta x n_eta} observed Fisher information matrix.
+The \verb{n_omega x n_omega} observed Fisher information matrix.
 }
 }
 \if{html}{\out{<hr>}}
@@ -290,12 +321,12 @@ Convert a Fisher information matrix to a variance matrix.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{fi}}{Fisher information matrix of size \verb{n_eta x n_eta} with parameters in the computational basis.}
+\item{\code{fi}}{Fisher information matrix of size \verb{n_omega x n_omega} with parameters in the computational basis.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Variance matrix of size \verb{n_eta x n_eta} with parameters in the computational basis.
+Variance matrix of size \verb{n_omega x n_omega} with parameters in the computational basis.
 }
 }
 \if{html}{\out{<hr>}}
@@ -320,6 +351,30 @@ Calculate the maximum likelihood parameter values.
 }
 \subsection{Returns}{
 A list with elements \code{coef} and optionally \code{vcov} containing the MLE in the computational basis and its variance estimate.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-resid"></a>}}
+\if{latex}{\out{\hypertarget{method-resid}{}}}
+\subsection{Method \code{resid()}}{
+Calculate the model residuals.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$resid(phi, mu, Sigma)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{phi}}{Kernel parameters in the original basis.}
+
+\item{\code{mu}}{Drift coefficients.}
+
+\item{\code{Sigma}}{Scale matrix.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A matrix of residuals the same size as \code{dX} as calculated with \code{\link[=csi_resid]{csi_resid()}}, upon using the model's \code{drift()} and \code{acf()} specifications.
 }
 }
 \if{html}{\out{<hr>}}

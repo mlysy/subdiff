@@ -33,20 +33,33 @@ fsd_model <- R6::R6Class(
     #' psi = (psi1 = logit(alpha/2), psi2 = logit(tau), psi3 = log(sigma2)).
     #' ```
     trans = function(phi) {
-      c(logit(phi[1], min = 0, max = 2), # alpha
-        logit(phi[2], min = 0, max = 1), # tau
-        log(phi[3])) # sigma2
+      setNames(c(logit(phi[1], min = 0, max = 2), # alpha
+                 logit(phi[2], min = 0, max = 1), # tau
+                 log(phi[3])), # sigma2
+               nm = paste0("psi", 1:private$n_phi))
     },
 
     #' @description Transform kernel parameters from computational to regular basis.
     #'
     #' @param psi See [csi_model].
     itrans = function(psi) {
-      c(ilogit(psi[1], min = 0, max = 2), # alpha
-        ilogit(psi[2], min = 0, max = 1), # tau
-        exp(psi[3])) # sigma2
-    }
+      setNames(c(ilogit(psi[1], min = 0, max = 2), # alpha
+                 ilogit(psi[2], min = 0, max = 1), # tau
+                 exp(psi[3])), # sigma2
+               nm = self$phi_names)
+    },
 
+    #' @description Transform parameters from computational basis to subdiffusion parameters.
+    #'
+    #' @param omega See [csi_model].
+    #' @return Vector with named elements `alpha` and `logD`.
+    get_subdiff = function(omega) {
+      theta <- self$itrans_full(omega) # convert to inferential basis
+      # extract alpha and logD
+      setNames(c(theta$phi["alpha"],
+                 log(mean(diag(theta$Sigma)))),
+               nm = c("alpha", "logD"))
+    }
   )
 
 )

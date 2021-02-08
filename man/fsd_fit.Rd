@@ -4,7 +4,13 @@
 \alias{fsd_fit}
 \title{Fit the fSD model.}
 \usage{
-fsd_fit(dX, dt, drift = c("linear", "none", "quadratic"), vcov = TRUE)
+fsd_fit(
+  dX,
+  dt,
+  drift = c("linear", "none", "quadratic"),
+  vcov = TRUE,
+  ad_only = TRUE
+)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
@@ -12,6 +18,8 @@ fsd_fit(dX, dt, drift = c("linear", "none", "quadratic"), vcov = TRUE)
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
 \item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
+
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
@@ -26,7 +34,7 @@ A vector of estimated parameters on transformed scale (See \code{\link[=fsd_mode
 Fit Savin & Doyle's localization error model with fBM process (See 'Details').
 }
 \details{
-To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term\preformatted{penalty(psi) = log(1+exp(psi2)) + log(1+exp(-psi2)) - psi3.
+To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term\preformatted{penalty(psi) = log(1+exp(psi[2])) + log(1+exp(-psi[2])) - psi[3].
 }
 
 The Savin & Doyle's localization error model with fBM process (fsd model) has the following form:
@@ -59,5 +67,5 @@ Tz <- Toeplitz(n = N)
 fsd_fit(dX, dt, Tz, vcov = TRUE)
 }
 \references{
-Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
+Savin, T. and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 }

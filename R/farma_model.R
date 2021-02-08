@@ -62,7 +62,7 @@ farma_model <- R6::R6Class(
       psi <- phi
       psi[1] <- logit(phi[1], min = 0, max = 2)
       psi[-1] <- logit(phi[-1], min = -1, max = 1)
-      psi
+      setNames(psi, nm = paste0("psi", 1:private$n_phi))
     },
 
     #' @description Transform kernel parameters from computational to regular basis.
@@ -72,7 +72,19 @@ farma_model <- R6::R6Class(
       phi <- psi
       phi[1] <- ilogit(psi[1], min = 0, max = 2)
       phi[-1] <- ilogit(psi[-1], min = -1, max = 1)
-      phi
+      setNames(phi, nm = self$phi_names)
+    },
+
+    #' @description Transform parameters from computational basis to subdiffusion parameters.
+    #'
+    #' @param omega See [csi_model].
+    #' @return Vector with named elements `alpha` and `logD`.
+    get_subdiff = function(omega) {
+      theta <- self$itrans_full(omega) # convert to inferential basis
+      # extract alpha and logD
+      setNames(c(theta$phi["alpha"],
+                 log(mean(diag(theta$Sigma)))),
+               nm = c("alpha", "logD"))
     },
 
     #' @description Class constructor.

@@ -6,6 +6,8 @@
 #' @template args-dt
 #' @template args-drift_preset
 #' @template args-vcov
+#' @template args-ad_only
+#'
 #' @return A vector of estimated parameters on transformed scale (See [fsd_model()]). If `vcov`, a list with components:
 #' \describe{
 #' \item{coef}{A vector of estimated parameters on transformed scale.}
@@ -14,7 +16,7 @@
 #'
 #' @details To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term
 #' ```
-#' penalty(psi) = log(1+exp(psi2)) + log(1+exp(-psi2)) - psi3.
+#' penalty(psi) = log(1+exp(psi[2])) + log(1+exp(-psi[2])) - psi[3].
 #' ```
 #'
 #' The Savin & Doyle's localization error model with fBM process (fsd model) has the following form:
@@ -34,14 +36,14 @@
 #'
 #' Optimization is done by [optimize()]. It works better when parameters are re-parametrized into unrestricted form (See [fsd_model()]).
 #'
-#' @references Savin, Thierry, and Patrick S. Doyle. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
+#' @references Savin, T. and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 #'
 #' @example examples/fit_setup.R
 #' @example examples/fsd_fit.R
 #'
 #' @export
 fsd_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
-                    vcov = TRUE) {
+                    vcov = TRUE, ad_only = TRUE) {
   drift <- match.arg(drift)
   model <- fsd_model$new(dX = dX, dt = dt, drift = drift)
   # penalty function
@@ -52,16 +54,17 @@ fsd_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
                fn = function(psi) model$nlp(psi) + penalty(psi))
   if(opt$convergence != 0) warning("`optim()` did not converge.")
   # combine with nuisance parameters
-  eta_hat <- model$get_eta(opt$par)
+  omega_hat <- model$get_omega(opt$par)
   if(vcov) {
-    fi <- model$fisher(eta_hat) # fisher information for likelihood
+    fi <- model$fisher(omega_hat) # fisher information for likelihood
     fp <- numDeriv::hessian(x = opt$par, func = penalty) # for penalty
     n_phi <- length(model$phi_names)
     fi[1:n_phi,1:n_phi] <- fi[1:n_phi,1:n_phi] + fp
     # convert to (named) variance
     var_hat <- model$get_vcov(fi)
-    out <- list(coef = eta_hat, vcov = var_hat)
-  } else out <- eta_hat
+    out <- list(coef = omega_hat, vcov = var_hat)
+  } else out <- omega_hat
+  if(ad_only) out <- to_ad(out, model, vcov)
   out
   ## model <- fsd_model()
   ## ans <- csi_fit(model, dX, dt, Tz, vcov)

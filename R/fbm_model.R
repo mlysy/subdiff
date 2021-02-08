@@ -27,11 +27,23 @@ fbm_model <- R6::R6Class(
     #' @description Transform kernel parameters from regular to computational basis.
     #'
     #' @param phi See [csi_model].
-    trans = function(phi) logit(phi, 0, 2),
+    trans = function(phi) setNames(logit(phi, 0, 2), nm = "psi1"),
     #' @description Transform kernel parameters from computational to regular basis.
     #'
     #' @param psi See [csi_model].
-    itrans = function(psi) ilogit(psi, 0, 2)
+    itrans = function(psi) setNames(ilogit(psi, 0, 2), nm = self$phi_names),
+
+    #' @description Transform parameters from computational basis to subdiffusion parameters.
+    #'
+    #' @param omega See [csi_model].
+    #' @return Vector with named elements `alpha` and `logD`.
+    get_subdiff = function(omega) {
+      theta <- self$itrans_full(omega) # convert to inferential basis
+      # extract alpha and logD
+      setNames(c(theta$phi["alpha"],
+                 log(mean(diag(theta$Sigma)))),
+               nm = c("alpha", "logD"))
+    }
   )
 )
 

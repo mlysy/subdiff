@@ -3,31 +3,28 @@
 \name{trans_Sigma}
 \alias{trans_Sigma}
 \alias{itrans_Sigma}
-\title{Unconstraining transformations for 1D or 2D variance matrices.}
+\title{Unconstraining transformation for variance matrices.}
 \usage{
-trans_Sigma(Sigma, D_scale = TRUE, rho_scale = FALSE)
+trans_Sigma(Sigma)
 
-itrans_Sigma(lambda, D_scale = TRUE, rho_scale = FALSE)
+itrans_Sigma(lambda)
 }
 \arguments{
 \item{Sigma}{Variance matrix on the regular scale.}
 
-\item{D_scale}{Logical, whether or not the transformation targets the diffusivity constant (see Details).}
-
-\item{rho_scale}{If \code{TRUE}, the variance matrix is expressed as \code{sigma = sqrt{Sigma[1,1]}} in 1D and \verb{(sigma1, sigma2, rho)} in 2D.  Otherwise it is expressed as a \verb{1x1} or \verb{2x2} matrix.}
-
-\item{lambda}{Variance matrix on the normalized scale (see Details).}
+\item{lambda}{Variance matrix on the normalized scale (see 'Details').}
 }
 \value{
-Variance matrix on the regular or normalized scale.
+Variance matrix on the regular or unconstrained scale (see 'Details').
 }
 \description{
-Unconstraining transformations for 1D or 2D variance matrices.
+Unconstraining transformation for variance matrices.
 }
 \details{
-The unconstrained variance matrix is defined as follows:
-\itemize{
-\item In 1D, it is \code{lambda = .5 * log(Sigma)}.
-\item In 2D, \code{lambda} is a vector of length 3 with last element \code{lambda[3] = logit(rho/2+1/2)}, where \eqn{\rho = \Sigma_{12}/} is the correlation.  When \code{D_scale = TRUE}, we have \verb{lambda[1:2] = (log(D), log(Sigma[1,1]/Sigma[2,2]))}, where \eqn{D = (\Sigma_{11} + \Sigma_{22})/2}.  Otherwise, the unconstraining transformation is \verb{lambda[1:2] = (log(Sigma[1,1]), log(Sigma[2,2]))}.
+The unconstraining transformation of a variance matrix is the so-called log-Cholesky decomposition.  Namely, the log-Cholesky decomposition of a variance matrix \code{Sigma} is a vector \code{lambda} corresponding to the upper triangular Cholesky factor, of which we take the log of the diagonal and then concatenate the non-zero elements in column-major order.  The exact calculation is given by:\preformatted{lambda <- chol(Sigma)
+diag(lambda) <- log(diag(lambda))
+lambda <- lambda[upper.tri(lambda,diag=TRUE)]
 }
+
+The function \code{trans_Sigma()} converts \code{Sigma} to \code{lambda}, whereas \code{itrans_Sigma()} performs the inverse transformation from \code{lambda} to \code{Sigma}.
 }

@@ -1,6 +1,7 @@
 #' ACF of the Rouse-GLE model.
 #'
 #' Autocorrelation of the Rouse-GLE transient subdiffusion model.
+#'
 #' @details The Rouse-GLE satisfies the integro-differential equation
 #' \deqn{
 #' F_t - \int_{-\infty}^t \gamma(t-s) \dot X_s ds = 0,

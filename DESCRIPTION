@@ -8,8 +8,8 @@ Authors@R: c(person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
              person("Yun", "Ling", role = "aut"))
 Description: Tools for implementing various models for particle subdiffusion in biological fluids.
 License: GPL-3
-Depends: R (>= 2.10), LMN, SuperGauss
-Imports: Rcpp (>= 0.12.12), R6, numDeriv, fftw, stats
+Depends: R (>= 2.10)
+Imports: Rcpp (>= 0.12.12), LMN, SuperGauss, R6, numDeriv, fftw, stats
 LinkingTo: Rcpp, RcppEigen
 LazyData: true
 RoxygenNote: 7.1.1

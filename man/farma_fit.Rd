@@ -4,7 +4,14 @@
 \alias{farma_fit}
 \title{Fit the farma model.}
 \usage{
-farma_fit(dX, dt, order, drift = c("linear", "none", "quadratic"), vcov = TRUE)
+farma_fit(
+  dX,
+  dt,
+  order,
+  drift = c("linear", "none", "quadratic"),
+  vcov = TRUE,
+  ad_only = TRUE
+)
 }
 \arguments{
 \item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
@@ -14,6 +21,8 @@ farma_fit(dX, dt, order, drift = c("linear", "none", "quadratic"), vcov = TRUE)
 \item{order}{A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.}
 
 \item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
+
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }

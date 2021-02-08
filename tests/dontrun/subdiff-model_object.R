@@ -223,7 +223,7 @@ csi_model <- R6Class(
     #' Conditional MLE of nuisance parameters.
     #'
     #' @param phi Kernel parameters in the original basis.
-    muSigma_hat = function(phi) {
+    nu_hat = function(phi) {
       suff <- private$get_suff(phi) # sufficient statistics
       list(mu = suff$Bhat, Sigma = suff$S/suff$n)
     },
