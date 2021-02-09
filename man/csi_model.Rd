@@ -43,6 +43,7 @@ The MSD of some models (e.g., \code{fsd} and \code{farma}) is not defined in con
 \item \href{#method-get_vcov}{\code{csi_model$get_vcov()}}
 \item \href{#method-fit}{\code{csi_model$fit()}}
 \item \href{#method-resid}{\code{csi_model$resid()}}
+\item \href{#method-sim}{\code{csi_model$sim()}}
 \item \href{#method-new}{\code{csi_model$new()}}
 \item \href{#method-clone}{\code{csi_model$clone()}}
 }
@@ -375,6 +376,34 @@ Calculate the model residuals.
 }
 \subsection{Returns}{
 A matrix of residuals the same size as \code{dX} as calculated with \code{\link[=csi_resid]{csi_resid()}}, upon using the model's \code{drift()} and \code{acf()} specifications.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-sim"></a>}}
+\if{latex}{\out{\hypertarget{method-sim}{}}}
+\subsection{Method \code{sim()}}{
+Simulate trajectories from the model.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$sim(phi, mu, Sigma, nsim = 1, fft = TRUE, nkeep, tol = 1e-06)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{phi}}{Kernel parameters in the original basis.}
+
+\item{\code{mu}}{Drift coefficients.}
+
+\item{\code{Sigma}}{Scale matrix.}
+
+\item{\code{nsim}}{Number of trajectories to simulate.}
+
+\item{\code{fft, nkeep, tol}}{Optional arguments to \code{\link[SuperGauss:rnormtz]{SuperGauss::rnormtz()}}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A matrix of size \code{dim(dX)} or an array of size \verb{nrow(dX) x ncol(dX) x nsim} array when \code{nsim > 1} of simulated increments, as calculated with \code{\link[=csi_sim]{csi_sim()}}, using the model's \code{drift()} and \code{acf()} specifications.
 }
 }
 \if{html}{\out{<hr>}}

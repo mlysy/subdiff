@@ -286,6 +286,23 @@ csi_model <- R6::R6Class(
       csi_resid(self$dX, drift = dr, acf = ac, Sigma = Sigma)
     },
 
+    #' @description Simulate trajectories from the model.
+    #'
+    #' @param phi Kernel parameters in the original basis.
+    #' @param mu Drift coefficients.
+    #' @param Sigma Scale matrix.
+    #' @param nsim Number of trajectories to simulate.
+    #' @param fft,nkeep,tol Optional arguments to [SuperGauss::rnormtz()].
+    #'
+    #' @return A matrix of size `dim(dX)` or an array of size `nrow(dX) x ncol(dX) x nsim` array when `nsim > 1` of simulated increments, as calculated with [csi_sim()], using the model's `drift()` and `acf()` specifications.
+    sim = function(phi, mu, Sigma, nsim = 1, fft = TRUE, nkeep, tol = 1e-6) {
+      dr <- self$drift(phi, dt = self$dt, N = private$N_) %*% mu
+      ac <- self$acf(phi, dt = self$dt, N = private$N_)
+      csi_sim(drift = dr, acf = ac, Sigma = Sigma,
+              X0 = rep(0, private$n_dims), nsim = nsim,
+              fft = fft, nkeep = nkeep, tol = tol)
+    },
+
     #' @description Model object constructor.
     #'
     #' @param dX Trajectory increments.

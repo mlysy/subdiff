@@ -50,6 +50,7 @@ model$theta_names[1] <- "gamma"
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nlp">}\href{../../subdiff/html/csi_model.html#method-nlp}{\code{subdiff::csi_model$nlp()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nu_hat">}\href{../../subdiff/html/csi_model.html#method-nu_hat}{\code{subdiff::csi_model$nu_hat()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="resid">}\href{../../subdiff/html/csi_model.html#method-resid}{\code{subdiff::csi_model$resid()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="sim">}\href{../../subdiff/html/csi_model.html#method-sim}{\code{subdiff::csi_model$sim()}}\out{</span>}
 \item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="trans_full">}\href{../../subdiff/html/csi_model.html#method-trans_full}{\code{subdiff::csi_model$trans_full()}}\out{</span>}
 }
 \out{</details>}
