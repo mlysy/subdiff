@@ -21,6 +21,6 @@ csi_resid <- function(dX, drift, acf, Sigma) {
   Z <- cholXZ(X = dX - drift, acf = acf)
   # spatial decorrelation
   ed <- eigen(Sigma)
-  C <- t(t(ed$vec) * sqrt(1/ed$val))
+  C <- t(t(ed$vectors) * sqrt(1/ed$values))
   Z %*% C
 }

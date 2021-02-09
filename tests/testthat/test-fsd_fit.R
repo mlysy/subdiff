@@ -42,8 +42,9 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
     ocheck <- optim_proj(xsol = omega_hat,
+                         xnames = names(omega_hat),
                          fun = function(omega) loglik_loc(omega, dX, dt, Tz),
-                         plot = F, xrng = .1, npts = 20, equalize = FALSE)
+                         plot = FALSE, xrng = 1, npts = 50, equalize = TRUE)
     expect_lt(max_xdiff(ocheck), .05)
   }
 })

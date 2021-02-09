@@ -14,7 +14,8 @@ csi_model <- R6::R6Class(
     n_dims = NULL, # internal number of dimensions.
     n_drift = NULL, # internal number of drift basis coefficients.
     n_phi = NULL, # internal number of drift + acf parameters.
-    omega_names = NULL, # Parameter names in the computational basis.
+    omega_names = NULL, # Full parameter names in the computational basis.
+    psi_names = NULL, # Kernel parameter names in the computational basis.
 
     Tz_ = NULL, # Toeplitz matrix object.
 
@@ -151,7 +152,7 @@ csi_model <- R6::R6Class(
     get_omega = function(psi) {
       nu <- self$nu_hat(self$itrans(psi)) # nuisance terms
       setNames(c(psi, nu$mu, trans_Sigma(nu$Sigma)),
-                      nm = private$omega_names)
+               nm = private$omega_names)
     },
 
     #' @description Convert from original to computational basis.
@@ -321,6 +322,7 @@ csi_model <- R6::R6Class(
       private$omega_names <- get_omega_names(n_dims = private$n_dims,
                                              n_drift = private$n_drift,
                                              n_phi = private$n_phi)
+      private$psi_names <- private$omega_names[1:private$n_phi]
     }
   )
 )
