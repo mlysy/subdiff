@@ -50,6 +50,213 @@ $$
 
 with $\pph = (\alpha, \tau)$, and the MSD scale factor is $\sigma^2 = \tr(\SSi)/\ndim$.
 
+## Creating the Jeffreys Model Class
+
 In order to fit the Jeffreys model \@ref(eq:jfsmsd) to trajectory data, we will create a class `jfs_model` which will derive from the base class `csi_model` used to represent the general location-scale model \@ref(eq:locscale).  In order to do this, we will need the following ingredients:
 
+- The increment autocorrelation function
 
+	$$
+	\acf_{\Delta Z}(h) = \cov(\Delta Z_n, \Delta Z_{n+h}).
+	$$
+
+	This must be supplied as a function with arguments $(\pph, \dt, N)$ and return the vector $\big(\acf_{\Delta Z}(0), \ldots, \acf_{\Delta Z}(N-1)\big)$.  Note that $\msd_{Z}(t)$ can be converted to $\acf_{\Delta Z}(h)$ via the function `SuperGauss::msd2acf()`.
+
+- Functions to convert back and forth between the kernel parameters in the "inferential" basis, $\pph$, and these parameters in a "computational basis", $\pps$.  That is, $\pps$ should have the same dimension as $\pph$ but have no constraints.  For the Jeffreys model, since $\alpha, \tau > 0$, a natural choice of computational basis is $\pps = (\log \alpha, \log \tau)$.
+
+- Specification of the drift basis functions $\RR(t \mid \pph)$.  This is done automatically in the case of linear, quadratic, or no drift, so we'll skip this here.
+
+- A character vector of the names of the elements of $\pph$ for display purposes.
+
+The following code block defines the `jfs_model` class.  This is done with the [R6](https://r6.r-lib.org/index.html) class mechanism, of which a basic understanding is assumed.  More information about the base class for location-scale models can be obtained from the package documentation: `?csi_model`.
+
+```{r jfs_model}
+#' Calculate the ACF of the Jeffreys model.
+#'
+#' @param alpha Scale parameter.
+#' @param tau Decorrelation time.
+#' @param dt Interobservation time.
+#' @param N Number of ACF lags to return.
+#'
+#' @return An ACF vector of length `N`.
+jfs_acf <- function(alpha, tau, dt, N) {
+  t <- (1:N)*dt # time vector
+  msd <- (t + alpha * (1 - exp(-t/tau)))
+  SuperGauss::msd2acf(msd) # convert msd to acf
+}
+
+jfs_model <- R6::R6Class(
+  classname = "jfs_model",
+  inherit = subdiff::csi_model,
+
+  public = list(
+    # Kernel parameter names in the inferential basis.
+    phi_names = c("alpha", "tau"),
+
+    # Autocorrelation function.
+    acf = function(phi, dt, N) {
+      jfs_acf(alpha = phi[1], tau = phi[2], dt = dt, N = N)
+    },
+
+    # Transform kernel parameters from inferential to computational basis.
+    trans = function(phi) {
+      psi <- log(phi)
+      names(psi) <- private$psi_names # these are determined automatically.
+      psi
+    },
+
+    # Transform kernel parameters from computational to inferential basis.
+    itrans = function(psi) {
+      phi <- exp(psi)
+      names(phi) <- public$phi_names
+      phi
+    }
+  )
+)
+```
+
+## Simulation
+
+```{r jfs_sim_calc, include = FALSE}
+kB <- 1.38064852e-23 # Boltzmann constant
+
+# simulation parameters
+tau_M <- 2.1 # seconds
+q <- 4.6e1 # unitless
+xi_V <- 1.4e-07 # kg/s
+rad <- 0.48 # particle radius (micron)
+Temp <- 298 # temperature of the system (Kelvin)
+
+dt <- 1/60 # interobservation time
+N <- 1800 # number of observations
+ndim <- 2 # number of dimensions
+
+# increment autocorrelation
+tau <- tau_M/(1+q)
+alpha <- tau * q
+acf <- jfs_acf(alpha = alpha, tau = tau, dt = dt, N = N)
+# increment drift matrix: in this case zero drift
+drift <- matrix(0, N, ndim)
+# scale matrix
+sigma2 <- 2*kB*Temp / (xi_V * (1+q))
+Sigma <- sigma2 * diag(ndim)
+# position at time t = 0
+X0 <- rep(0, ndim)
+
+# generate data
+Xt <- csi_sim(drift = drift, acf = acf,
+              Sigma = Sigma, X0 = X0)
+
+# plot empirical and theoretical MSD
+tmax <- 10 # maximum time to plot
+nmax <- floor(tmax/dt) # corresponding MSD lag number
+tibble(
+  Time = 1:nmax * dt, # time sequence
+  Theoretical = sigma2 * SuperGauss::acf2msd(acf[1:nmax]), # theoretical msd
+  Empirical = msd_fit(Xt, nlag = nmax) # empirical msd
+) %>%
+  pivot_longer(cols = Theoretical:Empirical, names_to = "MSD Type",
+               values_to = "MSD", values_ptypes = list(factor())) %>%
+  ggplot(aes(x = Time, y = MSD * 1e12, group = `MSD Type`)) +
+  geom_line(aes(color = `MSD Type`)) +
+  scale_x_log10() + scale_y_log10() +
+  xlab(expression("Time "*(s))) + ylab(expression("MSD "*(mu*m^2)))
+
+```
+
+<!-- In @raikher.rusakov10, the Jeffreys model \@ref(eq:jfsmsd) is calibrated to particles of radius $r = `r rad`\, \mathrm{\mu m}$ in a solution of cetyltrimethyl ammonium bromide $[\mathrm{CTAB}] = 1\, \mathrm{g}\, \mathrm{cm}^{-3}$ and potassium bromide $[\mathrm{KBr}] = 2\, \mathrm{M}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The fitted parameters are $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$. -->
+
+The following code shows how to simulate the trajectory of a particle from the Jeffreys model with parameters $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$ and temperature $T = `r Temp`\, \mathrm{K}$.  The 2D trajectory is generated with zero drift $\RR(t \mid \pph) = \bm{0}$, and scale factor $\SSi = \left[\begin{smallmatrix} \sigma^2 & 0 \\ 0 & \sigma^2 \end{smallmatrix} \right]$.  Figure \@ref(fig:jfssim) compares the empirical MSD for the simulated trajectory to the theoretical MSD.
+
+(ref:jfssim) Empirical and theoretical MSD for the Jeffreys model with parameters $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$ and temperature $T = `r Temp`\, \mathrm{K}$.
+
+```{r jfssim, ref.label = "jfs_sim_calc", fig.width = 7, fig.height = 3, fig.cap = "(ref:jfssim)"}
+```
+
+## Parameter Estimation
+
+
+
+```{r jfs_fit}
+mod <- jfs_model$new(Xt = Xt, dt = dt)
+```
+
+
+```{r scratch, eval = FALSE, include = FALSE}
+#' Convert original parameters to standardized parameters for the Jeffreys model.
+#'
+#' @param eta1 First viscosity parameter (positive real).
+#' @param eta2 Second viscosity parameter (positive real).
+#' @param Gamma The elastic modulus of the fluid (positive real).
+#' @param Temp Temperature of the system.
+#'
+#' @return Vector of standardized parameters `(tau_M, q, xi_V)`.
+jfs_stpar <- function(eta1, eta2, Gamma, Temp) {
+  
+}
+
+
+#' Calculate the MSD of the Jeffreys model.
+#'
+#' @param t Vector of timepoints at which to calculate the MSD.
+#' @param r Radius of the particle.
+#' @param eta1 First viscosity parameter.
+#' @param eta2 Second viscosity parameter.
+#' @param Gamma The elastic modulus of the fluid.
+#' @param Temp Temperature of the system.
+#'
+#' @return MSD vector of the same length as `t`.
+jfs_msd <- function(t, r, eta1, eta2, Gamma, Temp) {
+  Kb <- 1.381e-23 # Boltzmann's constant
+  tau <- eta2/Gamma
+  alpha <- eta1/Gamma
+  sigma2 <- 2 * kb * Temp / (6 * pi * r * eta1)
+  sigma2 * (t + alpha * (1 - exp(-abs(t)/tau)))
+}
+
+# Calculate the standardized parametrization
+jfs_std <- function(alpha, tau, sigma2, Temp) {
+  kB <- 1.38064852e-23 # Boltzmann constant ( m^2 kg /(s^2 K) )
+  q <- alpha/tau
+  tau_M <- tau * (1+q)
+  xi_V <- 2*kB*Temp/(sigma2 * (1+q))
+  setNames(c(tau_M, q, xi_V), c("tau_M", "q", "xi_V"))
+}
+# Calculate the natural parametrization
+jfs_nat <- function(tau_M, q, xi_V, Temp) {
+  kB <- 1.38064852e-23 # Boltzmann constant
+  sigma2 <- 2*kB*Temp/(xi_V * (1+q))
+  alpha <- q/(1+q) * tau_M
+  tau <- tau_M/(1+q)
+  setNames(c(alpha, tau, sigma2), c("alpha", "tau", "sigma2"))
+}
+# Calculate MSD
+jfs_msd <- function(t, tau_M, q, xi_V, Temp) {
+  ## kB <- 1.38064852e-23 # Boltzmann constant
+  ## sigma2 <- 2*kB*Temp/(xi_V * (1+q))
+  ## alpha <- q/(1+q) * tau_M
+  ## tau <- tau_M/(1+q)
+  theta_nat <- jfs_nat(tau_M, q, xi_V, Temp)
+  alpha <- theta_nat[1]
+  tau <- theta_nat[2]
+  sigma2 <- theta_nat[3]
+  sigma2 * (t + alpha * (1 - exp(-t/tau)))
+}
+
+tau_M <- 1.8e1 # seconds
+q <- 6.7e1 # unitless
+xi_V <- 1.2e-10 # kg/s
+rad <- 0.48 # particle radius (micron)
+Temp <- 298 # temperature of the system (Kelvin)
+theta_std <- c(tau_M = tau_M, q = q, xi_V = xi_V)
+theta_nat <- do.call(jfs_nat, as.list(c(theta_std, Temp = Temp)))
+do.call(jfs_std, as.list(c(theta_nat, Temp = Temp))) - theta_std
+
+tseq <- exp(seq(log(1/60), log(30), len = 1000))
+alpha <- 8.2
+tau <- 4.6e-2
+sigma2 <- 9.1e-15
+plot(tseq, 1e12 * sigma2 * (tseq + alpha * (1 - exp(-tseq/tau))),
+     type = "l", log = "xy", xlab = "Time (s)", ylab = "MSD (microns^2)")
+
+```

@@ -49,7 +49,9 @@ vignette: >
 \newcommand{\N}{\mathcal{N}}
 \newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
 \newcommand{\msd}{\operatorname{MSD}}
+\newcommand{\acf}{\operatorname{ACF}}
 \newcommand{\var}{\operatorname{var}}
+\newcommand{\cov}{\operatorname{cov}}
 \newcommand{\tr}{\operatorname{trace}}
 \newcommand{\arma}{\operatorname{ARMA}}
 \newcommand{\snr}{\mathrm{SNR}}

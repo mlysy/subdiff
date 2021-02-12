@@ -30,11 +30,8 @@ Xt <- hbe %>%
   select(x, y) %>%
   as.matrix()
 
-# convert to increments
-dX <- apply(Xt, 2, diff)
-
 # fit fbm to data
-fbm_est <- fbm_fit(dX = dX, dt = dt, drift = "linear")
+fbm_est <- fbm_fit(Xt = Xt, dt = dt, drift = "linear")
 fbm_est
 ```
 
@@ -191,9 +188,9 @@ As we can see, the fSD model is more expressive for localization errors which in
 
 ```{r fbmvsloc}
 # fit fsd to data
-fsd_est <- fsd_fit(dX = dX, dt = dt, drift = "linear")
+fsd_est <- fsd_fit(Xt = Xt, dt = dt, drift = "linear")
 # fit fma to data
-fma_est <- farma_fit(dX = dX, dt = dt, order = c(0, 1), drift = "linear")
+fma_est <- farma_fit(Xt = Xt, dt = dt, order = c(0, 1), drift = "linear")
 
 # display nicely
 
