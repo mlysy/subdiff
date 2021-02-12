@@ -19,7 +19,7 @@ The MSD of some models (e.g., \code{fsd} and \code{farma}) is not defined in con
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{dX}}{Trajectory increments.  A matrix where each row is an observation and each column is a measurement dimension.  Only reallocates memory for the internal Toeplitz matrix if necessary.}
+\item{\code{Xt}}{Particle trajectory.  A matrix where row \code{n} is the position of the particle at time \code{t = n * dt} and each column is a measurement dimension.  Only reallocates memory for the internal Toeplitz matrix if necessary.}
 
 \item{\code{dt}}{Interobservation time (scalar).}
 }
@@ -403,7 +403,7 @@ Simulate trajectories from the model.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A matrix of size \code{dim(dX)} or an array of size \verb{nrow(dX) x ncol(dX) x nsim} array when \code{nsim > 1} of simulated increments, as calculated with \code{\link[=csi_sim]{csi_sim()}}, using the model's \code{drift()} and \code{acf()} specifications.
+A matrix of size \code{dim(Xt)} or an array of size \verb{nrow(Xt) x ncol(dX) x nsim} array when \code{nsim > 1} of simulated increments, as calculated with \code{\link[=csi_sim]{csi_sim()}}, using the model's \code{drift()} and \code{acf()} specifications.
 }
 }
 \if{html}{\out{<hr>}}
@@ -412,13 +412,13 @@ A matrix of size \code{dim(dX)} or an array of size \verb{nrow(dX) x ncol(dX) x 
 \subsection{Method \code{new()}}{
 Model object constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{csi_model$new(dX, dt, drift = "linear", n_drift)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{csi_model$new(Xt, dt, drift = "linear", n_drift)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{dX}}{Trajectory increments.}
+\item{\code{Xt}}{Matrix of particle positions.}
 
 \item{\code{dt}}{Interobservation time.}
 
@@ -429,9 +429,15 @@ Model object constructor.
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
+The value of \code{n_phi} is automatically determined from \code{phi_names}.  But this means the latter must be set by \code{derived$initialize()} before \code{super$initialize()} is called.  Otherwise an error is thrown.
+
+The constructor can be called without \code{Xt} for accessing methods which don't require it, e.g.,\preformatted{derived$new(dt = dt)$acf(phi, dt, N)
+}
+
+\emph{Development Notes}
 \itemize{
-\item Is it worth checking whether model object is valid at construction time?
-\item \code{n_phi} is automatically determined from \code{phi_names}.  But this means the latter must be set by \code{derived$initialize()} before \code{super$initialize()} is called.  Otherwise an error is thrown.
+\item Should a validator be (optionally) called after the constructor?
+\item Should \code{psi} necessarily contain the origin, to facilitate the validator?
 }
 }
 

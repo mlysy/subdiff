@@ -1,10 +1,10 @@
 #' Fit least-squares estimate.
 #'
-#' @template args-dX
+#' @template args-Xt
 #' @template args-dt
 #' @param lags Integer vector of lags to use in the fit, such that the timepoints used in the fit are `tau = dt * lags`.
 #' @param type Either "standard" for the usual LS estimator, or "improved" for the version of Zhang et al (2018).
-#' @param vcov If `TRUE`, calculates the variance matrix of `(alpha, logD)`.
+#' @param vcov If `TRUE`, returns an estimate of the variance matrix of `(alpha, logD)`.
 #'
 #' @return If `vcov = FALSE`, vector of length 2 with estimates of `(alpha, logD)`.  Otherwise, a list with elements `coef` and `vcov`, where the former is the estimate and the latter is the corresponding variance estimator.
 #'
@@ -12,16 +12,16 @@
 #'
 #' @references Zhang, K., Crizer, K.P.R., Schoenfisch, M.H., Hill, B.D., Didier, G. (2018) "Fluid heterogeneity detection based on the asymptotic distribution of the time-averaged mean squared displacement in single particle tracking experiments". *Journal of Physics A: Mathematical and Theoretical*, 51, pp 445601(44).
 #' @export
-ls_fit <- function(dX, dt, lags,
+ls_fit <- function(Xt, dt, lags,
                    type = c("standard", "improved"), vcov = TRUE) {
   type <- match.arg(type)
   # calculate the MSD
-  N <- nrow(dX)
+  N <- nrow(Xt)-1
   lags <- sort(lags)
   if(max(lags) > N-1) {
-    stop("max(lags) must be smaller than nrow(dX)-1.")
+    stop("max(lags) must be smaller than nrow(Xt)-2.")
   }
-  msd <- msd_fit(Xt = apply(dX, 2, cumsum), nlag = max(lags))
+  msd <- msd_fit(Xt = Xt, nlag = max(lags))
   ## tau <- dt * lags
   # need the standard estimator
   y <- log(msd[lags])

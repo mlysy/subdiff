@@ -5,7 +5,7 @@
 \title{Fit the fBM model.}
 \usage{
 fbm_fit(
-  dX,
+  Xt,
   dt,
   drift = c("linear", "none", "quadratic"),
   vcov = TRUE,
@@ -13,7 +13,7 @@ fbm_fit(
 )
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
+\item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
 
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 

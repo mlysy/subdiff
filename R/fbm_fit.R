@@ -2,7 +2,7 @@
 #'
 #' Fit a fBM model to a multi-dimensional CSI process.
 #'
-#' @template args-dX
+#' @template args-Xt
 #' @template args-dt
 #' @template args-drift_preset
 #' @template args-vcov
@@ -27,13 +27,13 @@
 #' @example examples/fbm_fit.R
 #'
 #' @export
-fbm_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
+fbm_fit <- function(Xt, dt, drift = c("linear", "none", "quadratic"),
                     vcov = TRUE, ad_only = TRUE) {
   ## model <- fbm_model()
   ## ans <- csi_fit(model, dX, dt, Tz, vcov)
   ## ans
   drift <- match.arg(drift)
-  model <- fbm_model$new(dX = dX, dt = dt, drift = drift)
+  model <- fbm_model$new(Xt = Xt, dt = dt, drift = drift)
   out <- model$fit(psi0 = c(-5, 5), vcov = vcov)
   if(ad_only) out <- to_ad(out, model = model, vcov = vcov)
   out

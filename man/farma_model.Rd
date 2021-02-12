@@ -143,13 +143,13 @@ Vector with named elements \code{alpha} and \code{logD}.
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{farma_model$new(dX, dt, p, q, m = 50, drift = "linear", n_drift)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{farma_model$new(Xt, dt, p, q, m = 50, drift = "linear", n_drift)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{dX, dt, drift, n_drift}}{See \link{csi_model}.}
+\item{\code{Xt, dt, drift, n_drift}}{See \link{csi_model}.}
 
 \item{\code{p}}{Number of autoregressive terms (nonnegative integer).}
 

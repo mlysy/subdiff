@@ -37,8 +37,9 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
     ndims <- sample(1:3, 1)
     acf1 <- D * fsd_acf(alpha, tau, sig^2, dt, N)
     dX <- as.matrix(rnormtz(n = ndims, fft = FALSE, acf = acf1))
+    Xt <- apply(rbind(rnorm(ndims), dX), 2, cumsum)
     # fsd
-    omega_hat <- fsd_fit(dX, dt, vcov = FALSE, ad_only = FALSE) # fit MLE
+    omega_hat <- fsd_fit(Xt, dt = dt, vcov = FALSE, ad_only = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
     ocheck <- optim_proj(xsol = omega_hat,

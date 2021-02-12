@@ -5,7 +5,7 @@
 \title{Fit the fSD model.}
 \usage{
 fsd_fit(
-  dX,
+  Xt,
   dt,
   drift = c("linear", "none", "quadratic"),
   vcov = TRUE,
@@ -13,7 +13,7 @@ fsd_fit(
 )
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
+\item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
 
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
@@ -24,7 +24,7 @@ fsd_fit(
 \item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link[=fsd_model]{fsd_model()}}). If \code{vcov}, a list with components:
+A vector of estimated parameters on transformed scale (See \code{\link[=fsd_model]{fsd_model()}}). If \code{vcov = TRUE}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}

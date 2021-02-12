@@ -4,10 +4,10 @@
 \alias{ls_fit}
 \title{Fit least-squares estimate.}
 \usage{
-ls_fit(dX, dt, lags, type = c("standard", "improved"), vcov = TRUE)
+ls_fit(Xt, dt, lags, type = c("standard", "improved"), vcov = TRUE)
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
+\item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
 
 \item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
@@ -15,7 +15,7 @@ ls_fit(dX, dt, lags, type = c("standard", "improved"), vcov = TRUE)
 
 \item{type}{Either "standard" for the usual LS estimator, or "improved" for the version of Zhang et al (2018).}
 
-\item{vcov}{If \code{TRUE}, calculates the variance matrix of \verb{(alpha, logD)}.}
+\item{vcov}{If \code{TRUE}, returns an estimate of the variance matrix of \verb{(alpha, logD)}.}
 }
 \value{
 If \code{vcov = FALSE}, vector of length 2 with estimates of \verb{(alpha, logD)}.  Otherwise, a list with elements \code{coef} and \code{vcov}, where the former is the estimate and the latter is the corresponding variance estimator.

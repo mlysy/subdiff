@@ -89,21 +89,24 @@ farma_model <- R6::R6Class(
 
     #' @description Class constructor.
     #'
-    #' @param dX,dt,drift,n_drift See [csi_model].
+    #' @param Xt,dt,drift,n_drift See [csi_model].
     #' @param p Number of autoregressive terms (nonnegative integer).
     #' @param q Number of moving-average terms (nonnegative integer).
     #' @param m Order of the moving-average approximation (see [farma_acf()]).
-    initialize = function(dX, dt, p, q, m = 50, drift = "linear", n_drift) {
+    initialize = function(Xt, dt, p, q, m = 50, drift = "linear", n_drift) {
+      # determine p and q
       pq <- private$get_pq(p, q)
       p <- pq["p"]
       q <- pq["q"]
       private$p_ <- p
       private$q_ <- q
       private$m_ <- m
+      # set parameter names
       phi_names <- "alpha"
       if(p > 0) phi_names <- c(phi_names, paste0("phi", 1:p))
       if(q > 0) phi_names <- c(phi_names, paste0("rho", 1:q))
       self$phi_names <- phi_names
+      # create the acf function
       private$acf_impl <- function(phi, dt, N) {
         alpha <- phi[1]
         ar_coef <- if(private$p_ == 0) numeric() else phi[1+1:p]
@@ -111,7 +114,7 @@ farma_model <- R6::R6Class(
         farma_acf(alpha = alpha, phi = ar_coef, rho = ma_coef,
                   dt = dt, N = N, m = private$m_)
       }
-      super$initialize(dX = dX, dt = dt, drift = drift, n_drift = n_drift)
+      super$initialize(Xt = Xt, dt = dt, drift = drift, n_drift = n_drift)
       ## FIXME: modify the drift term
     }
   )

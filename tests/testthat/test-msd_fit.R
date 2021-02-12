@@ -21,8 +21,9 @@ test_that("msd calculation in C++ matches that of R", {
     msd_C <- msd_fit(Xt, nlag, demean)
     # R estimate
     if(demean) {
-      mu <- colMeans(dX)
-      Zt <- Xt - (1:N-1) %o% mu
+      ## mu <- colMeans(dX)
+      ## Zt <- Xt - (1:N-1) %o% mu
+      Zt <- matrix(stats::resid(lm(Xt ~ matrix(1:N))), nrow = N)
     } else {
       Zt <- Xt
     }
@@ -30,6 +31,6 @@ test_that("msd calculation in C++ matches that of R", {
     for(ii in 1:nlag) {
       msd_R[ii] <- mean(apply(Zt, 2, diff, lag = ii)^2)
     }
-    expect_equal(max(abs(msd_C - msd_R)), 0)
+    expect_equal(msd_C, msd_R)
   }
 })

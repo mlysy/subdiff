@@ -7,11 +7,11 @@
 msd_fit(Xt, nlag, demean = TRUE)
 }
 \arguments{
-\item{Xt}{Vector or matrix of trajectory positions (each column is a different coordinate).  The trajectory is assumed to be sampled at a constant frequency.}
+\item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
 
 \item{nlag}{Number of MSD lags to calculate.}
 
-\item{demean}{Logical; whether or not to remove the mean of \code{Xt} as estimated by linear drift.}
+\item{demean}{Logical; whether or not to subtract from \code{Xt} a regression-based estimate of its linear drift.}
 }
 \value{
 Sample MSD vector of length \code{nlag}.

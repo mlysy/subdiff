@@ -2,7 +2,7 @@
 #'
 #' Fit a fARMA(p,q) model to a multi-dimensional CSI process (See 'Details').
 #'
-#' @template args-dX
+#' @template args-Xt
 #' @template args-dt
 #' @param order A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.
 #' @template args-drift_preset
@@ -28,7 +28,7 @@
 #' @example examples/farma_fit.R
 #'
 #' @export
-farma_fit <- function(dX, dt, order,
+farma_fit <- function(Xt, dt, order,
                       drift = c("linear", "none", "quadratic"),
                       vcov = TRUE, ad_only = TRUE) {
   drift <- match.arg(drift)
@@ -36,9 +36,10 @@ farma_fit <- function(dX, dt, order,
     stop("order must be a vector of 2 nonnegative integers.")
   }
   if(all(order == 0)) {
-    return(fbm_fit(dX = dX, dt = dt, drift = drift, vcov = vcov))
+    return(fbm_fit(Xt = Xt, dt = dt, drift = drift,
+                   vcov = vcov, ad_only = ad_only))
   }
-  model <- farma_model$new(dX = dX, dt = dt, drift = drift,
+  model <- farma_model$new(Xt = Xt, dt = dt, drift = drift,
                            p = order[1], q = order[2], m = 50)
   out <- model$fit(psi0 = rep(0, length(model$phi_names)),
                    vcov = vcov)

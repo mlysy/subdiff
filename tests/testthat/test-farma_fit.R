@@ -33,8 +33,9 @@ test_that("MLE is at the mode of the projection plots.", {
     dX <- as.matrix(rnormtz(n = ndims,
                             acf = fbm_acf(alpha, dt, N+1)))
     dX <- (1-rho) * dX[-1,,drop=FALSE] + rho * dX[1:N,,drop=FALSE]
+    Xt <- apply(rbind(rnorm(ndims), dX), 2, cumsum)
     ## model <- farma_model$new(dX, dt, p = 1, q = 1)
-    omega_hat <- farma_fit(dX, dt, order = c(1,1),
+    omega_hat <- farma_fit(Xt = Xt, dt = dt, order = c(1,1),
                            vcov = FALSE, ad_only = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
@@ -78,7 +79,8 @@ test_that("MLE is at the mode of the projection plots.", {
     dX <- as.matrix(rnormtz(n = ndims,
                             acf = fbm_acf(alpha, dt, N+1)))
     dX <- (1-rho) * dX[-1,,drop=FALSE] + rho * dX[1:N,,drop=FALSE]
-    omega_hat <- farma_fit(dX, dt, order = c(0,1),
+    Xt <- apply(rbind(rnorm(ndims), dX), 2, cumsum)
+    omega_hat <- farma_fit(Xt = Xt, dt = dt, order = c(0,1),
                            vcov = FALSE, ad_only = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation

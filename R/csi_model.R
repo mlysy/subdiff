@@ -8,6 +8,7 @@ csi_model <- R6::R6Class(
   classname = "csi_model",
 
   private = list(
+    Xt_ = NULL, # internal positions.
     dX_ = NULL, # internal increments.
     dt_ = NULL, # internal interobservation time.
     N_ = NULL, # internal number of increments.
@@ -49,23 +50,41 @@ csi_model <- R6::R6Class(
 
   active = list(
 
-    #' @field dX Trajectory increments.  A matrix where each row is an observation and each column is a measurement dimension.  Only reallocates memory for the internal Toeplitz matrix if necessary.
-    dX = function(value) {
+    #' @field Xt Particle trajectory.  A matrix where row `n` is the position of the particle at time `t = n * dt` and each column is a measurement dimension.  Only reallocates memory for the internal Toeplitz matrix if necessary.
+    Xt = function(value) {
       if(missing(value)) {
-        return(private$dX_)
+        return(private$Xt_)
       } else {
-        if(!is.numeric(value) || !is.matrix(value)) {
-          stop("`dX` must be a numeric matrix.")
-        }
-        if(is.null(private$N_) || (nrow(value) != private$N_)) {
+        check_Xt(value)
+        private$Xt_ <- value
+        private$n_dims <- ncol(value)
+        if(is.null(private$N_) || (nrow(value) != private$N_+1)) {
           # reallocate Toeplitz matrix
-          private$N_ <- nrow(value)
-          private$n_dims <- ncol(value)
+          private$N_ <- nrow(value) - 1
           private$Tz_ <- Toeplitz$new(N = private$N_)
         }
-        private$dX_ <- value
+        # set increments
+        private$dX_ <- matrix(apply(value, 2, diff), ncol = private$n_dims)
       }
     },
+
+    ## #' @field dX Trajectory increments.  A matrix where each row is an observation and each column is a measurement dimension.  Only reallocates memory for the internal Toeplitz matrix if necessary.
+    ## dX = function(value) {
+    ##   if(missing(value)) {
+    ##     return(private$dX_)
+    ##   } else {
+    ##     if(!is.numeric(value) || !is.matrix(value)) {
+    ##       stop("`dX` must be a numeric matrix.")
+    ##     }
+    ##     if(is.null(private$N_) || (nrow(value) != private$N_)) {
+    ##       # reallocate Toeplitz matrix
+    ##       private$N_ <- nrow(value)
+    ##       private$n_dims <- ncol(value)
+    ##       private$Tz_ <- Toeplitz$new(N = private$N_)
+    ##     }
+    ##     private$dX_ <- value
+    ##   }
+    ## },
 
     #' @field dt Interobservation time (scalar).
     dt = function(value) {
@@ -78,6 +97,7 @@ csi_model <- R6::R6Class(
         private$dt_ <- value
       }
     }
+
   ),
 
   public = list(
@@ -283,7 +303,7 @@ csi_model <- R6::R6Class(
     resid = function(phi, mu, Sigma) {
       dr <- self$drift(phi, dt = self$dt, N = private$N_) %*% mu
       ac <- self$acf(phi, dt = self$dt, N = private$N_)
-      csi_resid(self$dX, drift = dr, acf = ac, Sigma = Sigma)
+      csi_resid(private$dX_, drift = dr, acf = ac, Sigma = Sigma)
     },
 
     #' @description Simulate trajectories from the model.
@@ -294,27 +314,35 @@ csi_model <- R6::R6Class(
     #' @param nsim Number of trajectories to simulate.
     #' @param fft,nkeep,tol Optional arguments to [SuperGauss::rnormtz()].
     #'
-    #' @return A matrix of size `dim(dX)` or an array of size `nrow(dX) x ncol(dX) x nsim` array when `nsim > 1` of simulated increments, as calculated with [csi_sim()], using the model's `drift()` and `acf()` specifications.
+    #' @return A matrix of size `dim(Xt)` or an array of size `nrow(Xt) x ncol(dX) x nsim` array when `nsim > 1` of simulated increments, as calculated with [csi_sim()], using the model's `drift()` and `acf()` specifications.
     sim = function(phi, mu, Sigma, nsim = 1, fft = TRUE, nkeep, tol = 1e-6) {
       dr <- self$drift(phi, dt = self$dt, N = private$N_) %*% mu
       ac <- self$acf(phi, dt = self$dt, N = private$N_)
-      csi_sim(drift = dr, acf = ac, Sigma = Sigma,
-              X0 = rep(0, private$n_dims), nsim = nsim,
-              fft = fft, nkeep = nkeep, tol = tol)
+      csi_sim(drift = dr, acf = ac, Sigma = Sigma, X0 = self$Xt[1,],
+              nsim = nsim, fft = fft, nkeep = nkeep, tol = tol)
     },
 
     #' @description Model object constructor.
     #'
-    #' @param dX Trajectory increments.
+    #' @param Xt Matrix of particle positions.
     #' @param dt Interobservation time.
     #' @param drift Drift specification.  Either one of the strings "none", "linear", "quadratric", or a function with signature `function(phi, dt, N)`.
     #' @param n_drift Integer number of drift terms.  Ignored if `drift` is one of the default strings.  Required otherwise.
     #'
     #' @details
-    #' - Is it worth checking whether model object is valid at construction time?
-    #' - `n_phi` is automatically determined from `phi_names`.  But this means the latter must be set by `derived$initialize()` before `super$initialize()` is called.  Otherwise an error is thrown.
-    initialize = function(dX, dt, drift = "linear", n_drift) {
-      if(!missing(dX)) self$dX <- dX
+    #' The value of `n_phi` is automatically determined from `phi_names`.  But this means the latter must be set by `derived$initialize()` before `super$initialize()` is called.  Otherwise an error is thrown.
+    #'
+    #' The constructor can be called without `Xt` for accessing methods which don't require it, e.g.,
+    #' ```
+    #' derived$new(dt = dt)$acf(phi, dt, N)
+    #' ```
+    #'
+    #' *Development Notes*
+    #'
+    #' - Should a validator be (optionally) called after the constructor?
+    #' - Should `psi` necessarily contain the origin, to facilitate the validator?
+    initialize = function(Xt, dt, drift = "linear", n_drift) {
+      if(!missing(Xt)) self$Xt <- Xt
       self$dt <- dt
       # set drift
       check_drift(drift) # validate
@@ -346,6 +374,16 @@ csi_model <- R6::R6Class(
 
 #--- helper functions ----------------------------------------------------------
 
+#' Check that `Xt` is a numeric matrix.
+#'
+#' @template args-Xt
+#' @noRd
+check_Xt <- function(Xt) {
+  if(!is.numeric(Xt) || !is.matrix(Xt)) {
+    stop("`Xt` must be a numeric matrix.")
+  }
+}
+
 #' Check that drift arguments are correctly specified.
 #'
 #' @param drift Drift function.
@@ -353,13 +391,13 @@ csi_model <- R6::R6Class(
 check_drift <- function(drift) {
   if(length(drift) != 1 || (!is.character(drift) &&
                             !is.function(drift))) {
-    stop("Incorrect drift specification.  Please see `csi_model` for details.")
+    stop("Incorrect drift specification.  Please see [csi_model$drift()] for details.")
   }
   if(is.character(drift) && !(drift %in% c("linear", "none", "quadratic"))) {
     stop('Prespecified drift must be one of "linear", "none", or "quadratic".')
   }
   if(is.function(drift) && !identical(methods::formalArgs(drift), c("phi", "dt", "N"))) {
-    stop("`drift()` must have argument signature `phi`, `dt`, `N`.")
+    stop("`drift()` must have argument signature `function(phi, dt, N)`.")
   }
 }
 

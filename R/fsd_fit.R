@@ -2,13 +2,13 @@
 #'
 #' Fit Savin & Doyle's localization error model with fBM process (See 'Details').
 #'
-#' @template args-dX
+#' @template args-Xt
 #' @template args-dt
 #' @template args-drift_preset
 #' @template args-vcov
 #' @template args-ad_only
 #'
-#' @return A vector of estimated parameters on transformed scale (See [fsd_model()]). If `vcov`, a list with components:
+#' @return A vector of estimated parameters on transformed scale (See [fsd_model()]). If `vcov = TRUE`, a list with components:
 #' \describe{
 #' \item{coef}{A vector of estimated parameters on transformed scale.}
 #' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
@@ -42,10 +42,10 @@
 #' @example examples/fsd_fit.R
 #'
 #' @export
-fsd_fit <- function(dX, dt, drift = c("linear", "none", "quadratic"),
+fsd_fit <- function(Xt, dt, drift = c("linear", "none", "quadratic"),
                     vcov = TRUE, ad_only = TRUE) {
   drift <- match.arg(drift)
-  model <- fsd_model$new(dX = dX, dt = dt, drift = drift)
+  model <- fsd_model$new(Xt = Xt, dt = dt, drift = drift)
   # penalty function
   penalty <- function(psi) log1pe(psi[2]) + log1pe(-psi[2]) - psi[3]
   # calculate MLE of penalized profile likelihood

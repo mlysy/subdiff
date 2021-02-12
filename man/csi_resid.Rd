@@ -7,7 +7,7 @@
 csi_resid(dX, drift, acf, Sigma)
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments. Increments of Gaussian CSI processes.}
+\item{dX}{Matrix of trajectory increments.}
 
 \item{drift}{Matrix of the same size as \code{dX} of increment drift in each coordinate per timepoint (see 'Details').}
 

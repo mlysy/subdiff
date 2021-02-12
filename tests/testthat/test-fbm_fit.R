@@ -40,8 +40,9 @@ test_that("MLE is at the mode of the projection plots.", {
     ndims <- test_cases$ndims[ii]
     dX <- as.matrix(rnormtz(n = ndims,
                             acf = D * fbm_acf(alpha, dt, N)))
+    Xt <- apply(rbind(rnorm(ndims), dX), 2, cumsum)
     drift <- as.character(test_cases$drift[ii])
-    omega_hat <- fbm_fit(dX, dt, drift = drift,
+    omega_hat <- fbm_fit(Xt = Xt, dt = dt, drift = drift,
                          vcov = FALSE, ad_only = FALSE) # fit MLE
     # projection plots
     Tz <- Toeplitz$new(N = N) # memory allocation
