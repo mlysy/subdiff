@@ -56,6 +56,7 @@ vignette: >
 \newcommand{\arma}{\operatorname{ARMA}}
 \newcommand{\snr}{\mathrm{SNR}}
 \newcommand{\kbt}{k_{\mathrm{B}}T}
+\newcommand{\argmax}{\operatorname{arg\,max}}
 \newcommand{\mmu}{\bm{\mu}}
 \newcommand{\eet}{\bm{\eta}}
 \newcommand{\tth}{\bm{\theta}}
@@ -101,8 +102,9 @@ The purpose of the **subdiff** library is to provide simple and computationally 
 require(subdiff)
 require(tidyr)
 require(dplyr)
+require(optimCheck)
 require(ggplot2)
-require(RColorBrewer)
+## require(RColorBrewer)
 require(gridExtra)
 require(parallel)
 ```

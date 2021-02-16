@@ -108,7 +108,7 @@ jfs_model <- R6::R6Class(
     # Transform kernel parameters from computational to inferential basis.
     itrans = function(psi) {
       phi <- exp(psi)
-      names(phi) <- public$phi_names
+      names(phi) <- self$phi_names
       phi
     }
   )
@@ -166,7 +166,7 @@ tibble(
 
 <!-- In @raikher.rusakov10, the Jeffreys model \@ref(eq:jfsmsd) is calibrated to particles of radius $r = `r rad`\, \mathrm{\mu m}$ in a solution of cetyltrimethyl ammonium bromide $[\mathrm{CTAB}] = 1\, \mathrm{g}\, \mathrm{cm}^{-3}$ and potassium bromide $[\mathrm{KBr}] = 2\, \mathrm{M}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The fitted parameters are $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$. -->
 
-The following code shows how to simulate the trajectory of a particle from the Jeffreys model with parameters $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$ and temperature $T = `r Temp`\, \mathrm{K}$.  The 2D trajectory is generated with zero drift $\RR(t \mid \pph) = \bm{0}$, and scale factor $\SSi = \left[\begin{smallmatrix} \sigma^2 & 0 \\ 0 & \sigma^2 \end{smallmatrix} \right]$.  Figure \@ref(fig:jfssim) compares the empirical MSD for the simulated trajectory to the theoretical MSD.
+The following code shows how to simulate the trajectory of a particle from the Jeffreys model with parameters $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$ and temperature $T = `r Temp`\, \mathrm{K}$.  The 2D trajectory is generated with zero drift $\RR(t \mid \pph) = 0$, and scale factor $\SSi = \left[\begin{smallmatrix} \sigma^2 & 0 \\ 0 & \sigma^2 \end{smallmatrix} \right]$.  Figure \@ref(fig:jfssim) compares the empirical MSD for the simulated trajectory to the theoretical MSD.
 
 (ref:jfssim) Empirical and theoretical MSD for the Jeffreys model with parameters $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$ and temperature $T = `r Temp`\, \mathrm{K}$.
 
@@ -175,11 +175,73 @@ The following code shows how to simulate the trajectory of a particle from the J
 
 ## Parameter Estimation
 
+The `jfs_model` class inherits from the base class `csi_model`, which contains a number of methods to assist with parameter estimation.  In the following example, we'll use these to calculate the MLE of the Jeffreys fluid parameters $(\eta_1, \eta_2, \Gamma)$ along with their standard errors.  This proceeds in several steps:
 
+### Step 1: Profile Likelihood
 
-```{r jfs_fit}
+The first step is to calculate the MLE of the kernel parameters $\pph = (\alpha, \tau)$.  Let $\ell(\tth \mid \XX) = \ell(\pph, \mmu, \SSi \mid \XX)$ denote the loglikelihood function for the complete set of parameters.  As noted in @ling.etal19,
+
+$$
+(\hat{\mmu}_{\pph}, \hat{\SSi}_{\pph}) = \argmax_{(\mmu, \SSi)} \ell(\pph, \mmu, \SSi \mid \XX)
+$$
+	
+is available in closed-form, from which we may calculate the so-called [profile likelihood](https://en.wikipedia.org/wiki/Likelihood_function#Profile_likelihood) function
+
+\begin{equation}
+\begin{aligned}
+\ell_{\tx{prof}}(\pph \mid \XX) &= \max_{\mmu, \SSi} \ell(\pph, \mmu, \SSi \mid \XX) \\
+& = \ell(\pph, \hat{\mmu}_{\pph}, \hat{\SSi}_{\pph} \mid \XX).	
+\end{aligned}
+(\#eq:llprof)
+\end{equation}
+
+It follows that if $\hat{\pph} = \argmax_{\pph} \ell_{\tx{prof}}(\pph \mid \XX)$, then the MLE of $\tth = (\pph, \mmu, \SSi)$ is given by
+
+$$
+\hat{\tth} = (\hat{\pph}, \hat{\mmu}_{\hat{\pph}}, \hat{\SSi}_{\hat{\pph}}).
+$$
+
+The following code shows how to calculate $\hat{\tth}$.  Note that the optimization of the profile likelihood \@ref(eq:llprof) is done with respect to $\pps$, the kernel parameters in the computational basis.  We'll use the function `stats::optim()` for this.
+
+```{r jfs_nlp}
+# construct the model object
 mod <- jfs_model$new(Xt = Xt, dt = dt)
+
+# minimize the negative profile likelihood.
+opt <- optim(fn = mod$nlp, # negative profile likelihood
+             par = c(0, 0)) # initial value of psi
+
+# mle of psi
+psi_hat <- opt$par
+psi_hat
 ```
+
+Before going further, it is sometimes useful to check whether `stats::optim()` has indeed converged.  One way to do this is by examining the convergence flag:
+
+```{r jfs_optconv}
+opt$convergence
+```
+
+A value of zero means `stats::optim()` thinks it has converged.  Any other value means it hasn't converged (details in the function documentation).  However, the convergence metric used by `stats::optim()` is sometimes unreliable.  A more reliable but slower convergence diagnostic is to look at projection plots.  The process is facilitated with the use of the R package `r cran_link("optimCheck")`.
+
+```{r jfsproj, fig.width = 7, fig.height = 3, fig.cap = "Projection plots for profile likelihood maximization.  Red lines correspond to values of the candidate solution."}
+optimCheck::optim_proj(fun = mod$nlp, # function to minimize
+                       xsol = psi_hat, # candidate for local minimum
+                       xnames = expression(log(alpha), log(tau)), # parameter names
+                       maximum = FALSE) # check minimum not maximum
+```
+
+The red lines in Figure \@ref(fig:jfsproj) correspond to the values of the candidate solution $\pps$.  The fact that each of these values is at the minimum of the projection plot of the corresponding negative profile loglikelihood function indicates that `stats::optim()` has found a local optimum.  We can now convert $\hat \pps$ into the MLE of $\tth$:
+
+```{r jfs_mle}
+phi_hat <- mod$itrans(psi = psi_hat) # convert psi to inferential basis (phi)
+nu_hat <- mod$nu_hat(phi = phi_hat) # calculate nu_hat = (mu_hat, Sigma_hat)
+theta_hat <- list(phi = phi_hat, mu = nu_hat$mu, Sigma = nu_hat$Sigma)
+theta_hat
+```
+
+### Step 2: Variance Estimation
+
 
 
 ```{r scratch, eval = FALSE, include = FALSE}
