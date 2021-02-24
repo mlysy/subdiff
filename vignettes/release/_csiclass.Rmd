@@ -25,7 +25,7 @@ $$
 \msd_{\tilde{\XX}} = \tfrac 1 {\ndim} \tr(\SSi) \cdot  \eta(t \mid \pph).
 $$
 
-Another appealing property of this model is that its parameters $\tth = (\pph, \mmu, \SSi)$ can be estimated from discrete observations $\XX = (\rv [0] {\XX} N)$ in a computationally efficient manner [@ling.etal20].
+Another appealing property of this model is that its parameters $\tth = (\pph, \mmu, \SSi)$ can be estimated from discrete observations $\XX = (\rv [0] {\XX} N)$ in a computationally efficient manner [@ling.lysy20].
 
 ## Example: Brownian Motion in a Jeffreys Fluid
 
@@ -137,8 +137,8 @@ alpha <- tau * q
 acf <- jfs_acf(alpha = alpha, tau = tau, dt = dt, N = N)
 # increment drift matrix: in this case zero drift
 drift <- matrix(0, N, ndim)
-# scale matrix
-sigma2 <- 2*kB*Temp / (xi_V * (1+q))
+# scale matrix (micron^2)
+sigma2 <- 1e12 * 2*kB*Temp / (xi_V * (1+q))
 Sigma <- sigma2 * diag(ndim)
 # position at time t = 0
 X0 <- rep(0, ndim)
@@ -157,7 +157,7 @@ tibble(
 ) %>%
   pivot_longer(cols = Theoretical:Empirical, names_to = "MSD Type",
                values_to = "MSD", values_ptypes = list(factor())) %>%
-  ggplot(aes(x = Time, y = MSD * 1e12, group = `MSD Type`)) +
+  ggplot(aes(x = Time, y = MSD, group = `MSD Type`)) +
   geom_line(aes(color = `MSD Type`)) +
   scale_x_log10() + scale_y_log10() +
   xlab(expression("Time "*(s))) + ylab(expression("MSD "*(mu*m^2)))
@@ -201,6 +201,8 @@ $$
 \hat{\tth} = (\hat{\pph}, \hat{\mmu}_{\hat{\pph}}, \hat{\SSi}_{\hat{\pph}}).
 $$
 
+The upshot of this technique is that $\hat{\tth}$ can be obtained by maximizing $\ell_{\tx{prof}}(\pph \mid \XX)$ rather than $\ell(\tth \mid \XX)$.  The former is a lower-dimensional optimization problem, and thus more computationally efficient.
+
 The following code shows how to calculate $\hat{\tth}$.  Note that the optimization of the profile likelihood \@ref(eq:llprof) is done with respect to $\pps$, the kernel parameters in the computational basis.  We'll use the function `stats::optim()` for this.
 
 ```{r jfs_nlp}
@@ -231,7 +233,7 @@ optimCheck::optim_proj(fun = mod$nlp, # function to minimize
                        maximum = FALSE) # check minimum not maximum
 ```
 
-The red lines in Figure \@ref(fig:jfsproj) correspond to the values of the candidate solution $\pps$.  The fact that each of these values is at the minimum of the projection plot of the corresponding negative profile loglikelihood function indicates that `stats::optim()` has found a local optimum.  We can now convert $\hat \pps$ into the MLE of $\tth$:
+The red lines in Figure \@ref(fig:jfsproj) correspond to the values of the candidate solution $\pps$.  The fact that each of these values is at the minimum of the projection plot of the corresponding negative profile loglikelihood function indicates that `stats::optim()` has found a local optimum.  We can now convert $\hat{\pps}$ into the MLE of $\tth$:
 
 ```{r jfs_mle}
 phi_hat <- mod$itrans(psi = psi_hat) # convert psi to inferential basis (phi)
@@ -241,6 +243,42 @@ theta_hat
 ```
 
 ### Step 2: Variance Estimation
+
+The variance of the MLE, $\var(\hat{\tth})$, is estimated by $\VV(\hat{\tth})$, the inverse of the [observed Fisher information matrix](https://en.wikipedia.org/wiki/Observed_information),
+
+$$
+\VV(\hat{\tth}) = \left[- \frac{\partial^2}{\partial \tth \partial \tth'} \ell(\hat{\tth} \mid \XX)\right]^{-1}.
+$$
+
+The confidence interval for a given parameter $\theta_j$ is then given by $\hat \theta_j \pm 2 \se(\hat \theta_j)$, where the standard error is $\se(\hat \theta_j) = \sqrt{[\VV(\hat{\tth})]_{jj}}$.
+
+The **subdiff** package calculates the variance estimate using numerical differentiation via the R package `r cran_link("numDeriv")`.  However, rather than calculating the Hessian of the loglikelihood with respect to the inferential basis $\tth$, **subdiff** instead does this with respect to a computational basis $\oom = (\pps, \mmu, \lla)$, where $\lla$ is the log-Cholesky decomposition of $\SSi$.  That is, for $\SSi_{\ndim \times \ndim}$, $\lla$ is a vector of size $\ndim(\ndim+1)/2$ corresponding to the upper Cholesky factor of $\SSi$ in column-major order, but with the log of its diagonal elements.  In other words, if
+$$
+\UU_{\ndim \times \ndim} = \begin{bmatrix} 
+\exp(\lambda_1) & \lambda_2 & \cdots & \lambda_{\ndim(\ndim-1)/2 + 1} \\
+0 & \exp(\lambda_3) & \cdots & \lambda_{\ndim(\ndim-1)/2 + 2} \\
+\vdots & & \ddots & \vdots \\
+0 & 0 & \cdots & \exp(\lambda_{\ndim(\ndim-1)/2+\ndim})
+\end{bmatrix},
+$$
+then $\UU$ is the unique upper-triangular matrix with positive diagonal elements such that $\SSi = \UU'\UU$.  The vector $\lla$ is unconstrained in $\mathbb{R}^{\ndim(\ndim-1)/2+\ndim}$, and consequently $\oom$ is unconstrained in $\mathbb{R}^{\operatorname{dim}(\oom)}$ as well, which make the numerical Hessian calculation more stable and more accurate.  Moreover, the estimators $\hat{\oom}$ and $\VV(\hat{\oom})$ can be easily used to calculate standard errors and confidence intervals for any parameter of interest as we shall see [below](#deltamethod).
+
+The following R code shows how to calculate $\hat{\oom}$ and $\VV(\hat{\oom})$.
+
+```{r jfs_var}
+# convert theta to computational basis (omega)
+omega_hat <- mod$trans_full(phi = theta_hat$phi,
+                            mu = theta_hat$mu,
+                            Sigma = theta_hat$Sigma)
+# calculate fisher information matrix
+fi_obs <- mod$fisher(omega_hat)
+# stable inversion of fisher information
+var_hat <- mod$get_vcov(fi_obs)
+list(coef = signif(omega_hat, 2),
+     vcov = signif(var_hat, 2))
+```
+
+### Step 3: Estimating Arbitrary Quantities of Interest {#deltamethod}
 
 
 

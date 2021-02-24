@@ -35,7 +35,7 @@ fbm_est <- fbm_fit(Xt = Xt, dt = dt, drift = "linear")
 fbm_est
 ```
 
-But what about estimates of the full set of parameters, $\tth = (\alpha, \mmu, \SSi)$?  We'll return to this a little bit later.
+But what about estimates of the full set of parameters, $\tth = (\alpha, \mmu, \SSi)$?  We'll return to this point [below](#deltamethod).
 
 # Parametric Modeling in the Presense of Noise
 

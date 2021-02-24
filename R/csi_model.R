@@ -182,7 +182,8 @@ csi_model <- R6::R6Class(
     #' @param Sigma Scale matrix.
     #' @return Full parameter vector in the computational basis.
     trans_full = function(phi, mu, Sigma) {
-      c(self$trans(phi), mu, trans_Sigma(Sigma))
+      setNames(c(self$trans(phi), mu, trans_Sigma(Sigma)),
+               nm = private$omega_names)
     },
 
     #' @description Convert from computational to original basis.
@@ -240,11 +241,13 @@ csi_model <- R6::R6Class(
     #' @param omega Vector of length `n_omega` of parameters in the computational basis.
     #' @return The `n_omega x n_omega` observed Fisher information matrix.
     fisher = function(omega) {
-      numDeriv::hessian(x = omega, func = function(omega) {
+      fi <- numDeriv::hessian(x = omega, func = function(omega) {
         # convert omega to phi, mu, Sigma
         theta <- self$itrans_full(omega)
         -self$loglik(theta$phi, theta$mu, theta$Sigma)
       })
+      colnames(fi) <- rownames(fi) <- private$omega_names
+      fi
     },
 
     #' @description Convert a Fisher information matrix to a variance matrix.
