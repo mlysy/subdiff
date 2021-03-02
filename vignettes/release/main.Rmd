@@ -38,6 +38,7 @@ vignette: >
 <!-- \newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}} -->
 \newcommand{\RR}{\bm{R}}
 \newcommand{\BB}{\bm{B}}
+\newcommand{\JJ}{\bm{J}}
 \newcommand{\XX}{\bm{X}}
 \newcommand{\UU}{\bm{U}}
 \newcommand{\VV}{\bm{V}}
@@ -68,6 +69,7 @@ vignette: >
 \newcommand{\oom}{\bm{\omega}}
 \newcommand{\pps}{\bm{\psi}}
 \newcommand{\pph}{\bm{\phi}}
+\newcommand{\zze}{\bm{\zeta}}
 \newcommand{\SSi}{\bm{\Sigma}}
 \newcommand{\ndim}{d}
 \newcommand{\ndrift}{k}
@@ -127,14 +129,14 @@ n_rng <- range(tapply(hbe$id, hbe$id, length)) # range of trajectory lengths
 dt <- 1/60 # interobservation time
 ```
 
-<!-- ```{r dataset, child = "_dataset.Rmd"} -->
-<!-- ``` -->
+```{r dataset, child = "_dataset.Rmd"}
+```
 
-<!-- ```{r semiparam, child = "_semiparametric.Rmd"} -->
-<!-- ``` -->
+```{r semiparam, child = "_semiparametric.Rmd"}
+```
 
-<!-- ```{r param, child = "_parametric.Rmd"} -->
-<!-- ``` -->
+```{r param, child = "_parametric.Rmd"}
+```
 
 ```{r csiclass, child = "_csiclass.Rmd"}
 ```

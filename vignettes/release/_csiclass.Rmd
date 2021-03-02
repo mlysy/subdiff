@@ -36,7 +36,7 @@ Consider a particle of radius $r$ in a Jeffreys fluid described by viscosity par
 (\#eq:jfsmsd)
 \end{equation}
 
-where $q = \eta_1/\eta_2$, $\tau_M = (\eta_1 + \eta_2)/\Gamma$, and $\xi_V = 6\pi r \cdot \eta_1\eta_2/(\eta_1 + \eta_2)$.  A more natural parametrization is
+where $q = \eta_1/\eta_2$, $\tau_M = (\eta_1 + \eta_2)/\Gamma$, $\xi_V = 6\pi r \cdot \eta_1\eta_2/(\eta_1 + \eta_2)$, and $T$ and $r$ are the temperature of the system and radius of the particle, respectively.  A more natural parametrization is
 
 $$
 \msd_{\tilde{\XX}}(t) = \sigma^2 \left\{t + \alpha \left[1 - e^{-t/\tau}\right]\right\},
@@ -124,7 +124,6 @@ kB <- 1.38064852e-23 # Boltzmann constant
 tau_M <- 2.1 # seconds
 q <- 4.6e1 # unitless
 xi_V <- 1.4e-07 # kg/s
-rad <- 0.48 # particle radius (micron)
 Temp <- 298 # temperature of the system (Kelvin)
 
 dt <- 1/60 # interobservation time
@@ -175,7 +174,7 @@ The following code shows how to simulate the trajectory of a particle from the J
 
 ## Parameter Estimation
 
-The `jfs_model` class inherits from the base class `csi_model`, which contains a number of methods to assist with parameter estimation.  In the following example, we'll use these to calculate the MLE of the Jeffreys fluid parameters $(\eta_1, \eta_2, \Gamma)$ along with their standard errors.  This proceeds in several steps:
+The `jfs_model` class inherits from the base class `csi_model`, which contains a number of methods to assist with parameter estimation.  In the following example, we'll use these to calculate the MLE of the Jeffreys fluid parameters $\zze = (\eta_1, \eta_2, \Gamma)$ along with their standard errors.  This proceeds in several steps:
 
 ### Step 1: Profile Likelihood
 
@@ -273,14 +272,85 @@ omega_hat <- mod$trans_full(phi = theta_hat$phi,
 # calculate fisher information matrix
 fi_obs <- mod$fisher(omega_hat)
 # stable inversion of fisher information
-var_hat <- mod$get_vcov(fi_obs)
+omega_var <- mod$get_vcov(fi_obs)
 list(coef = signif(omega_hat, 2),
-     vcov = signif(var_hat, 2))
+     vcov = signif(omega_var, 2))
 ```
 
 ### Step 3: Estimating Arbitrary Quantities of Interest {#deltamethod}
 
+Let $\pps = (\psi_1, \ldots, \psi_P) \in \mathbb R^{P}$, for which we have the MLE $\hat{\pps}$ and its variance estimate $\VV(\hat{\pps})$.  Now suppose we wish to estimate the quantity of interest $\zze = \bm{G}(\pps) = \big(G_1(\pps), \ldots, G_Q(\pps)\big) \in \mathbb R^{Q}$.  Then the point estimate is $\hat{\zze} = \bm{G}(\hat{\pps})$, and the corresponding variance estimate is
 
+$$
+\VV(\hat{\zze}) = \JJ(\hat{\pps})' \VV(\hat{\pps}) \JJ(\hat{\pps}),
+$$
+
+where $\JJ(\pps)$ is the $P \times Q$ Jacobian matrix with elements $[\JJ(\pps)]_{ij} = \frac{\partial}{\partial \psi_i} G_j(\pps)$.  The code below shows how to do this for the Jeffreys model parameters $\zze = (\eta_1, \eta_2, \Gamma)$ for a particle of radius $r = `r rad` \, \mu\mathrm{m}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The Jacobian matrix $\JJ(\hat{\pps})$ is calculated numerically using `numDeriv::jacobian()`.
+
+```{r jfs_zeta}
+#' Calculate the Jeffreys model parameters from the parameters of the computational basis.
+#'
+#' @param omega Vector of computational basis parameters.
+#' @param model Jeffreys model object of class `jfs_model`.  This is used to convert `omega` to the inferential basis `theta = (phi, mu, Sigma)`.
+#' @param rad Radius of the particle (m).
+#' @param Temp Temperature of the system (Kelvin).
+#' 
+#' @return A vector with named elements `eta1` (N s / m^2), `eta2` (N s / m^2), and `Gamma` (kg / (m s^2)).
+jfs_zeta <- function(omega, model, rad, Temp) {
+  kB <- 1.38064852e-23 # Boltzmann constant: m^2 kg /(s^2 K)
+  # convert omega to theta
+  theta <- model$itrans_full(omega)
+  # parameters in simplified basis
+  alpha <- theta$phi["alpha"]
+  tau <- theta$phi["tau"]
+  sigma2 <- mean(diag(theta$Sigma)) * 1e-12 # convert from micron^2 to m^2
+  # parameters in original basis
+  eta1 <- 2*kB*Temp / (6*pi*rad * sigma2)
+  Gamma <- eta1/alpha
+  eta2 <- tau*Gamma
+  setNames(c(eta1, eta2, Gamma), c("eta1", "eta2", "Gamma"))
+}
+
+# estimate of zeta
+
+rad <- 0.48 # particle radius (micron)
+Temp <- 298 # temperature of the system (Kelvin)
+
+# point estimate
+zeta_hat <- jfs_zeta(omega = omega_hat,
+                     model = mod,
+                     rad = rad * 1e-6, # micron -> m
+                     Temp = Temp)
+
+# variance estimate
+# jacobian is returned as a matrix of size `length(zeta) x length(omega)`
+jac <- numDeriv::jacobian(
+                   func = function(omega) {
+                     jfs_zeta(omega,
+                              model = mod, rad = rad*1e-6, Temp = Temp)
+                   },
+                   x = omega_hat
+                 )
+zeta_var <- jac %*% omega_var %*% t(jac)
+colnames(zeta_var) <- rownames(zeta_var) <- names(zeta_hat)
+
+list(coef = signif(zeta_hat, 2),
+     vcov = signif(zeta_var, 2))
+```
+
+Finally we can convert the variance matrix estimate to standard errors and 95% confidence intervals for each element of $\zze$.
+
+```{r jfs_zeta_se}
+# standard errors
+zeta_se <- sqrt(diag(zeta_var))
+
+# display point estimate, standard error, and confidence interval
+disp <- cbind(est = zeta_hat,
+              se = zeta_se,
+              `2.5%` = zeta_hat - 2*zeta_se,
+              `97.5%` = zeta_hat + 2*zeta_se)
+signif(disp, 2)
+```
 
 ```{r scratch, eval = FALSE, include = FALSE}
 #' Convert original parameters to standardized parameters for the Jeffreys model.
@@ -299,18 +369,18 @@ jfs_stpar <- function(eta1, eta2, Gamma, Temp) {
 #' Calculate the MSD of the Jeffreys model.
 #'
 #' @param t Vector of timepoints at which to calculate the MSD.
-#' @param r Radius of the particle.
+#' @param rad Radius of the particle.
 #' @param eta1 First viscosity parameter.
 #' @param eta2 Second viscosity parameter.
 #' @param Gamma The elastic modulus of the fluid.
 #' @param Temp Temperature of the system.
 #'
 #' @return MSD vector of the same length as `t`.
-jfs_msd <- function(t, r, eta1, eta2, Gamma, Temp) {
+jfs_msd <- function(t, rad, eta1, eta2, Gamma, Temp) {
   Kb <- 1.381e-23 # Boltzmann's constant
   tau <- eta2/Gamma
   alpha <- eta1/Gamma
-  sigma2 <- 2 * kb * Temp / (6 * pi * r * eta1)
+  sigma2 <- 2*Kb*Temp / (6*pi*rad * eta1)
   sigma2 * (t + alpha * (1 - exp(-abs(t)/tau)))
 }
 

@@ -36,7 +36,8 @@ tseq <- 1:nlags*dt # time sequence
 msd_hat <- lapply(ids, function(id) {
   Xt <- hbe %>%
     filter(id == !!id) %>%
-    select(x, y)
+    select(x, y) %>%
+    as.matrix()
   tibble(id = id, t = tseq, msd = msd_fit(Xt = Xt, nlag = nlags))
 }) %>% bind_rows()
 

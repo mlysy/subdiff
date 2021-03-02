@@ -47,7 +47,7 @@ Nmax <- floor(tmax/dt)
 
 tibble(t = 1:Nmax * dt,
        Empirical = msd_fit(Xt, nlag = Nmax),
-       fBM = exp(est$coef["logD"]) * (1:Nmax * dt)^est$coef["alpha"]) %>%
+       fBM = exp(fbm_est$coef["logD"]) * (1:Nmax * dt)^fbm_est$coef["alpha"]) %>%
   pivot_longer(cols = Empirical:fBM, names_to = "MSD Type", values_to = "msd") %>%
   ggplot(aes(x = t, y = msd, group = `MSD Type`)) +
   geom_line(aes(col = `MSD Type`)) +
