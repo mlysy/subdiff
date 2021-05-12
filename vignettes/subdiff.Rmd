@@ -1,14 +1,12 @@
 ---
-title: "**subdiff**: An R/C++ Toolchain for the Analysis of Passive Particle-Tracking Data"
+title: "Introduction to **subdiff**: Tools for the Analysis of Passive Particle-Tracking Data"
 author: "Martin Lysy, Yun Ling"
 date: "`r Sys.Date()`"
 output: 
-  rmarkdown::html_vignette:
+  bookdown::html_vignette2:
     toc: true
-    toc_depth: 4
-  html_document:
+  bookdown::html_document2:
     toc: true
-    toc_depth: 4
     toc_float: true
     #code_folding: hide
     #keep_md: yes
@@ -16,142 +14,138 @@ bibliography: references.bib
 csl: taylor-and-francis-harvard-x.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{Introduction to subdiff}
+  %\VignetteIndexEntry{Introduction to **subdiff**: Tools for the Analysis of Passive Particle-Tracking Data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      TeX: {
+	  Macros: {
+	      rv: ["#2_{#1},\\ldots,#2_{#3}",3,"1"]
+	  }
+      }
+  });
+</script>
+
+
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+\newcommand{\tx}[1]{\textrm{#1}}
+<!-- \newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}} -->
+\newcommand{\RR}{\bm{R}}
+\newcommand{\BB}{\bm{B}}
+\newcommand{\JJ}{\bm{J}}
+\newcommand{\XX}{\bm{X}}
+\newcommand{\UU}{\bm{U}}
+\newcommand{\VV}{\bm{V}}
+\newcommand{\dX}{\Delta\XX}
+\newcommand{\YY}{\bm{Y}}
+\newcommand{\ZZ}{\bm{Z}}
+\newcommand{\dt}{\Delta t}
+\newcommand{\tmin}{t_{\tx{min}}}
+\newcommand{\tmax}{t_{\tx{max}}}
+\newcommand{\aD}{(\alpha,D)}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
+\newcommand{\msd}{\operatorname{MSD}}
+\newcommand{\acf}{\operatorname{ACF}}
+\newcommand{\var}{\operatorname{var}}
+\newcommand{\se}{\operatorname{se}}
+\newcommand{\cov}{\operatorname{cov}}
+\newcommand{\tr}{\operatorname{trace}}
+\newcommand{\arma}{\operatorname{ARMA}}
+\newcommand{\snr}{\mathrm{SNR}}
+\newcommand{\kbt}{k_{\mathrm{B}}T}
+\newcommand{\argmax}{\operatorname{arg\,max}}
+\newcommand{\mmu}{\bm{\mu}}
+\newcommand{\eet}{\bm{\eta}}
+\newcommand{\tth}{\bm{\theta}}
+\newcommand{\lla}{\bm{\lambda}}
+\newcommand{\oom}{\bm{\omega}}
+\newcommand{\pps}{\bm{\psi}}
+\newcommand{\pph}{\bm{\phi}}
+\newcommand{\zze}{\bm{\zeta}}
+\newcommand{\SSi}{\bm{\Sigma}}
+\newcommand{\ndim}{d}
+\newcommand{\ndrift}{k}
+\newcommand*\ud{\mathop{}\!\mathrm{d}}
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-source("format.R") # R formatting
-# silently load packages
-suppressMessages({
-  require(subdiff)
-  require(ggplot2)
-  require(parallel)
-  require(kableExtra)
-})
-cache_build <- TRUE # cache while creating vignette
+# silently load packages not used in code
+## suppressMessages({
+##   require(kableExtra)
+## })
+# format link to CRAN packages
+cran_link <- function(pkg) {
+  paste0("[**", pkg, "**](https://CRAN.R-project.org/package=", pkg, ")")
+}
 ```
 
-<!-- markdown setup -->
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-  TeX: { equationNumbers: { autoNumber: "AMS" } }
-});
-</script>
-<!-- html-only macros -->
-\newcommand{\bm}[1]{\boldsymbol{#1}}
-\newcommand{\tx}[1]{\textrm{#1}}
+# Introduction
 
-<!-- regular latex macros -->
-\newcommand{\XX}{{\bm X}}
-\newcommand{\ZZ}{{\bm Z}}
-\newcommand{\dt}{\Delta t}
-\newcommand{\dX}{\Delta\XX}
-\newcommand{\msd}{\textrm{MSD}}
-\newcommand{\tmin}{t_{\tx{min}}}
-\newcommand{\tmax}{t_{\tx{max}}}
-\newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}}
-\newcommand{\aD}{(\alpha,D)}
-\newcommand{\mmu}{{\bm \mu}}
-\newcommand{\pph}{{\bm \phi}}
-\newcommand{\pps}{{\bm \psi}}
-\newcommand{\tth}{{\bm \theta}}
-\newcommand{\gga}{{\bm \gamma}}
-\newcommand{\lla}{{\bm \lambda}}
-\newcommand{\SSi}{{\bm \Sigma}}
-\newcommand{\tr}{\operatorname{tr}}
-\newcommand{\logit}{\operatorname{logit}}
-\newcommand{\ilogit}{\operatorname{ilogit}}
-\newcommand{\LLa}{{\bm \Lambda}}
-\newcommand{\VV}{{\bm V}}
-\newcommand{\cov}{\operatorname{cov}}
-\newcommand{\sd}{\operatorname{sd}}
-\newcommand{\var}{\operatorname{var}}
-\newcommand{\se}{\operatorname{se}}
-\newcommand{\ve}{\widehat{\var}}
-\newcommand{\MN}{\operatorname{Matrix-Normal}}
-\newcommand{\WW}{{\bm W}}
-\newcommand{\iid}{\stackrel{\tx{iid}}{\sim}}
-\newcommand{\N}{\mathcal N}
-\newcommand{\bO}{\mathcal O}
-\newcommand{\bo}{{\bm 1}}
-\newcommand{\TT}{{\bm T}}
-\newcommand{\GG}{{\bm G}}
-\newcommand{\JJ}{{\bm J}}
-
-## `r section("Overview")`
-
-The **subdiff** package provides a number of utilities for analyzing subdiffusion in passive particle tracking data.  Let $\XX(t) = \big(\XX_1(t), \ldots, \XX_q(t)\big)$ denote the $q$-dimensional position of a particle at time $t$, where $q = 1-3$.  In an ideal experiment, it is typically assumed that $\XX(t)$ is a Continuous Stationary Increments (CSI) process, i.e., a stochastic process with mean zero and such that the distribution of $\dX(t) = \XX(t+\dt) - \XX(t)$ is independent of $t$.  Under these conditions, the covariance properties of $\XX(t)$ can often be deduced entirely from the particle's mean square displacement (MSD),
+The **subdiff** package provides a number of utilities for analyzing subdiffusion in passive particle tracking data.  Let $\XX(t) = \big(X_1(t), \ldots, X_{\ndim}(t)\big)$ denote the $\ndim$-dimensional position of a particle at time $t$, where $\ndim$ is typically between 1 and 3.  In an ideal experiment, it is typically assumed that $\XX(t)$ is a Continuous Stationary Increments (CSI) process, i.e., a stochastic process with mean zero and such that the distribution of $\dX(t) = \XX(t+\dt) - \XX(t)$ is independent of $t$.  Under these conditions, the covariance properties of $\XX(t)$ can often be deduced entirely from the particle's mean square displacement (MSD),
 \begin{equation}
-\msd_X(t) = \frac 1 q \sum_{i=1}^qE\big[\big(X_i(t)-X_i(0)\big)^2\big].
-\label{eq:msd}
+\msd_{\XX}(t) = \frac 1 \ndim \sum_{i=1}^\ndim E\big[\big(X_i(t)-X_i(0)\big)^2\big].
+(\#eq:msd)
 \end{equation}
 A widely observed phenomenon is that the MSD of microparticles diffusing in biological fluids has a power-law signature on a given timescale,
 \begin{equation}
-  \msd_X(t) \sim D t^\alpha, \qquad t \in (\tmin, \tmax).
-  \label{eq:subdiff}
+  \msd_{\XX}(t) \sim D \cdot t^\alpha, \qquad t \in (\tmin, \tmax).
+  (\#eq:subdiff)
 \end{equation}
-Whereas $\alpha = 1$ corresponds to the MSD of ordinary diffusion observed in Brownian particles, the power law MSD \\eqref{eq:subdiff} with $\alpha \in (0,1)$ is referred to as subdiffusion.  
+Whereas $\alpha = 1$ corresponds to the MSD of ordinary diffusion observed in Brownian particles, the power law MSD \@ref(eq:subdiff) with $\alpha \in (0,1)$ is referred to as *subdiffusion*.  
 
-In the following sections, we introduce some of the tools provided by **subdiff** for estimating the subdiffusion coefficients $\aD$ and the subdiffusion time interval $(\tmin, \tmax)$:
+The purpose of the **subdiff** library is to provide simple and computationally efficient tools for modeling and estimating subdiffusion.  An overview of these tools is presented below.  
 
-- Section `r ref_label("sec:sp")` presents a semi-parametric subdiffusion estimator based on the empirical MSD which is perhaps most familiar to many practitioners.
+## Installation
 
-- Section `r ref_label("sec:par")` introduces a family of parametric models which typically yields much greater precision estimates of $\aD$.
-
-- Section `r ref_label("sec:hier")` shows how to estimate heterogeneity of the fluid medium using hierarchical modeling (TBD).
-
-<!-- The **subdiff** toolchain provides consists of several R packages providing various components for analyzing particle tracking data. -->
-
-### `r subsection("Installation", "sec:inst")`
-
-Installation of **subdiff** requires several other packages not currently available on CRAN:
-
-- `r github_link("subdiff")`: The main interface to the toolchain.
-- `r github_link("LMN")`: Dimension reduction for parametric subdiffusion models.  In particular, these methods allow us to estimate linear or quadratic drift for 1-3 dimensional trajectories with zero computational overhead.
-- ~~`r github_link("mniw")`~~: (Not available yet) Bayesian inference for parametric subdiffusion models.  In particular, these methods can be used to estimate heterogenity of the fluid medium from multiple trajectories.
-- `r github_link("SuperGauss")`: Efficient computations for parametric models, i.e., scaling almost linearly in the number of timepoints.
-- `r github_link("optimCheck")`: To run unit tests for optimization routines -- recommended to make sure that **subdiff** has been installed correctly.
-
-Other helpful packages, some of which are required to run the code in this tutorial:
-
-- `r cran_link("devtools")`: For installing packages that aren't on CRAN.
-- `r cran_link("testthat")`: For running the toolchain unit tests.
-- `r cran_link("parallel")`: For processing multiple particle trajectories simulatenously on multiple cores.
-- `r cran_link("numDeriv")`: For computing accurate numerical derivatives.
-- `r cran_link("ggplot2")`: For creating a variety of good-looking plots with minimal effort. 
-
-#### Windows/OSX Instructions
-
-**SuperGauss** binaries are available on CRAN, so it can be installed from within an R session via e.g.,
-```{r, eval = FALSE}
-install.packages("SuperGauss")
-```
-To install the development version available only on GitHub, you will have to first install the C library `r pkg_link("FFTW", "http://www.fftw.org/")`.  Please see Appendix `r ref_label("app:fftw")` for how to do this.
-
-The remaining packages are only on GitHub and contain C++ code which needs to be compiled from source.  The first step is to make sure your R environment is properly configured to compile C++ source code.  Please see Appendix `r ref_label("app:rcpp")` for instructions on how to do this.  Next, install the `r cran_link("devtools")` package (e.g., as above), then with the packages in the following order:
-```{r, eval = FALSE}
-pkgs <- paste0("mlysy/", c("optimCheck", "mniw", "LMN", "subdiff"))
-devtools::install_github(repo = pkgs, INSTALL_opts = "--install-tests")
+```{r load_packages, include = FALSE, message = FALSE}
+# load required packages
+require(subdiff)
+require(tidyr)
+require(dplyr)
+require(optimCheck)
+require(ggplot2)
+require(gridExtra)
+## require(RColorBrewer)
+## require(parallel)
 ```
 
-#### Linux/Installing from Source
+To install the **subdiff** package:
 
-On linux everything needs to be built from source, including **SuperGauss** which also requires the C library `r pkg_link("FFTW", "http://www.fftw.org/")` to be installed.  Please see Appendix `r ref_label("app:fftw")` for how to do this.
+1.  Install the `r cran_link("Rcpp")` package.  To do this properly you will also need to install a C++ compiler.  Instructions for this are available [here](https://teuder.github.io/rcpp4everyone_en/020_install.html).  
 
-#### Testing the Installation
+    To test that this step is done correctly, quit + restart R, then run the following command:
+	
+    ```{r rcpp_test, eval = FALSE}
+    Rcpp::evalCpp("2 + 2")
+    ```
 
-It is highly recommended that you run the package unit tests to make sure that everything is installed correctly.  To do this, install the R package `r cran_link("testthat")`, then e.g.,
-```{r eval = FALSE}
-testthat::test_package("subdiff", reporter = "progress")
-```
+    If the output is `4` then **Rcpp** is installed correctly.
 
-## `r section("Semi-Parametric Subdiffusion Estimation", "sec:sp")`
+2.  Install the `r cran_link("devtools")` package.
+
+3.  In an R session run the following commands:
+
+    ```{r install, eval =FALSE}
+    devtools::install_github("mlysy/LMN")
+    devtools::install_github("mlysu/subdiff")
+    ```
+
+4.  Once the packages are installed, to test that everything works correctly, quit + restart R then run the command:
+
+    ```{r subdiff_test, eval = FALSE}
+    testthat::test_package("subdiff", reporter = "progress")
+    ```
+	
+	Occasionally due to random chance a few of the tests may fail.  However, if everything works correctly then rerunning this a few times will eventually produce zero test failures.  
+
 
 ```{r hbe_info, include = FALSE}
 npaths <- length(unique(hbe$id)) # number of trajectories
@@ -159,515 +153,17 @@ n_rng <- range(tapply(hbe$id, hbe$id, length)) # range of trajectory lengths
 dt <- 1/60 # interobservation time
 ```
 
-The `hbe` dataset included in the **subdiff** package consists of `r length(unique(hbe$id))` 2D trajectories consisting of `r n_rng[1]`-`r n_rng[2]` observations recorded at a frequency of `r 1/dt`Hz.  These trajectories are displayed in Figure `r ref_label("fig:hbe_plot")`. 
-```{r hbe_plot, cache = cache_build, fig.show = "hold", out.width = "47.5%"}
-require(subdiff)
-require(ggplot2)
-
-# plot trajectories and histogram of trajectory lengths
-qplot(x = x, y = y, data = hbe,
-      color = factor(id), geom = "line",
-      xlab = expression("X Position ("*mu*m*")"),
-      ylab = expression("Y Position ("*mu*m*")")) +
-  theme(legend.position = "none")
-qplot(x = tapply(hbe$id, hbe$id, length), geom = "histogram",
-      xlab = "Number of Observations", ylab = "Counts")
-```
-`r fig_label("2D particle trajectories (left) and number of observation in each (right).", "fig:hbe_plot")`
-
-Let $\XX = (\rv [0] \XX N)$, $\XX_n = \XX(n \cdot \dt)$ denote recorded positions of a given particle trajectory.  The semi-parametric subdiffusion estimator consists of two steps:
-
-1.  Calculate the empirical MSD for each trajectory, defined as
-
-    $$
-	\widehat{\msd}_{\XX}(n \cdot \dt) = \frac 1 {q(N-n+1)} \sum_{h=0}^{N-n} \Vert \XX_{h+n}-\XX_{h}\Vert^2.
-	$$
-		
-2.  Estimate $\aD$ by regressing $y_n = \log \widehat{\msd}_{\XX}(n \cdot \dt)$ onto $x_n = \log(n\cdot \dt)$, such that
-
-    $$
-    \hat \alpha = \frac{\sum_{n=0}^N(y_n - \bar y)(x_n - \bar x)}{\sum_{n=0}^N(x_n - \bar x)^2}, \qquad \hat D = \tfrac 1 2 \exp(\bar y - \hat \alpha \bar x),
-	$$
-	
-	where $\bar x$ and $\bar y$ are the samples means of $x_n$ and $y_n$.
-	
-Since particle trajectories are often contaminated with low-frequency drift, the empirical MSD is often calculated on the drift-subtracted observations, $\tilde \XX_n = (\XX_n - \XX_0) - n \overline{\dX}$, where $\dX = \frac 1 N \sum_{n=1}^N (\XX_n - \XX_{n-1})$ is the average displacement over the interobservation time $\dt$.  Morever, the empirical MSD is known to be biased at large lag times, such that only about 30-50% of the shortest lagtimes are usually kept for estimating $\aD$.
-
-Figure `r ref_label("fig:msd_emp")` displays the empirical MSD of the first 500 lags for each trajectory and the corresponding estimates of $\aD$.
-```{r msd_emp, cache = cache_build, out.width = "47.5%", fig.show = "hold"}
-# extract variables from a dataset
-get_vars <- function(data, id, vars) data[data$id == id, vars]
-
-# calculate empirical MSDs
-ids <- unique(hbe$id)
-nlags <- 500 # number of lags
-dt <- 1/60 # interobservation time
-tseq <- 1:nlags*dt # time sequence
-msd_hat <- sapply(ids, function(id) {
-  Xt <- get_vars(data = hbe, id = id, vars = c("x", "y"))
-  cbind(id = id, t = tseq, msd = msd_fit(Xt = Xt, nlag = nlags))
-}, simplify = FALSE)
-msd_hat <- as.data.frame(do.call(rbind, msd_hat))
-
-# calculate mean and standard error
-msd_stats <- tapply(msd_hat$msd, msd_hat$t, function(msd) {
-  c(est = mean(msd), se = sd(msd)/sqrt(length(ids)))
-})
-names(msd_stats) <- NULL
-msd_stats <- as.data.frame(cbind(t = tseq, do.call(rbind, msd_stats)))
-
-# plot msd's with mean +/- 1.96 se
-ggplot(data = msd_stats) + # blank plot
-  # individual msd's
-  geom_line(data = msd_hat,
-            mapping = aes(x = t, y = msd, group = factor(id),
-                          color = "msd")) +
-  # +/- 1.96*se confidence band
-  geom_ribbon(mapping = aes(x = t,
-                            ymin = est-1.96*se, ymax = est+1.96*se,
-                            color = "se", fill = "se", alpha = "se")) +
-  # mean line
-  geom_line(aes(x = t, y = est, color = "est")) +
-  # set colors manually
-  scale_color_manual(values = c(msd = "lightblue", est = "black", se = NA)) +
-  scale_fill_manual(values = c(msd = NA, est = NA, se = "red")) +
-  scale_alpha_manual(values = c(msd = NA, est = NA, se = .5)) +
-  # axes names and log-scale
-  scale_x_continuous(name = expression("Time (s)"), trans = "log10") +
-  scale_y_continuous(name = expression("MSD ("*mu*m^2*")"), trans = "log10") +
-  # remove legend
-  theme(legend.position = "none")
-
-# estimate & plot subdiffusion parameters
-aD_hat <- sapply(ids, function(id) {
-  msd <- get_vars(data = msd_hat, id = id, vars = "msd")
-  aD <- msd_ls(msd = msd, tseq = tseq)
-  c(id = id, aD)
-}, simplify = FALSE)
-aD_hat <- as.data.frame(do.call(rbind, aD_hat))
-
-qplot(x = D, y = alpha, data = aD_hat, group = factor(id), log = "x",
-      xlab = expression("D"), ylab = expression(alpha))
-```
-`r fig_label(paste0("Empirical MSDs for the ", npaths, " trajectories (left) and corresponding estimates of $\\aD$ (right)."), "fig:msd_emp")`
-
-### `r subsection("Estimation of the Subdiffusion Timescale", "sec:spts")`
-
-TBD...
-
-## `r section("Parametric Modeling", "sec:par")`
-
-A general parametric model for subdiffusive particles is the so-called Location-Scale model of @lysy.etal16,
-\begin{equation}
-  \XX(t) = \mmu t + \SSi^{1/2} \ZZ(t),
-  \label{eq:locscale}
-\end{equation}
-where $\mmu = (\rv \mu q)$ is the coordinate-wise coefficient of linear drift, $\SSi_{q\times q}$ is a symmetric positive-definite scaling matrix, and $\ZZ(t) = \big(Z_1(t), \ldots, Z_q(t)\big)$ are independent and identically distributed (iid) copies of a CSI process $Z(t)$ having MSD
-$$
-\msd_Z(t) = \eta(t \mid \pph).
-$$
-An attractive feature of model \\eqref{eq:locscale} is that the MSD of the drift-subtracted particle trajectory $\tilde \XX(t) = \XX(t) - \mmu t$ is simply given by
-$$
-\msd_{\tilde \XX} = \tfrac 1 q \tr(\SSi) \cdot  \eta(t \mid \pph).
-$$
-Another appealing property of this model is that its parameters $\tth = (\pph, \mmu, \SSi)$ can be estimated from discrete observations $\XX = (\rv [0] \XX N)$ in a computationally efficient manner.
-
-### `r subsection("Fractional Brownian Motion", "sec:fbm")`
-
-Fractional Brownian motion (fBM) $Z(t) = B^\alpha(t)$ is the only CSI process with exactly power-law MSD,
-$$
-  \msd_{B^\alpha}(t) = t^\alpha = \eta(t \mid \alpha), \qquad \alpha \in (0,2).
-$$
-Since for CSI processes we have $\cov\big(Z(t), Z(s)\big) = \tfrac 1 2 \big(\eta(t \mid \pph) + \eta(s \mid \pph) - \eta(|t-s| \mid \pph)\big)$, it follows that the covariance of fBM is given by
-$$
-  \cov\big(B^\alpha(t), B^\alpha(s)\big) = \tfrac 1 2 \big(|t|^\alpha + |s|^\alpha - |t-s|^\alpha\big).
-$$
-
-#### `r subsubsection("Simulation")`
-
-The matrix of position observations $\XX_{N\times q}$ for a given particle trajectory follows a [Matrix-Normal distribution](https://en.wikipedia.org/wiki/Matrix_normal_distribution),
-\begin{equation}
-  \XX \sim \MN(\LLa, \VV, \SSi),
-  \label{eq:mndist}
-\end{equation}
-where $\LLa$ is an $N\times q$ matrix with elements $\Lambda_{ni} = \mu_in \cdot \dt$ and $\VV$ is an $N\times N$ matrix with elements
-$$
-V_{nm} = \cov\big(B^\alpha(n \cdot \dt), B^\alpha(m \cdot \dt)\big).
-$$
-If $\WW$ is an $N\times q$ matrix with $W_{ni} \iid \N(0,1)$, then
-\begin{equation}
-  \XX = \VV^{1/2}\WW(\SSi^{1/2})' + \LLa
-  \label{eq:mnsim}
-\end{equation}
-has the Matrix-Normal distribution \\eqref{eq:mndist}, where $\VV^{1/2}$ and $\SSi^{1/2}$ are the lower Cholesky factors of $\VV$ and $\SSi$.  Equation \\eqref{eq:mnsim} suggests that position data $\XX$ for a given data may be simulated as follows.
-
-```{r fbm_sim1, cache = cache_build}
-# true parameter values
-alpha <- .8 # subdiffusion exponent
-mu <- c(.025, -.025) # drift coefficients
-Sigma <- cbind(c(.1,.05), c(.05,.1)) # scale matrix
-
-N <- 1800 # number of observations
-dt <- 1/60 # interobservation time
-
-# simulate an fBM trajectory
-
-# step 1: obtain fbm covariance matrix
-fbm_cov <- function(t, s, alpha) {
-  .5 * (abs(t)^alpha + abs(s)^alpha - abs(t-s)^alpha)
-}
-tseq <- (1:N)*dt # sequence of time points excluding t = 0
-V <- outer(tseq, tseq, fbm_cov, alpha = alpha) # temporal variance matrix
-
-# step 2: simulate fbm
-system.time({
-  Xt <- matrix(rnorm(N*2), N, 2) # generate white noise
-  Xt <- t(chol(V)) %*% Xt # temporal correlations
-  Xt <- Xt %*% chol(Sigma) # spatial correlations
-  Xt <- Xt + tseq %o% mu # drift
-  Xt <- cbind(0, Xt) # add first observation
-})
+```{r dataset, child = "subdiff_child/_dataset.Rmd"}
 ```
 
-However, the Cholesky decomposition of $\VV$ in the R code above requires $\bO(N^3)$ operations and $\bO(N^2)$ spaces in memory, thus scaling very poorly with $N$.  A more efficient method of simulation is to note that the increment matrix $\dX_{N\times q}$ is also Matrix-Normal:
-$$
-\dX \sim \MN(\bo \mmu \cdot \dt, \TT, \SSi),
-$$
-where $\bo_{N\times 1} = (1,\ldots, 1)$, $\mmu_{q\times 1} = (\rv \mu q)$, and
-$$
-T_{nm} = \cov(\Delta B_n^\alpha, \Delta B_m^\alpha) = \tfrac 1 2 \big(|n-m+1|^\alpha + |n-m-1|^\alpha - 2 |n-m|^\alpha\big).
-$$
-The matrix $\TT$ is called a Toeplitz matrix and is of the form
-$$
-\TT = \begin{bmatrix} \tau_0 & \tau_1 & \tau_2 & \cdots & \tau_{N-1} \\
-  \tau_1 & \tau_0 & \tau_1 & \cdots & \tau_{N-2} \\
-  \tau_2 & \tau_1 & \tau_0 & \cdots & \tau_{N-3} \\
-  \vdots & & & \ddots & \vdots \\
-  \tau_{N-1} & \tau_{N-2} & \tau_{N-3} & \cdots & \tau_0
-\end{bmatrix},
-$$
-where $\tau_h = \cov(\Delta B^\alpha_0, \Delta B^\alpha_h)$, thus requiring only $\bO(N)$ spaces in memory (the first row or column).  Moreover, $\dX$ can be simulated in $\bO(N \log N)$ by the so-called [circulant embedding](https://pdfs.semanticscholar.org/bffe/cfaee3eda00bd04f4ad8f019173e1c2f39fb.pdf) method of @dietrich.newsam97, as implemented by function `SuperGauss::rSnorm()`.
-
-```{r fbm_sim2}
-# simulate fbm trajectory efficiently
-system.time({
-  acf <- fbm_acf(alpha, dt = dt, N = N) # increment autocorrelation
-  # generate temporally correlated increments
-  dX <- SuperGauss::rSnorm(n = 2, acf = acf)
-  dX <- dX %*% chol(Sigma) # spatial correlations
-  dX <- dX + rep(dt, N) %o% mu # drift
-  Xt <- apply(dX, 2, cumsum) # convert increments to positions
-  Xt <- cbind(0, Xt) # add first observations
-})
+```{r semiparam, child = "subdiff_child/_semiparametric.Rmd"}
 ```
 
-#### `r subsubsection("Parameter Inference")`
-
-To estimate the parameters of the fBM-driven location-scale model \\eqref{eq:locscale}, it is convenient to transform $\tth = (\alpha, \mmu, \SSi)$ to an unconstrained basis.  Since $\alpha \in (0,2)$, a natural unconstraining transformation is
-$$
-  \kappa = \logit(\alpha, 0, 2),
-$$
-where the generalized logit transformation is given by
-$$
-  \logit(x, L, U) = \log\left(\frac{p}{1-p}\right), \qquad p = \frac{x-L}{U-L}.
-$$
-The drift coefficients $\mmu$ are already unrestricted, so we are left to unconstrain the scale matrix $\SSi$.  The **subdiff** toolchain provides several approaches to achieve this:
-
-- For $q = 1$, the unconstrained parametrization is $\lambda = \tfrac 1 2 \log \Sigma_{11}$.
-
-- For $q = 2$, the unconstrained parametrization is
-
-    $$
-	\lla = \big(\log \tr(\SSi), \log(\Sigma_{11}/\Sigma_{22}), \logit(\rho, -1, 1)\big), \qquad \rho = \frac{\Sigma_{12}}{\sqrt{\Sigma_{11}\Sigma_{22}}}.
-	$$
-<!-- - For $q = 2$, one option of unconstrained parametrization is -->
-
-<!--     $$ -->
-<!--     \lla = \big(\tfrac 1 2 \log \Sigma_{11}, \tfrac 1 2 \log \Sigma_{22}, \logit(\rho, -1, 1)\big), \qquad \rho = \frac{\Sigma_{12}}{\sqrt{\Sigma_{11}\Sigma_{22}}}.  -->
-<!--     $$ -->
-	
-<!--     Another option is to set -->
-
-<!--     $$ -->
-<!--     \lla = \big(\log(\Sigma_{11}+\Sigma_{22}), \log(\Sigma_{11}/\Sigma_{22}), \logit(\rho, -1, 1)\big). -->
-<!--     $$ -->
-	
-<!--     The advantage of this second transformation is that it leads to simple error bars for $D = \tr(\SSi)$ as we shall see momentarily. -->
-
-- For $q = 3$, the unconstraining transformation is still TBD...
-
-The R code below shows how to fit the fBM model to all `r npaths` HBE datasets, parallelizing computations with the R package `r cran_link("parallel")`.
-
-```{r fbm_fit, cache = cache_build}
-ids <- unique(hbe$id) # trajectory labels
-dt <- 1/60 # interobservation time
-
-# create a function to fit the MLE for dataset id
-fbm_mle <- function(id) {
-  # extract the dataset
-  Xt <- get_vars(data = hbe, id = id, vars = c("x", "y"))
-  # convert to increments
-  dX <- apply(Xt, 2, diff)
-  N <- nrow(dX) # number of increments
-  # external memory allocation (to speed up calculations)
-  Tz <- SuperGauss::Toeplitz(n = N)
-  fbm_fit(dX = dX, dt = dt, Tz = Tz, vcov = TRUE)
-}
-
-parallel::detectCores() # detect number of cores
-# on my system half the cores are virtual and don't increase performance much
-ncores <- 4
-
-# create parallel cluster
-parclust <- parallel::makeCluster(ncores)
-# add required package(s) to cluster
-parallel::clusterEvalQ(cl = parclust, expr = {
-  require(subdiff)
-})
-# add required global variables to cluster
-parallel::clusterExport(cl = parclust,
-                        varlist = c("get_vars", "hbe", "dt"))
-
-# fit MLE to each dataset in parallel
-system.time({
-  Psi_est <- parSapply(cl = parclust, X = ids, FUN = fbm_mle)
-})
-
-# shut down cluster to free up resources
-parallel::stopCluster(cl = parclust)
-```
-Figure `r ref_label("fig:fbm_mle_plot")` displays the MLE of $\pps = (\kappa, \mmu, \lla)$ over the `r npaths` HBE trajectories.
-```{r fbm_mle_plot, cache = cache_build, fig.align = "center", fig.width = 6}
-# boxplots for MLE of each parameter
-Psi_mle <- as.data.frame(cbind(id = ids, do.call(rbind, Psi_est["coef",])))
-# rearrange to have parameter name and value as a variables
-param_names <- c("kappa", "mu[1]", "mu[2]",
-                 "lambda[1]", "lambda[2]", "lambda[3]")
-names(param_names) <- names(Psi_mle)[-1]
-Psi_mle <- do.call(rbind, lapply(names(param_names), function(par) {
-  data.frame(id = ids, parameter = as.character(param_names[par]),
-             value = Psi_mle[,par])
-}))
-# plot
-qplot(y = value, data = Psi_mle, # empty plot
-      geom = "blank", xlab = "", ylab = "", xlim = .5*c(-1,1)) +
-  # horizontal whisker bars in background
-  stat_boxplot(geom = "errorbar", width = .25) +
-  # boxplot in foreground
-  geom_boxplot() +
-  # separate into different plots with different axes
-  facet_wrap(facets = ~ parameter, scales = "free",
-             labeller = label_parsed) +
-  # remove x axis
-  theme(axis.ticks.x = element_blank(), axis.text.x = element_blank())
-```
-`r fig_label(paste0("Boxplots of unconstrained parameters $\\pps = (\\kappa, \\mu, \\lla)$ over the ", npaths, " HBE trajectories."), "fig:fbm_mle_plot")`
-
-#### `r subsubsection("Confidence Intervals")`
-
-The output for a single trajectory is of the following form:
-
-```{r fbm_fit_out}
-sapply(Psi_est[,1], signif, digits = 3)
+```{r param, child = "subdiff_child/_parametric.Rmd"}
 ```
 
-The elements of the output are:
-
-
-- `coef`: the MLE $\hat \pps$ of $\pps = (\kappa, \mmu, \lla)$ in the unconstrained basis.
-
-- `vcov`: $\ve(\hat \pps)$, the variance estimate of $\hat \pps$.
-
-The standard error for the estimator $\hat \psi_k$ is given by
-$$
-\se(\hat \psi_k) = \widehat{\sd}(\hat \psi_k) = \sqrt{[\ve(\hat \pps)]_{kk}},
-$$
-from which 95\% confidence intervals for $\psi_k$ are obtained from the normal approximation
-\begin{equation}
-  \hat \psi_k \pm 1.96 \times \se(\hat \psi_k).
-  \label{eq:cinorm}
-\end{equation}
-Thus, if $(a, b)$ is a confidence interval for e.g., $\psi_1 = \logit(\alpha, 0, 2)$, then a confidence interval for $\alpha$ is given by
-$$
-\big(\ilogit(a, 0, 2), \ilogit(b, 0, 2)\big), \qquad \ilogit(y, L, U) = L + \frac{U-L}{1 + e^{-y}}.
-$$
-These confidence intervals are usually not symmetric around the MLE $\hat \alpha = \ilogit(\hat \psi_1)$, but tend to be more reliable than intervals of the form $\hat \alpha \pm 1.96 \times \se(\hat \alpha)$, where $\se(\hat \alpha)$ is obtained from $\ve(\hat \pps)$ by the following general rule.
-
-> **Delta Method.**  Suppose that $\pps \in \mathbb R^p$ has MLE and variance estimator $\hat \pps$ and $\ve(\hat \pps)$.  Then the MLE and variance estimator of $\gga = \GG(\pps) \in \mathbb R^d$ are
-> $$
-> \hat \gga = \GG(\hat \pps), \qquad \ve(\hat \pps) = \JJ(\hat \pps)' \ve(\hat \pps) \JJ(\hat \pps),
-> $$
-> where $\JJ(\pps)$ is the $p \times d$ Jacobian matrix with elements $J_{km}(\pps) = \frac{\mathrm{d}}{\mathrm{d}\psi_k} G_m(\pps)$.
-
-Table `r ref_label("tab:fbm_ci")` displays confidence intervals for $\alpha$ for the first 10 trajectories using two methods:
-
-1. The *Direct Method* $\hat \alpha \pm 1.96 \times \se(\hat \alpha)$.
-2.  The *Delta Method* $\ilogit(\hat \kappa \pm 1.96 \times \se(\hat \kappa), 0, 2)$.
-
-In this case, we can see that the estimates are extremely close.  This may not be the case however when $\hat \alpha$ is closer to zero.
-```{r aD_tab}
-# transform psi = (kappa, lambda1) to aD = (alpha, logD = log10 D)
-Gfun <- function(psi) {
-  log10e <- log10(exp(1))
-  setNames(c(ilogit(psi[1], 0, 2), log10e * psi[2]), c("alpha", "logD"))
-}
-
-# for psi = (kappa, lambda1) and aD = (alpha, logD), calculate:
-# - psi_mle, psi_se
-# - aD_mle, aD_se
-# - aD_cov = cov(alpha, logD)
-aD_stat <- sapply(ids, function(id) {
-  # MLE and variance estimator on unconstrained scale (kappa, lambda1)
-  ipsi <- c(1,4) # indices of (kappa, lambda1) in psi
-  psi_mle <- Psi_est[["coef",id]][ipsi]
-  psi_ve <- Psi_est[["vcov",id]][ipsi, ipsi]
-  # MLE of aD
-  aD_mle <- Gfun(psi_mle)
-  # variance estimate of aD_mle
-  # jacobian
-  # NOTE: this is the transpose of how it is defined in the vignette
-  Jac <- numDeriv::jacobian(func = Gfun, x = psi_mle)
-  aD_ve <- tcrossprod(Jac %*% psi_ve, Jac) # t(Jac) %*% psi_ve %*% Jac
-  # standard errors of aD_mle
-  aD_se <- sqrt(diag(aD_ve))
-  # cov(alpha_mle, logD_mle)
-  aD_cov <- aD_ve[1,2]
-  setNames(c(id, psi_mle, sqrt(diag(psi_ve)), aD_mle, aD_se, aD_cov),
-           c("id", "kappa_mle", "lambda1_mle",
-             "kappa_se", "lambda1_se",
-             "alpha_mle", "logD_mle",
-             "alpha_se", "logD_se", "aD_cov"))
-}, simplify = FALSE)
-aD_stat <- as.data.frame(do.call(rbind, aD_stat))
-
-# calculate confidence intervals for alpha using two methods:
-
-# method 1: normal approximation on alpha_mle
-alpha_ci1 <- cbind(L = aD_stat$alpha_mle - 1.96 * aD_stat$alpha_se,
-                   U = aD_stat$alpha_mle + 1.96 * aD_stat$alpha_se)
-# method 2: normal approximation on kappa_mle
-alpha_ci2 <- cbind(L = ilogit(aD_stat$kappa_mle - 1.96 * aD_stat$kappa_se, 0, 2),
-                   U = ilogit(aD_stat$kappa_mle + 1.96 * aD_stat$kappa_se, 0, 2))
-
-# display
-tab <- cbind(aD_stat[,"id"], alpha_ci1, alpha_ci2)
-tab <- signif(tab[1:10,], digits = 3)
-colnames(tab) <- c("Trajectory ID", "Lower", "Upper", "Lower", "Upper")
-require(kableExtra) # for nice HTML tables
-kable(tab) %>%
-  kable_styling(bootstrap_options = c("striped", "responsive"), full_width = TRUE) %>%
-  add_header_above(c(" " = 1, "Direct Method" = 2, "Delta Method" = 2)) %>%
-  column_spec(1:5, width = "3cm")
-```
-`r tab_label("95% confidence intervals for $\\alpha$ by Direct Method and Delta Method.", "tab:fbm_ci")`
-
-Figure `r ref_label("fig:fbm_ell_plot")` displays 95\% confidence ellipses for $(\alpha, \log_{10} D)$, where $D = \tr(\SSi)$.  We can see that the estimates of $\alpha$ and $\log_{10}D$ are highly correlated with each other.
-
-```{r fbm_ell_plot, cache = cache_build, fig.align = "center", fig.width = 6}
-# points of a 2D ellipse
-ellipse <- function (mu, V, alpha = 0.95, n = 100) {
-  eV <- eigen(V)
-  hlen <- sqrt(qchisq(alpha, df = 2) * eV$val)
-  phi <- atan2(eV$vec[2, 1], eV$vec[1, 1])
-  theta <- seq(0, 2 * pi, len = n + 1)
-  x <- hlen[1] * cos(theta)
-  y <- hlen[2] * sin(theta)
-  alpha <- atan2(y, x)
-  rad <- sqrt(x^2 + y^2)
-  cbind(x = rad * cos(alpha + phi) + mu[1],
-        y = rad * sin(alpha + phi) + mu[2])
-}
-
-# confidence ellipses
-aD_ell <- sapply(ids, function(id) {
-  # extract aD_mle and aD_ve
-  aD_mle <- as.numeric(get_vars(aD_stat, id = id,
-                                vars = c("alpha_mle", "logD_mle")))
-  aD_ve <- matrix(NA, 2, 2)
-  diag(aD_ve) <- as.numeric(get_vars(aD_stat, id = id,
-                                     vars = c("alpha_se", "logD_se")))^2
-  aD_ve[1,2] <- aD_ve[2,1] <- get_vars(aD_stat, id = id, vars = "aD_cov")
-  # calculate points of 95% confidence ellipse
-  ell <- ellipse(mu = aD_mle, V = aD_ve)
-  colnames(ell) <- c("alpha", "logD")
-  cbind(id = id, ell)
-}, simplify = FALSE)
-aD_ell <- as.data.frame(do.call(rbind, aD_ell))
-
-ggplot(data = aD_ell) + # empty plot
-  # confidence ellipses
-  geom_polygon(aes(x = logD, y = alpha, group = id,
-                   fill = "ci", alpha = "ci", color = "ci")) +
-  # mles
-  geom_point(data = aD_stat,
-             mapping = aes(x = logD_mle, y = alpha_mle, group = id,
-                           color = "mle")) +
-  # custom colors
-  scale_fill_manual(values = c(mle = "black", ci = "red")) +
-  scale_color_manual(values = c(mle = "black", ci = NA)) +
-  scale_alpha_manual(values = c(mle = 0, ci = .2)) +
-  # axis labels
-  scale_x_continuous(name = expression(log[10]*(D))) +
-  scale_y_continuous(name = expression(alpha)) +
-  # remove legend
-  theme(legend.position = "none")
-```
-`r fig_label(paste0("95\\% confidence ellipses for $(\\alpha, \\log_{10}D)$ for the ", npaths, " HBE trajectories."), "fig:fbm_ell_plot")`
-
-### `r subsection("Generalized Langevin Equation")`
-
-### `r subsection("Savin-Doyle Localization Error Model")`
-
-## `r section("Heterogeneity of the Fluid Medium", "sec:hier")`
-
-```{r set_appendix, include = FALSE}
-appendix()
+```{r csiclass, child = "subdiff_child/_csiclass.Rmd"}
 ```
 
-## `r section("Appendix")`
-
-### `r subsection("Configuring R to Compile C++ Source Code", "app:rcpp")`
-
-- For Windows: Install `r pkg_link("Rtools", "https://cran.r-project.org/bin/windows/Rtools/")`.  Let the installer modify your system variable `PATH`.  
-
-- For OSX: Install `r pkg_link("Clang 6.0.0", "https://cran.r-project.org/bin/macosx/tools/")` from the `.pkg` file on the CRAN website.
-
-- To make sure the C++ compiler is correctly set up, install the `r pkg_link("Rcpp", "cran")` package and run the following:
-```{r, eval = FALSE}
-Rcpp::cppFunction(
-  "double AddTest(double x, double y) {
-     return x + y;
-   }")
-AddTest(5.2, 3.4)
-```
-If the code compiles and outputs `r 5.2+3.4` then the C++ compiler is interfaced with R correctly.
-
-### `r subsection("Installing the **FFTW** Library", "app:fftw")`
-
-For linux I believe that installation is relatively straightforward.
-
-#### Windows
-
-- Download the precompiled binary from [here](http://www.fftw.org/install/windows.html) for your version of Windows (32 or 64 bit).
-- In order to install **SuperGauss** directly, you **must** unzip the DLLs to a folder called `C:/fftw`, and add this location to the system `PATH` variable, as explained [here](https://www.java.com/en/download/help/path.xml).
-- If for some reason you can't install to `C:/fftw`, then in the **SuperGauss** source folder, open the file `src/Makevars.win` and replace the instances of `C:/fftw` with the location where the **FFTW** library is installed.  Make sure you modify the system `PATH` variable accordingly.
-
-#### OSX
-
-- Download the latest version of **FFTW** from [here](http://www.fftw.org/download.html).
-- Install the library yourself by opening Terminal in the downloaded folder, then:
-
-    ```bash
-    ./configure
-    make
-    make install
-    ```
-
-    Further instructions to customize the installation are available [here](http://www.fftw.org/fftw3_doc/Installation-on-Unix.html#Installation-on-Unix).
-
-#### Testing
-
-To make sure the **FFTW** library is correctly installed, you can try to build the R package `r pkg_link("fftw", "cran")` from source.  
-
-## References
+# References
 

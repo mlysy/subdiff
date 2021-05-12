@@ -4,6 +4,7 @@
 #'
 #' @details Constructor function that generates a list of fsd model for purpose of fitting.
 #'
+#' @example examples/fsd_sim.R
 #' @example examples/fsd_model.R
 #'
 NULL

@@ -23,11 +23,3 @@ Compute the autocorrelation of fractional Brownian motion (fBM) increments at eq
 Let \code{X_t} denote an fBM process and \verb{dX_n = X_\{dt * (n+1)\} - X_\{dt * n\}} denote the \code{n}th increment of \code{X_t} with interobservation time \code{dt}.  The autocorrelation of the fBM increment process \code{dX_n} is given by\preformatted{acf_dX(n) = 0.5 * dt^alpha * (|n+1|^alpha + |n-1|^alpha - 2|n|^\\alpha).
 }
 }
-\examples{
-# ACF parameters
-alpha <- 0.8
-dt <- 1/60
-N <- 1800
-# ACF of fBM model
-fbm_acf(alpha, dt, N)
-}

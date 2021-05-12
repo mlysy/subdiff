@@ -9,18 +9,20 @@ Authors@R: c(person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
 Description: Tools for implementing various models for particle subdiffusion in biological fluids.
 License: GPL-3
 Depends: R (>= 2.10)
-Imports: Rcpp (>= 0.12.12), LMN, SuperGauss, R6, numDeriv, fftw, stats
+Imports: Rcpp (>= 0.12.12), LMN, SuperGauss, R6, numDeriv, fftw, methods, stats
 LinkingTo: Rcpp, RcppEigen
 LazyData: true
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Suggests: 
     testthat,
-    optimCheck,
     knitr,
-    rmarkdown,
-    kableExtra,
-    ggplot2
+    bookdown,
+    tidyr,
+    dplyr,
+    optimCheck,
+    ggplot2,
+    gridExtra
 SystemRequirements: fftw
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)

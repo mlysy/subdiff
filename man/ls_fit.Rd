@@ -2,9 +2,27 @@
 % Please edit documentation in R/ls_fit.R
 \name{ls_fit}
 \alias{ls_fit}
-\title{Fit least-squares estimate.}
+\alias{ls_msd_fit}
+\title{Calculate the least-squares estimate of \verb{(alpha, D)}.}
 \usage{
-ls_fit(Xt, dt, lags, type = c("standard", "improved"), vcov = TRUE)
+ls_fit(
+  Xt,
+  dt,
+  lags,
+  type = c("standard", "improved"),
+  vcov = TRUE,
+  msd = FALSE
+)
+
+ls_msd_fit(
+  msd,
+  dt,
+  lags,
+  N,
+  ndim,
+  type = c("standard", "improved"),
+  vcov = TRUE
+)
 }
 \arguments{
 \item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
@@ -16,12 +34,21 @@ ls_fit(Xt, dt, lags, type = c("standard", "improved"), vcov = TRUE)
 \item{type}{Either "standard" for the usual LS estimator, or "improved" for the version of Zhang et al (2018).}
 
 \item{vcov}{If \code{TRUE}, returns an estimate of the variance matrix of \verb{(alpha, logD)}.}
+
+\item{msd}{Vector of empirical MSD estimates computed by \code{\link[=msd_fit]{msd_fit()}} at the values of \code{lags}.}
+
+\item{N}{Length of the particle trajectory.}
+
+\item{ndim}{Number of dimensions of the particle trajectory.}
 }
 \value{
 If \code{vcov = FALSE}, vector of length 2 with estimates of \verb{(alpha, logD)}.  Otherwise, a list with elements \code{coef} and \code{vcov}, where the former is the estimate and the latter is the corresponding variance estimator.
 }
 \description{
-Fit least-squares estimate.
+Calculate the least-squares estimate of \verb{(alpha, D)}.
+}
+\details{
+\code{\link[=ls_fit]{ls_fit()}} first computes the MSD using \code{msd_fit(Xt, dt, demean = TRUE)} then passes this on to \code{\link[=ls_msd_fit]{ls_msd_fit()}}.  For finer control over the MSD or if it has been precomputed, one may interact with \code{\link[=ls_msd_fit]{ls_msd_fit()}} directly.
 }
 \note{
 Uses the \strong{subdiff} convention for \code{D}.

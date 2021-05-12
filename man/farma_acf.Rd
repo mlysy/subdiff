@@ -33,16 +33,6 @@ where \code{rho_0 = 1 - sum(phi) - sum(rho)}.
 
 This function returns the autocorrelation of the stationary process \verb{dY_n = Y_\{n+1\} - Y_n}.  The \code{ARMA(p,q)} filter is approximated with \code{m} moving-average terms (see \code{\link[=arma_acf]{arma_acf()}} for details).
 }
-\examples{
-# ACF parameters
-alpha <- 0.8
-dt <- 1/60
-N <- 1800
-phi <- 0.1
-rho <- c(0.1, 0.05)
-# ACF of farma model
-farma_acf(alpha, phi, rho, dt, N)
-}
 \references{
 Ling, Y., Lysy, M., Seim, I., Newby, J.M., Hill, D.B., Cribb, J., and Forest, M.G. "Measurement error correction in particle tracking microrheology" (2019). \url{https://arxiv.org/abs/1911.06451}.
 }

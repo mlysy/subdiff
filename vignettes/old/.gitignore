@@ -1,0 +1,6 @@
+*.html
+*.R
+!format.R
+!jss/jss-subdiff.R
+subdiff_cache
+subdiff_files

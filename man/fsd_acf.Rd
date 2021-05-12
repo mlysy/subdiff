@@ -31,16 +31,6 @@ where \verb{eps_n ~iid N(0,1)} is a Gaussian white noise process.
 
 This function returns the autocorrelation of the stationary process \verb{dY_n = Y_\{n+1\} - Y_n}.
 }
-\examples{
-# ACF parameters
-alpha <- 0.8
-dt <- 1/60
-N <- 1800
-tau <- 0.1
-sigma2 <- 0.001
-# ACF of fsd model
-fsd_acf(alpha, tau, sigma2, dt, N)
-}
 \references{
 Savin, T., and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 }

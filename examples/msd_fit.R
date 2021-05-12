@@ -1,3 +1,6 @@
 # Compute the MSD of Xt
 nlag <- 600
-msd1 <- msd_fit(Xt, nlag = nlag)
+msd <- msd_fit(Xt, nlag = nlag)
+
+plot(dt*(1:nlag), msd, xlab = "Time", ylab = "MSD")
+

@@ -160,10 +160,9 @@ tibble(
   geom_line(aes(color = `MSD Type`)) +
   scale_x_log10() + scale_y_log10() +
   xlab(expression("Time "*(s))) + ylab(expression("MSD "*(mu*m^2)))
-
 ```
 
-<!-- In @raikher.rusakov10, the Jeffreys model \@ref(eq:jfsmsd) is calibrated to particles of radius $r = `r rad`\, \mathrm{\mu m}$ in a solution of cetyltrimethyl ammonium bromide $[\mathrm{CTAB}] = 1\, \mathrm{g}\, \mathrm{cm}^{-3}$ and potassium bromide $[\mathrm{KBr}] = 2\, \mathrm{M}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The fitted parameters are $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$. -->
+<!-- In @raikher.rusakov10, the Jeffreys model \@ref(eq:jfsmsd) is calibrated to particles of radius $r = `r NA`\, \mathrm{\mu m}$ in a solution of cetyltrimethyl ammonium bromide $[\mathrm{CTAB}] = 1\, \mathrm{g}\, \mathrm{cm}^{-3}$ and potassium bromide $[\mathrm{KBr}] = 2\, \mathrm{M}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The fitted parameters are $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$. -->
 
 The following code shows how to simulate the trajectory of a particle from the Jeffreys model with parameters $\tau_M = `r tau_M`\, \mathrm{s}$, $q = `r q`$, and $\xi_V = `r xi_V`\, \mathrm{kg/s}$ and temperature $T = `r Temp`\, \mathrm{K}$.  The 2D trajectory is generated with zero drift $\RR(t \mid \pph) = 0$, and scale factor $\SSi = \left[\begin{smallmatrix} \sigma^2 & 0 \\ 0 & \sigma^2 \end{smallmatrix} \right]$.  Figure \@ref(fig:jfssim) compares the empirical MSD for the simulated trajectory to the theoretical MSD.
 
@@ -279,15 +278,7 @@ list(coef = signif(omega_hat, 2),
 
 ### Step 3: Estimating Arbitrary Quantities of Interest {#deltamethod}
 
-Let $\pps = (\psi_1, \ldots, \psi_P) \in \mathbb R^{P}$, for which we have the MLE $\hat{\pps}$ and its variance estimate $\VV(\hat{\pps})$.  Now suppose we wish to estimate the quantity of interest $\zze = \bm{G}(\pps) = \big(G_1(\pps), \ldots, G_Q(\pps)\big) \in \mathbb R^{Q}$.  Then the point estimate is $\hat{\zze} = \bm{G}(\hat{\pps})$, and the corresponding variance estimate is
-
-$$
-\VV(\hat{\zze}) = \JJ(\hat{\pps})' \VV(\hat{\pps}) \JJ(\hat{\pps}),
-$$
-
-where $\JJ(\pps)$ is the $P \times Q$ Jacobian matrix with elements $[\JJ(\pps)]_{ij} = \frac{\partial}{\partial \psi_i} G_j(\pps)$.  The code below shows how to do this for the Jeffreys model parameters $\zze = (\eta_1, \eta_2, \Gamma)$ for a particle of radius $r = `r rad` \, \mu\mathrm{m}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The Jacobian matrix $\JJ(\hat{\pps})$ is calculated numerically using `numDeriv::jacobian()`.
-
-```{r jfs_zeta}
+```{r jfs_zeta_calc, include = FALSE}
 #' Calculate the Jeffreys model parameters from the parameters of the computational basis.
 #'
 #' @param omega Vector of computational basis parameters.
@@ -336,6 +327,18 @@ colnames(zeta_var) <- rownames(zeta_var) <- names(zeta_hat)
 
 list(coef = signif(zeta_hat, 2),
      vcov = signif(zeta_var, 2))
+```
+
+
+Let $\pps = (\psi_1, \ldots, \psi_P) \in \mathbb R^{P}$, for which we have the MLE $\hat{\pps}$ and its variance estimate $\VV(\hat{\pps})$.  Now suppose we wish to estimate the quantity of interest $\zze = \bm{G}(\pps) = \big(G_1(\pps), \ldots, G_Q(\pps)\big) \in \mathbb R^{Q}$.  Then the point estimate is $\hat{\zze} = \bm{G}(\hat{\pps})$, and the corresponding variance estimate is
+
+$$
+\VV(\hat{\zze}) = \JJ(\hat{\pps})' \VV(\hat{\pps}) \JJ(\hat{\pps}),
+$$
+
+where $\JJ(\pps)$ is the $P \times Q$ Jacobian matrix with elements $[\JJ(\pps)]_{ij} = \frac{\partial}{\partial \psi_i} G_j(\pps)$.  The code below shows how to do this for the Jeffreys model parameters $\zze = (\eta_1, \eta_2, \Gamma)$ for a particle of radius $r = `r rad` \, \mu\mathrm{m}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The Jacobian matrix $\JJ(\hat{\pps})$ is calculated numerically using `numDeriv::jacobian()`.
+
+```{r jfs_zeta, ref = "jfs_zeta_calc"}
 ```
 
 Finally we can convert the variance matrix estimate to standard errors and 95% confidence intervals for each element of $\zze$.

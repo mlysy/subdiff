@@ -6,9 +6,6 @@
 \description{
 Base class for CSI models.
 }
-\note{
-The MSD of some models (e.g., \code{fsd} and \code{farma}) is not defined in continuous time, and thus depends on the interobservation time \code{dt}.  This is completely overlooked in \code{csi_model$msd()} as it is presently coded, which is potentially misleading.  Need to think carefully about what the \code{msd()} method should do.
-}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -131,7 +128,9 @@ Position mean square displacement function.
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-This function can be directly supplied by the derived class, or by default is derived automatically from a high-resolution evaluation of \code{super$acf()}.  That is, with \code{dt} being up to 10x smaller than \code{min(diff(sort(abs(t))))}.  Thus the default method is most efficient when \code{t} consists of evenly spaced timepoints, and most wasteful when two time points are much closer than any others.
+This method can be directly supplied by the derived class.  Otherwise, it uses \code{\link[SuperGauss:acf2msd]{SuperGauss::acf2msd()}} to calculate the MSD from \code{self$acf()} at intervals of \code{self$dt}, and interpolates linearly between these timepoints at the desired values in \code{t}.
+
+The \code{self$msd()} method is defined this way because the MSD of some CSI models (e.g., \code{fsd} and \code{farma}) is not defined in continuous time, and thus intrinsically depends on the interobservation time \code{dt}.  Thus, the default \code{self$msd()} method throws an error if \code{self$dt} has not yet been set.
 }
 
 \subsection{Returns}{
@@ -403,7 +402,7 @@ Simulate trajectories from the model.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A matrix of size \code{dim(Xt)} or an array of size \verb{nrow(Xt) x ncol(dX) x nsim} array when \code{nsim > 1} of simulated increments, as calculated with \code{\link[=csi_sim]{csi_sim()}}, using the model's \code{drift()} and \code{acf()} specifications.
+A matrix of size \code{dim(Xt)} or an array of size \verb{nrow(Xt) x ncol(dX) x nsim} array when \code{nsim > 1} of simulated trajectories, as calculated with \code{\link[=csi_sim]{csi_sim()}}, using the model's \code{drift()} and \code{acf()} specifications.
 }
 }
 \if{html}{\out{<hr>}}

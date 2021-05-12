@@ -10,4 +10,3 @@ inst/extdata/data
 *.dll
 *.pdf
 vignettes/.build.timestamp
-vignettes/old

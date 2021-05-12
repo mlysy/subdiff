@@ -11,7 +11,7 @@
 #' ```
 #' where the "square roots" correspond to the Cholesky decomposition for the row-dependence matrix `toeplitz(acf)`, and the eigen decomposition for the column-dependence matrix `Sigma`.
 #'
-#' @example examples/fit_setup.R
+#' @example examples/fbm_sim.R
 #' @example examples/csi_resid.R
 #'
 #' @export

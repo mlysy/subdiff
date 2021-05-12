@@ -13,8 +13,6 @@
 #' acf_dX(n) = 0.5 * dt^alpha * (|n+1|^alpha + |n-1|^alpha - 2|n|^\alpha).
 #' ```
 #'
-#' @example examples/acf_setup.R
-#' @example examples/fbm_acf.R
 #' @export
 fbm_acf <- function(alpha, dt, N) {
   if(N == 1) {

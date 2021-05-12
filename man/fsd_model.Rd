@@ -10,10 +10,29 @@ Class definition for the fSD model.
 Constructor function that generates a list of fsd model for purpose of fitting.
 }
 \examples{
-# generate a fsd model object
-model <- fsd_model()
-# we can modify the elements of generated object
-model$theta_names[1] <- "gamma"
+# simulate data from the fsd model
+alpha <- .8
+tau <- .1
+sigma2 <- .01
+
+dt <- 1/60
+N <- 1800
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = fsd_acf(alpha, tau, sigma2, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
+# create fsd model object
+model <- fsd_model$new(Xt = Xt, dt = dt, drift = "linear")
+
+# evaluate loglikelihood
+model$loglik(phi = c(alpha = alpha, tau = tau, sigma2 = sigma2),
+             mu = rep(0, ndim),
+             Sigma = diag(ndim))
+
 }
 \section{Super class}{
 \code{\link[subdiff:csi_model]{subdiff::csi_model}} -> \code{fsd_model}

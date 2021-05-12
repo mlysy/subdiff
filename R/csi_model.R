@@ -55,7 +55,7 @@ csi_model <- R6::R6Class(
       if(missing(value)) {
         return(private$Xt_)
       } else {
-        check_Xt(value)
+        value <- check_Xt(value)
         private$Xt_ <- value
         private$n_dims <- ncol(value)
         if(is.null(private$N_) || (nrow(value) != private$N_+1)) {
@@ -126,18 +126,25 @@ csi_model <- R6::R6Class(
     #' @param t Vector of time points at which to calculate the MSD.
     #' @return A vector of MSD values the same length as `t`.
     #'
-    #' @details This function can be directly supplied by the derived class, or by default is derived automatically from a high-resolution evaluation of `super$acf()`.  That is, with `dt` being up to 10x smaller than `min(diff(sort(abs(t))))`.  Thus the default method is most efficient when `t` consists of evenly spaced timepoints, and most wasteful when two time points are much closer than any others.
+    #' @details This method can be directly supplied by the derived class.  Otherwise, it uses [SuperGauss::acf2msd()] to calculate the MSD from `self$acf()` at intervals of `self$dt`, and interpolates linearly between these timepoints at the desired values in `t`.
     #'
-    #' @note The MSD of some models (e.g., `fsd` and `farma`) is not defined in continuous time, and thus depends on the interobservation time `dt`.  This is completely overlooked in `csi_model$msd()` as it is presently coded, which is potentially misleading.  Need to think carefully about what the `msd()` method should do.
+    #' The `self$msd()` method is defined this way because the MSD of some CSI models (e.g., `fsd` and `farma`) is not defined in continuous time, and thus intrinsically depends on the interobservation time `dt`.  Thus, the default `self$msd()` method throws an error if `self$dt` has not yet been set.
     msd = function(phi, t) {
       # method 1
-      # method 2
-      dt <- get_dt(t)
-      N <- max(abs(t)) %/% dt
-      acf <- self$acf(phi, dt = dt, N = N)
-      msd <- c(0, SuperGauss::acf2msd(acf))
-      # pair msd with corresponding elements of tseq
-      msd[abs(t) %/% dt + 1]
+      N <- ceiling(max(abs(t)) / self$dt)
+      acf <- self$acf(phi, dt = self$dt, N = N)
+      tseq <- self$dt * 1:N
+      msd <- SuperGauss::acf2msd(acf)
+      approx(x = c(rev(tseq), 0, tseq),
+             y = c(rev(msd), 0, msd),
+             xout = t)
+      ## # method 2
+      ## dt <- get_dt(t)
+      ## N <- max(abs(t)) %/% dt
+      ## acf <- self$acf(phi, dt = dt, N = N)
+      ## msd <- c(0, SuperGauss::acf2msd(acf))
+      ## # pair msd with corresponding elements of tseq
+      ## msd[abs(t) %/% dt + 1]
     },
 
     ## acf = function(phi, dt, N) {
@@ -317,7 +324,7 @@ csi_model <- R6::R6Class(
     #' @param nsim Number of trajectories to simulate.
     #' @param fft,nkeep,tol Optional arguments to [SuperGauss::rnormtz()].
     #'
-    #' @return A matrix of size `dim(Xt)` or an array of size `nrow(Xt) x ncol(dX) x nsim` array when `nsim > 1` of simulated increments, as calculated with [csi_sim()], using the model's `drift()` and `acf()` specifications.
+    #' @return A matrix of size `dim(Xt)` or an array of size `nrow(Xt) x ncol(dX) x nsim` array when `nsim > 1` of simulated trajectories, as calculated with [csi_sim()], using the model's `drift()` and `acf()` specifications.
     sim = function(phi, mu, Sigma, nsim = 1, fft = TRUE, nkeep, tol = 1e-6) {
       dr <- self$drift(phi, dt = self$dt, N = private$N_) %*% mu
       ac <- self$acf(phi, dt = self$dt, N = private$N_)
@@ -379,12 +386,16 @@ csi_model <- R6::R6Class(
 
 #' Check that `Xt` is a numeric matrix.
 #'
+#' If it's a data frame, convert to numeric matrix.
+#'
 #' @template args-Xt
 #' @noRd
 check_Xt <- function(Xt) {
+  if(is.list(Xt)) Xt <- as.matrix(Xt)
   if(!is.numeric(Xt) || !is.matrix(Xt)) {
     stop("`Xt` must be a numeric matrix.")
   }
+  Xt
 }
 
 #' Check that drift arguments are correctly specified.

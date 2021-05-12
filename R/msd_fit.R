@@ -11,7 +11,7 @@
 #' @export
 msd_fit <- function(Xt, nlag, demean = TRUE) {
   ## Xt <- as.matrix(Xt)
-  check_Xt(Xt)
+  Xt <- check_Xt(Xt)
   N <- nrow(Xt)
   if(demean) {
     ## mu <- (Xt[N,] - Xt[1,])/(N-1)

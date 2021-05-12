@@ -1,6 +1,8 @@
 
 context("msd_ls")
 
+source(system.file("proj", "msd_ls.R", package = "subdiff"))
+
 test_that(".weighted_ls is equivalent to lm with 'weights'", {
   ntest <- 2
   for(ii in 1:ntest) {

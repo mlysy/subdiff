@@ -8,6 +8,7 @@
 #' ```
 #' with subdiffusion exponent `0 < alpha < 2`.
 #'
+#' @example examples/fbm_sim.R
 #' @example examples/fbm_model.R
 NULL
 

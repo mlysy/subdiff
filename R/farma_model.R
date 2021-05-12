@@ -5,6 +5,7 @@
 #' @details Constructor function that generates a list of farma(p,q) model for purpose of fitting.
 #' @template ret-csi_class
 #'
+#' @example examples/farma_sim.R
 #' @example examples/farma_model.R
 NULL
 
@@ -22,14 +23,17 @@ farma_model <- R6::R6Class(
     #` Obtain the `p` and `q` parameters.
     #`
     #` Gives an error if these are not formatted correctly.
-    get_pq = function(p, q) {
-      if(missing(p)) p <- 0
+    get_pq = function(order) {
+      if(length(order) != 2) stop("order must be a vector of length 2.")
+      p <- order[1]
+      q <- order[2]
+      ## if(missing(p)) p <- 0
       if((p - as.integer(p) != 0) && p < 0) {
-        "AR order term `p` must be a nonnegative integer."
+        stop("AR order term `p = order[1]` must be a nonnegative integer.")
       }
-      if(missing(q)) q <- 0
+      ## if(missing(q)) q <- 0
       if((q - as.integer(q) != 0) && q < 0) {
-        "MA order term `q` must be a nonnegative integer."
+        stop("MA order term `q = order[2]` must be a nonnegative integer.")
       }
       setNames(c(p, q), nm = c("p", "q"))
     },
@@ -90,12 +94,11 @@ farma_model <- R6::R6Class(
     #' @description Class constructor.
     #'
     #' @param Xt,dt,drift,n_drift See [csi_model].
-    #' @param p Number of autoregressive terms (nonnegative integer).
-    #' @param q Number of moving-average terms (nonnegative integer).
+    #' @param order Vector of two nonnegative integers specifying the number of autoregressive and moving-average terms, respectively.
     #' @param m Order of the moving-average approximation (see [farma_acf()]).
-    initialize = function(Xt, dt, p, q, m = 50, drift = "linear", n_drift) {
+    initialize = function(Xt, dt, order = c(0, 0), m = 50, drift = "linear", n_drift) {
       # determine p and q
-      pq <- private$get_pq(p, q)
+      pq <- private$get_pq(order)
       p <- pq["p"]
       q <- pq["q"]
       private$p_ <- p

@@ -23,13 +23,14 @@ Downsample a multi-dimensional time series.
 Sample observations from original time series \eqn{X = [X_0, X_2, X_3, ..., X_N]} at constant rate \code{r}. For given position index \code{i} finally returns \eqn{X_{ds} = [X_i, X_{i+r}, X_{i+2r}, ...]}.
 }
 \examples{
-# generates a 2-d series of fBM.
+# simulate a 2D fbm trajectory.
 alpha <- 0.8
 dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dt, N)
-dX <- rSnorm(2, acf = acf1)
+acf <- fbm_acf(alpha, dt, N)
+dX <- SuperGauss::rnormtz(n = 2, acf = acf)
 Xt <- apply(dX, 2, cumsum)
+
 # downsample Xt by rate 2.
 Xt_ds2 <- downsample(Xt, r = 2)
 }

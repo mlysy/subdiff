@@ -19,9 +19,9 @@ fbm_fit(
 
 \item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
-\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
+\item{vcov}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 
-\item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
 A vector of estimated parameters on transformed scale (See \code{\link[=fbm_model]{fbm_model()}}). If \code{vcov}, a list with components:
@@ -45,14 +45,20 @@ where \eqn{Z[t]} consists of \verb{q = 1,2} iid fBM processes with \eqn{MSD_Z(t)
 Optimization is done by \code{\link[stats:optimize]{stats::optimize()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fbm_model]{fbm_model()}}).
 }
 \examples{
-# generating 2-d stationary time series
-alpha <- 0.8
+# simulate data from the fbm model
+alpha <- .8
+
 dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dt, N)
-dX <- rSnorm(2, acf = acf1)
-# Toeplitz object for internal computation
-Tz <- Toeplitz(n = N)
-# Fit the fBM model
-fbm_fit(dX, dt, Tz, vcov = TRUE)
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = fbm_acf(alpha, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
+# Fit the fbm model
+fbm_fit(Xt, dt = dt, drift = "linear")
+
 }

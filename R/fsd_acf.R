@@ -20,9 +20,6 @@
 #'
 #' @references Savin, T., and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 #'
-#' @example examples/acf_setup.R
-#' @example examples/fsd_acf.R
-#'
 #' @export
 fsd_acf <- function(alpha, tau, sigma2, dt, N) {
   if(tau == 0) {

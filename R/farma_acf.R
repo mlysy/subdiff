@@ -21,9 +21,6 @@
 #'
 #' @references Ling, Y., Lysy, M., Seim, I., Newby, J.M., Hill, D.B., Cribb, J., and Forest, M.G. "Measurement error correction in particle tracking microrheology" (2019). <https://arxiv.org/abs/1911.06451>.
 #'
-#' @example examples/acf_setup.R
-#' @example examples/farma_acf.R
-#'
 #' @export
 farma_acf <- function(alpha, phi = numeric(), rho = numeric(), dt, N, m = 50) {
   rho0 <- (1 - sum(rho) - sum(phi))

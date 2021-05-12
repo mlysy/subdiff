@@ -28,16 +28,22 @@ The residuals are calculated as\preformatted{Z = toeplitz(acf)^\{-1/2\} \%*\% (d
 where the "square roots" correspond to the Cholesky decomposition for the row-dependence matrix \code{toeplitz(acf)}, and the eigen decomposition for the column-dependence matrix \code{Sigma}.
 }
 \examples{
-# generating 2-d stationary time series
-alpha <- 0.8
+# simulate data from the fbm model
+alpha <- .8
+
 dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dt, N)
-dX <- rSnorm(2, acf = acf1)
-# Toeplitz object for internal computation
-Tz <- Toeplitz(n = N)
-mu <- c(1,2)
-Sigma <- diag(2)
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = fbm_acf(alpha, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
 # compute the residuals
-csi_resid(dX, drift = rep(dt, N) \%o\% mu, acf1, Sigma)
+Z <- csi_resid(dX = apply(Xt, 2, diff),
+               drift = matrix(0, N-1, ndim),
+               acf = fbm_acf(alpha, dt, N-1),
+               Sigma = diag(ndim))
 }

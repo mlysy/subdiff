@@ -30,15 +30,14 @@ Figure \@ref(fig:msdemp) displays the empirical MSD of the first 500 lags for ea
 ```{r msdemp, out.width = "47.5%", fig.show = "hold", fig.cap = paste0("Empirical MSDs for the ", npaths, " trajectories (left) and corresponding estimates of $\\aD$ (right).")}
 # calculate empirical MSDs
 ids <- unique(hbe$id)
-nlags <- 500 # number of lags
+nlag <- 500 # number of lags
 dt <- 1/60 # interobservation time
-tseq <- 1:nlags*dt # time sequence
+tseq <- 1:nlag*dt # time sequence
 msd_hat <- lapply(ids, function(id) {
   Xt <- hbe %>%
     filter(id == !!id) %>%
-    select(x, y) %>%
-    as.matrix()
-  tibble(id = id, t = tseq, msd = msd_fit(Xt = Xt, nlag = nlags))
+    select(x, y)
+  tibble(id = id, t = tseq, msd = msd_fit(Xt = Xt, nlag = nlag))
 }) %>% bind_rows()
 
 # calculate mean MSD and its standard error
@@ -72,13 +71,14 @@ ggplot(data = msd_stats) +
 
 # estimate & plot subdiffusion parameters
 aD_hat <- lapply(ids, function(id) {
-  msd_id <- msd_hat %>%
-  filter(id == !!id)
-  msd_ls(msd = msd_id$msd, tseq = msd_id$t)
-}) %>% bind_rows()
+  Xt <- hbe %>%
+    filter(id == !!id) %>%
+    select(x, y)
+  ls_fit(Xt, dt = dt, lags = 1:nlag, vcov = FALSE)
+}) %>% bind_rows() 
 
 aD_hat %>%  
-  ggplot(aes(x = D, y = alpha)) +
+  ggplot(aes(x = exp(logD), y = alpha)) +
   geom_point() + 
   xlab(expression("D")) +
   ylab(expression(alpha)) +

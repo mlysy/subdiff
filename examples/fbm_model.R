@@ -1,6 +1,8 @@
-# --- FIXME ---
-## # generate a fBM model object
-## model <- fbm_model()
-## # we can modify the elements of generated object
-## model$theta_names <- "gamma"
+# create fbm model object
+model <- fbm_model$new(Xt = Xt, dt = dt, drift = "linear")
+
+# evaluate loglikelihood
+model$loglik(phi = c(alpha = alpha),
+             mu = rep(0, ndim),
+             Sigma = diag(ndim))
 

@@ -18,33 +18,38 @@ msd_subdiff(msd, tseq, rel_tol = 0.05, tmax = FALSE, log = FALSE)
 \item{log}{Logical; whether or not the time window is measured on log-scale (See details).}
 }
 \value{
-A vector of length 3 if \code{tmax = FALSE}, or a vector of length 4 if \code{tmax = FALSE}.
+A vector of length 3 if \code{tmax = FALSE}, or a vector of length 4 if \code{tmax = TRUE}.
 }
 \description{
 Calculate effective subdiffusion time window and parameters from an arbitrary mean square displacement curve.
 }
 \details{
-Effective subdiffusion time window is defined as the longest time window whose power-law fit (computed by function \code{\link[=msd_ls]{msd_ls()}}) is within a small margin of real msd. It is actually performing the linear regression\preformatted{log(msd[tmin, tmax]) ~ log(D) + alpha * log(tseq[tmin,tmax]).
+Effective subdiffusion time window is defined as the longest time window whose power-law fit is within a small margin of real msd. It is actually performing the linear regression\preformatted{log(msd[tmin, tmax]) ~ log(D) + alpha * log(tseq[tmin,tmax]).
 }
 
 where \code{tmin} is the starting point of time window and \code{tmax} is the end of time window. And the relative error between the true msd and power law approximation is defined as\preformatted{epsilon = max((msd[tmin, tmax] - D * tseq[tmin,tmax]^alpha) / msd[tmin, tmax]).
 }
 
-Since in many experiment \code{tmax} is out-of-observation, this function allows to set \code{tmax = tseq[length(tseq)]}, which is the end of experiment. By doing this we only search for \code{tmin}. In addition, the default value of \code{log = FALSE} means the length of time window is defined as \code{tmax - tmin}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting \code{log = TRUE} defines the length of time window as \code{log(tmax) - log(tmin)} and also applies a log-scaled weight in power fitting (more details in \code{msd_ls}).
+Since in many experiment \code{tmax} is out-of-observation, this function allows to set \code{tmax = tseq[length(tseq)]}, which is the end of experiment. By doing this we only search for \code{tmin}. In addition, the default value of \code{log = FALSE} means the length of time window is defined as \code{tmax - tmin}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting \code{log = TRUE} defines the length of time window as \code{log(tmax) - log(tmin)}.
 This function finds the longest time window whose \code{epsilon} is smaller than \code{rel_tol} by applying grid search.
 }
 \examples{
-# generates a 2-d series of fBM.
+# simulate a 2D fbm trajectory.
 alpha <- 0.8
 dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dt, N)
-dX <- rSnorm(2, acf = acf1)
+acf <- fbm_acf(alpha, dt, N)
+dX <- SuperGauss::rnormtz(n = 2, acf = acf)
 Xt <- apply(dX, 2, cumsum)
+
 # Compute the MSD of Xt
 nlag <- 600
-msd1 <- msd_fit(Xt, nlag = nlag)
+msd <- msd_fit(Xt, nlag = nlag)
+
+plot(dt*(1:nlag), msd, xlab = "Time", ylab = "MSD")
+
 # Effective subdiffusion time of MSD
 tseq <- 1:nlag * dt
-msd_subdiff(msd1, tseq)
+msd_subdiff(msd, tseq)
+
 }

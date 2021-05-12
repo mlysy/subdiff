@@ -1,2 +1,2 @@
 # Fit the fsd model
-fsd_fit(dX, dt, Tz, vcov = TRUE)
+fsd_fit(Xt, dt = dt, drift = "linear")

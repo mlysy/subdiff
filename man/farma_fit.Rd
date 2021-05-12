@@ -22,9 +22,9 @@ farma_fit(
 
 \item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
-\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
+\item{vcov}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 
-\item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
 A vector of estimated parameters on transformed scale (See \code{\link[=farma_model]{farma_model()}}). If \code{vcov}, a list with components:
@@ -43,19 +43,27 @@ Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
 }{
 Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
 }
-where \eqn{X_n} is an \verb{q = 1,2} dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
+where \eqn{X_n} is a \code{d}-dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
 
 Optimization is done by \code{\link[stats:optim]{stats::optim()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=farma_model]{farma_model()}}).
 }
 \examples{
-# generating 2-d stationary time series
-alpha <- 0.8
+# simulate data from a farma(1,1) model
+alpha <- .8
+phi <- .1
+rho <- .1
+
 dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dt, N)
-dX <- rSnorm(2, acf = acf1)
-# Toeplitz object for internal computation
-Tz <- Toeplitz(n = N)
-# Fit the farma(0,1) model
-farma_fit(dX, dt, order = c(0,1), Tz, vcov = TRUE)
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = farma_acf(alpha, phi = phi, rho = rho, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
+# Fit the farma(1,1) model
+farma_fit(Xt, dt = dt, order = c(1,1), vcov = TRUE)
+
 }

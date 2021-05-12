@@ -13,11 +13,26 @@ Fractional Brownian motion \code{X_t} is the only (zero-mean) continuous station
 with subdiffusion exponent \verb{0 < alpha < 2}.
 }
 \examples{
-# --- FIXME ---
-## # generate a fBM model object
-## model <- fbm_model()
-## # we can modify the elements of generated object
-## model$theta_names <- "gamma"
+# simulate data from the fbm model
+alpha <- .8
+
+dt <- 1/60
+N <- 1800
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = fbm_acf(alpha, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
+# create fbm model object
+model <- fbm_model$new(Xt = Xt, dt = dt, drift = "linear")
+
+# evaluate loglikelihood
+model$loglik(phi = c(alpha = alpha),
+             mu = rep(0, ndim),
+             Sigma = diag(ndim))
 
 }
 \section{Super class}{

@@ -1,5 +1,8 @@
 ## Dataset
 
+```{r ref.label = "load_packages"}
+```
+
 Throughout, we'll be using the `hbe` dataset included in the **subdiff** package, which consists of `r length(unique(hbe$id))` 2D trajectories of 1-micron tracer particles in 2.5 wt% mucus harvested from human bronchial epithelial (HBE) cell cultures, as detailed in @hill.etal14.  Each trajectory contains `r n_rng[1]`-`r n_rng[2]` observations recorded at a frequency of `r 1/dt`Hz.  The full dataset is displayed in Figure \@ref(fig:hbeplot).
 
 ```{r ref.label = "hbe_info"}

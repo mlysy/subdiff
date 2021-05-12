@@ -1,2 +1,3 @@
-# Fit the fBM model
-fbm_fit(dX, dt, Tz, vcov = TRUE)
+# Fit the fbm model
+fbm_fit(Xt, dt = dt, drift = "linear")
+

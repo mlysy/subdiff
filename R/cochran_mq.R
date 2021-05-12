@@ -1,6 +1,6 @@
 #' Cochran's multivariate Q-test for heterogeneity.
 #'
-#' Under `H0`, `k` independent estimators are of a common `p`-diemensional parameter; their precision-weighted sum-of-squares follows asymptotically a `chi^2` distribution with `k-p` degrees of freedom.
+#' Suppose we have `k` independent estimators of `p`-dimensional vectors `theta_1, ..., theta_k`.  Under the null hypothesis `H0` that the `theta_i` are all the same, the Cochran Q-statistic is the precision-weighted sum-of-squares of the estimators.  Asymptotically it follows a chi-square distribution with `p*(k-1)` degrees of freedom.
 #'
 #' @param est A `k x p` matrix of independent estimates of a common parameter.
 #' @param ve A `(p x p x k)`-dimensional array of corresponding variance estimates.
@@ -9,11 +9,11 @@
 #'   \item{`Q`}{The value of the test statistic.}
 #'   \item{`df`}{The degrees of freedom of the test.}
 #'   \item{`pval`}{The p-value of the test.}
-#'   \item{`est`}{The combined estimate of the parameter under `H0`.}
-#'   \item{`ve`}{The variance estimate of the combined estimator.}
+#'   \item{`coef`}{The combined estimate of the parameter under `H0`.}
+#'   \item{`vcov`}{The variance estimate of the combined estimator.}
 #' }
 #' @export
-cochranMQ <- function(est, ve) {
+cochran_mq <- function(est, ve) {
   k <- nrow(est)
   p <- ncol(est)
   # estimate of common parameter and its variance
@@ -36,5 +36,5 @@ cochranMQ <- function(est, ve) {
   list(Q = Q,
        df = df0,
        pval = pchisq(Q, df = df0, lower.tail = FALSE),
-       est = est0, ve = ve0)
+       coef = est0, vcov = ve0)
 }

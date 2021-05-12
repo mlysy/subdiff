@@ -19,9 +19,9 @@ fsd_fit(
 
 \item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
-\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
+\item{vcov}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 
-\item{var_calc}{Logical; if \code{TRUE}, also estimate the variance matrix.}
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
 A vector of estimated parameters on transformed scale (See \code{\link[=fsd_model]{fsd_model()}}). If \code{vcov = TRUE}, a list with components:
@@ -55,16 +55,23 @@ When put \verb{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
 Optimization is done by \code{\link[=optimize]{optimize()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fsd_model]{fsd_model()}}).
 }
 \examples{
-# generating 2-d stationary time series
-alpha <- 0.8
+# simulate data from the fsd model
+alpha <- .8
+tau <- .1
+sigma2 <- .01
+
 dt <- 1/60
 N <- 1800
-acf1 <- fbm_acf(alpha, dt, N)
-dX <- rSnorm(2, acf = acf1)
-# Toeplitz object for internal computation
-Tz <- Toeplitz(n = N)
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = fsd_acf(alpha, tau, sigma2, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
 # Fit the fsd model
-fsd_fit(dX, dt, Tz, vcov = TRUE)
+fsd_fit(Xt, dt = dt, drift = "linear")
 }
 \references{
 Savin, T. and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.

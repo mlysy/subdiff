@@ -20,11 +20,11 @@
 #' }{
 #' Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
 #' }
-#' where \eqn{X_n} is an `q = 1,2` dimensional fBM model (See [fbm_fit()]).
+#' where \eqn{X_n} is a `d`-dimensional fBM model (See [fbm_fit()]).
 #'
 #' Optimization is done by [stats::optim()]. It works better when parameters are re-parametrized into unrestricted form (See [farma_model()]).
 #'
-#' @example examples/fit_setup.R
+#' @example examples/farma_sim.R
 #' @example examples/farma_fit.R
 #'
 #' @export
@@ -32,15 +32,15 @@ farma_fit <- function(Xt, dt, order,
                       drift = c("linear", "none", "quadratic"),
                       vcov = TRUE, ad_only = TRUE) {
   drift <- match.arg(drift)
-  if((length(order) != 2) || !all(order - as.integer(order) == 0)) {
-    stop("order must be a vector of 2 nonnegative integers.")
-  }
-  if(all(order == 0)) {
+  ## if((length(order) != 2) || !all(order - as.integer(order) == 0)) {
+  ##   stop("order must be a vector of 2 nonnegative integers.")
+  ## }
+  if(length(order) == 2 && all(order == 0)) {
     return(fbm_fit(Xt = Xt, dt = dt, drift = drift,
                    vcov = vcov, ad_only = ad_only))
   }
   model <- farma_model$new(Xt = Xt, dt = dt, drift = drift,
-                           p = order[1], q = order[2], m = 50)
+                           order = order, m = 50)
   out <- model$fit(psi0 = rep(0, length(model$phi_names)),
                    vcov = vcov)
   if(ad_only) out <- to_ad(out, model, vcov)

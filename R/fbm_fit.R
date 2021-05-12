@@ -23,7 +23,7 @@
 #'
 #' Optimization is done by [stats::optimize()]. It works better when parameters are re-parametrized into unrestricted form (See [fbm_model()]).
 #'
-#' @example examples/fit_setup.R
+#' @example examples/fbm_sim.R
 #' @example examples/fbm_fit.R
 #'
 #' @export

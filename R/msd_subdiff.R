@@ -5,9 +5,9 @@
 #' @param rel_tol Relative tolerence for difference between msd and linear fit.
 #' @param tmax Logical; if `TRUE` estimate `tmax`, otherwise set it to the last MSD timepoint `tseq[length(tseq)]` (See details).
 #' @param log Logical; whether or not the time window is measured on log-scale (See details).
-#' @return A vector of length 3 if `tmax = FALSE`, or a vector of length 4 if `tmax = FALSE`.
+#' @return A vector of length 3 if `tmax = FALSE`, or a vector of length 4 if `tmax = TRUE`.
 #' @details
-#' Effective subdiffusion time window is defined as the longest time window whose power-law fit (computed by function [msd_ls()]) is within a small margin of real msd. It is actually performing the linear regression
+#' Effective subdiffusion time window is defined as the longest time window whose power-law fit is within a small margin of real msd. It is actually performing the linear regression
 #' ```
 #' log(msd[tmin, tmax]) ~ log(D) + alpha * log(tseq[tmin,tmax]).
 #' ```
@@ -15,7 +15,7 @@
 #' ```
 #' epsilon = max((msd[tmin, tmax] - D * tseq[tmin,tmax]^alpha) / msd[tmin, tmax]).
 #' ```
-#' Since in many experiment `tmax` is out-of-observation, this function allows to set `tmax = tseq[length(tseq)]`, which is the end of experiment. By doing this we only search for `tmin`. In addition, the default value of `log = FALSE` means the length of time window is defined as `tmax - tmin`, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting `log = TRUE` defines the length of time window as `log(tmax) - log(tmin)` and also applies a log-scaled weight in power fitting (more details in `msd_ls`).
+#' Since in many experiment `tmax` is out-of-observation, this function allows to set `tmax = tseq[length(tseq)]`, which is the end of experiment. By doing this we only search for `tmin`. In addition, the default value of `log = FALSE` means the length of time window is defined as `tmax - tmin`, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting `log = TRUE` defines the length of time window as `log(tmax) - log(tmin)`.
 #' This function finds the longest time window whose `epsilon` is smaller than `rel_tol` by applying grid search.
 #'
 #' @example examples/Xt_setup.R
@@ -30,17 +30,19 @@ msd_subdiff <- function(msd, tseq, rel_tol = 0.05, tmax = FALSE, log = FALSE) {
   ind <- !is.na(msd) # non-NA terms
   if(!tmax) {
     # tmax = N*dt
-    Theta <- .tmin_search(msd[ind], xx[ind], rel_tol, log)
+    Theta <- find_tmin(msd[ind], xx[ind], rel_tol, log)
     names(Theta) <- c("tmin", "alpha", "D")
   } else {
     #tmax requires computation
-    Theta <- .twin_search(msd[ind], xx[ind], rel_tol, log)
+    Theta <- find_trng(msd[ind], xx[ind], rel_tol, log)
     names(Theta) <- c("tmin", "tmax", "alpha", "D")
   }
   Theta
 }
 
-.tmin_search <- function(msd, tseq, rel_tol, log) {
+#--- helper functions ----------------------------------------------------------
+
+find_tmin <- function(msd, tseq, rel_tol, log) {
   N <- length(tseq)
   for(jj in 2:N-1) {
     msd1 <- msd[jj:N]
@@ -53,7 +55,7 @@ msd_subdiff <- function(msd, tseq, rel_tol = 0.05, tmax = FALSE, log = FALSE) {
   c(tseq[jj], theta)
 }
 
-.twin_search <- function(msd, tseq, rel_tol, log) {
+find_trng <- function(msd, tseq, rel_tol, log) {
   N <- length(tseq)
   stg <- matrix(NA, N, 4)
   for(tmax in N:2) {

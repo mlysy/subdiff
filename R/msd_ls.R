@@ -16,12 +16,8 @@
 #' where `w(t) > 0` is a weight function.  The default value of `logw = FALSE` uses `w(t) = 1`, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting `logw = TRUE` uses uniform weighting on the log-scale, which corresponds to `w(t) = 1/t`.
 #'
 #' For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by `NA` in the `msd` matrix.
-#' 
-#' @example examples/Xt_setup.R
-#' @example examples/msd_fit.R
-#' @example examples/msd_ls.R
-#' 
-#' @export
+#'
+#' @noRd
 msd_ls <- function(msd, tseq, pooled = TRUE, logw = TRUE) {
   yy <- log(as.matrix(msd))
   npaths <- ncol(yy)
@@ -40,15 +36,15 @@ msd_ls <- function(msd, tseq, pooled = TRUE, logw = TRUE) {
   rownames(Theta) <- c("alpha", "D")
   for(ii in 1:npaths) {
     ind <- !is.na(yy[,ii])
-    Theta[,ii] <- .weighted_ls(yy[ind,ii], xx[ind], ww[ind])
+    Theta[,ii] <- wls_fit(yy[ind,ii], xx[ind], ww[ind])
   }
   if(npaths == 1) Theta <- Theta[,1]
   Theta
 }
 
-# efficient weighted regression in alpha/D estimation context.
+# efficient weighted least-squares in alpha/D estimation context.
 # will eventually be converted to C++
-.weighted_ls <- function(yy, xx, ww) {
+wls_fit <- function(yy, xx, ww) {
   ww <- ww/sum(ww) # normalize weights
   ybar <- sum(ww * yy)
   xbar <- sum(ww * xx)

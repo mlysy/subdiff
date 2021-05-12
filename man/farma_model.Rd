@@ -20,11 +20,29 @@ Constructor for farma model object.
 Constructor function that generates a list of farma(p,q) model for purpose of fitting.
 }
 \examples{
-# --- FIXME ---
-## # generate a farma(1,1) model object
-## model <- farma_model(1,1)
-## # we can modify the elements of generated object
-## model$theta_names[1] <- "gamma"
+# simulate data from a farma(1,1) model
+alpha <- .8
+phi <- .1
+rho <- .1
+
+dt <- 1/60
+N <- 1800
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = farma_acf(alpha, phi = phi, rho = rho, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
+# create farma(1,1) model object
+model <- farma_model$new(Xt = Xt, dt = dt, order = c(1, 1), drift = "linear")
+
+# evaluate loglikelihood
+model$loglik(phi = c(alpha = alpha, phi = phi, rho = rho),
+             mu = rep(0, ndim),
+             Sigma = diag(ndim))
+
 }
 \section{Super class}{
 \code{\link[subdiff:csi_model]{subdiff::csi_model}} -> \code{farma_model}
@@ -143,7 +161,7 @@ Vector with named elements \code{alpha} and \code{logD}.
 \subsection{Method \code{new()}}{
 Class constructor.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{farma_model$new(Xt, dt, p, q, m = 50, drift = "linear", n_drift)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{farma_model$new(Xt, dt, order = c(0, 0), m = 50, drift = "linear", n_drift)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -151,9 +169,7 @@ Class constructor.
 \describe{
 \item{\code{Xt, dt, drift, n_drift}}{See \link{csi_model}.}
 
-\item{\code{p}}{Number of autoregressive terms (nonnegative integer).}
-
-\item{\code{q}}{Number of moving-average terms (nonnegative integer).}
+\item{\code{order}}{Vector of two nonnegative integers specifying the number of autoregressive and moving-average terms, respectively.}
 
 \item{\code{m}}{Order of the moving-average approximation (see \code{\link[=farma_acf]{farma_acf()}}).}
 }
