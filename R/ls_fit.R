@@ -18,8 +18,7 @@
 #' @references Zhang, K., Crizer, K.P.R., Schoenfisch, M.H., Hill, B.D., Didier, G. (2018) "Fluid heterogeneity detection based on the asymptotic distribution of the time-averaged mean squared displacement in single particle tracking experiments". *Journal of Physics A: Mathematical and Theoretical*, 51, pp 445601(44).
 #' @export
 ls_fit <- function(Xt, dt, lags,
-                   type = c("standard", "improved"), vcov = TRUE,
-                   msd = FALSE) {
+                   type = c("standard", "improved"), vcov = TRUE) {
   # calculate the MSD
   Xt <- check_Xt(Xt)
   N <- nrow(Xt)

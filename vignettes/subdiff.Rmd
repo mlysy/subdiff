@@ -167,5 +167,10 @@ dt <- 1/60 # interobservation time
 ```{r csiclass, child = "_subdiff/_csiclass.Rmd"}
 ```
 
+# Appendix: Code for Figure \@ref(fig:fsdvsfma)
+
+```{r fsdvsfmacode, ref.label = "fsdvsfma", eval = FALSE}
+```
+
 # References
 

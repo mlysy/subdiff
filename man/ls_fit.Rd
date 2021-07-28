@@ -5,14 +5,7 @@
 \alias{ls_msd_fit}
 \title{Calculate the least-squares estimate of \verb{(alpha, D)}.}
 \usage{
-ls_fit(
-  Xt,
-  dt,
-  lags,
-  type = c("standard", "improved"),
-  vcov = TRUE,
-  msd = FALSE
-)
+ls_fit(Xt, dt, lags, type = c("standard", "improved"), vcov = TRUE)
 
 ls_msd_fit(
   msd,

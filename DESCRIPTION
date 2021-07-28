@@ -18,11 +18,11 @@ Suggests:
     testthat,
     knitr,
     bookdown,
+    rmarkdown,
     tidyr,
     dplyr,
     optimCheck,
     ggplot2,
     gridExtra
-SystemRequirements: fftw
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
