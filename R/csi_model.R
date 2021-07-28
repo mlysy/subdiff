@@ -135,9 +135,9 @@ csi_model <- R6::R6Class(
       acf <- self$acf(phi, dt = self$dt, N = N)
       tseq <- self$dt * 1:N
       msd <- SuperGauss::acf2msd(acf)
-      approx(x = c(rev(tseq), 0, tseq),
+      approx(x = c(-rev(tseq), 0, tseq),
              y = c(rev(msd), 0, msd),
-             xout = t)
+             xout = t)$y
       ## # method 2
       ## dt <- get_dt(t)
       ## N <- max(abs(t)) %/% dt

@@ -1,12 +1,12 @@
 Package: subdiff
 Type: Package
-Title: Inference for Subdiffusive Particle Tracking
+Title: Subdiffusive Modeling in Passive Particle-Tracking Microrheology
 Version: 0.0.1.9002
 Date: 2020-04-10
 Authors@R: c(person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
 	            role = c("aut", "cre")),
              person("Yun", "Ling", role = "aut"))
-Description: Tools for implementing various models for particle subdiffusion in biological fluids.
+Description: Tools for implementing various models for particle subdiffusion in biological fluids.  In addition to the well-known semiparametric least-squares estimator based on the mean square displacement (MSD), the package provides functions for simulation, inference, and goodness-of-fit for two fully-parametric subdiffusion models: fractional Brownian motion and the generalized Langevin equation (GLE) model with Rouse memory kernel.  A generic model class allows users to easily implement custom subdiffusion models, with a ready-made framework for drift, high-frequency error correction, and efficient maximum likelihood estimation.
 License: GPL-3
 Depends: R (>= 2.10)
 Imports: Rcpp (>= 0.12.12), LMN, SuperGauss, R6, numDeriv, fftw, methods, stats

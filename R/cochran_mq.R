@@ -30,7 +30,7 @@ cochran_mq <- function(est, ve) {
   Q <- 0
   for(ii in 1:k) {
     de <- est[ii,] - est0
-    Q[1] <- Q + crossprod(de, IV[,1:p,ii] %*% de)
+    Q <- Q + crossprod(de, IV[,1:p,ii] %*% de)
   }
   df0 <- p*(k-1) # is this correct???
   list(Q = Q,

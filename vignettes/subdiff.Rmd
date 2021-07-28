@@ -2,6 +2,8 @@
 title: "Introduction to **subdiff**: Tools for the Analysis of Passive Particle-Tracking Data"
 author: "Martin Lysy, Yun Ling"
 date: "`r Sys.Date()`"
+pkgdown:
+  as_is: true
 output: 
   bookdown::html_vignette2:
     toc: true
@@ -153,16 +155,16 @@ n_rng <- range(tapply(hbe$id, hbe$id, length)) # range of trajectory lengths
 dt <- 1/60 # interobservation time
 ```
 
-```{r dataset, child = "subdiff_child/_dataset.Rmd"}
+```{r dataset, child = "_subdiff/_dataset.Rmd"}
 ```
 
-```{r semiparam, child = "subdiff_child/_semiparametric.Rmd"}
+```{r semiparam, child = "_subdiff/_semiparametric.Rmd"}
 ```
 
-```{r param, child = "subdiff_child/_parametric.Rmd"}
+```{r param, child = "_subdiff/_parametric.Rmd"}
 ```
 
-```{r csiclass, child = "subdiff_child/_csiclass.Rmd"}
+```{r csiclass, child = "_subdiff/_csiclass.Rmd"}
 ```
 
 # References

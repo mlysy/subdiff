@@ -22,7 +22,7 @@ A vector of length \code{N} giving the autocorrelation of the filtered process.
 Calculate the autocorrelation of an ARMA(p,q) filter applied to a stationary process.
 }
 \details{
-Let \code{X_n} denote the observation of the original process at time \code{n}, and \code{Y_n} denote the corresponding observation of the filtered process.  The AR(p,q) filter model is defined as\preformatted{Y_n = X_n + sum_\{i=1\}^p phi_i Y_\{n-i\} + sum_\{j=1\}^q + rho_j X_\{n-j\}.
+Let \code{X_n} denote the observation of the original process at time \code{n}, and \code{Y_n} denote the corresponding observation of the filtered process.  The AR(p,q) filter model is defined as\preformatted{Y_n = X_n + sum_\{i=1\}^p phi_i Y_\{n-i\} + sum_\{j=1\}^q rho_j X_\{n-j\}.
 }
 
 The autocorrelation of \code{Y_n} can be computed exactly from that of \code{X_n} for pure moving-average filters with \code{p = 0}.  The general ARMA(p,q) filter is first approximated by a moving-average process of order \code{m} of the form\preformatted{Y[n] = X[n] + sum_\{j=1\}^m psi[j] X[n-j],

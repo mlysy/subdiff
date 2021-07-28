@@ -7,7 +7,7 @@
 #' @return A vector of length `N` giving the autocorrelation of the filtered process.
 #' @details Let `X_n` denote the observation of the original process at time `n`, and `Y_n` denote the corresponding observation of the filtered process.  The AR(p,q) filter model is defined as
 #' ```
-#' Y_n = X_n + sum_{i=1}^p phi_i Y_{n-i} + sum_{j=1}^q + rho_j X_{n-j}.
+#' Y_n = X_n + sum_{i=1}^p phi_i Y_{n-i} + sum_{j=1}^q rho_j X_{n-j}.
 #' ```
 #' The autocorrelation of `Y_n` can be computed exactly from that of `X_n` for pure moving-average filters with `p = 0`.  The general ARMA(p,q) filter is first approximated by a moving-average process of order `m` of the form
 #' ```
