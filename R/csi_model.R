@@ -2,6 +2,8 @@
 #'
 #' @description Base class for CSI models.
 #'
+#' @details TBD.  See `vignette("subdiff")` for details of the CSI model employed here.
+#'
 #' @importFrom stats optim optimize
 #' @export
 csi_model <- R6::R6Class(
@@ -124,7 +126,10 @@ csi_model <- R6::R6Class(
     #'
     #' @param phi Kernel parameters in the original basis.
     #' @param t Vector of time points at which to calculate the MSD.
-    #' @return A vector of MSD values the same length as `t`.
+    #' @return A vector of *unscaled* MSD values the same length as `t`.  That is, for the drift-subtracted process `X_sub(t) = X(t) - drift(t) * mu`, the method returns `eta(t)` where
+    #'
+    #' ```
+    #' MSD_{X_sub}(t) = trace(Sigma) * eta(t).
     #'
     #' @details This method can be directly supplied by the derived class.  Otherwise, it uses [SuperGauss::acf2msd()] to calculate the MSD from `self$acf()` at intervals of `self$dt`, and interpolates linearly between these timepoints at the desired values in `t`.
     #'

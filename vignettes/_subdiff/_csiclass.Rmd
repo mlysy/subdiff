@@ -22,7 +22,7 @@ where:
 An attractive feature of model \@ref(eq:locscale) is that the MSD of the drift-subtracted particle trajectory $\tilde{\XX}(t) = \XX(t) - \RR(t)' \mmu$ has the simple formula
 
 $$
-\msd_{\tilde{\XX}} = \tfrac 1 {\ndim} \tr(\SSi) \cdot  \eta(t \mid \pph).
+\msd_{\tilde{\XX}} = \tr(\SSi) \cdot  \eta(t \mid \pph).
 $$
 
 Another appealing property of this model is that its parameters $\tth = (\pph, \mmu, \SSi)$ can be estimated from discrete observations $\XX = (\rv [0] {\XX} N)$ in a computationally efficient manner [@ling.lysy20].
@@ -32,23 +32,23 @@ Another appealing property of this model is that its parameters $\tth = (\pph, \
 Consider a particle of radius $r$ in a Jeffreys fluid described by viscosity parameters $\eta_1$ and $\eta_2$ and elastic modulus $\Gamma$.  The MSD of the drift-subtracted particle trajectory $\tilde{\XX}(t)$ is given by [@raikher.rusakov10]
 
 \begin{equation}
-\msd_{\tilde{\XX}}(t) = \frac{2 \kbt}{\xi_V(1+q)} \times \left\{t + \frac{q}{1+q} \tau_M \left[1 - \exp\left(-\frac{(1+q)t}{\tau_M}\right)\right]\right\},
+\msd_{\tilde{\XX}}(t) = \frac{2\ndim \kbt}{\xi_V(1+q)} \times \left\{t + \frac{q}{1+q} \tau_M \left[1 - \exp\left(-\frac{(1+q)t}{\tau_M}\right)\right]\right\},
 (\#eq:jfsmsd)
 \end{equation}
 
 where $q = \eta_1/\eta_2$, $\tau_M = (\eta_1 + \eta_2)/\Gamma$, $\xi_V = 6\pi r \cdot \eta_1\eta_2/(\eta_1 + \eta_2)$, and $T$ and $r$ are the temperature of the system and radius of the particle, respectively.  A more natural parametrization is
 
 $$
-\msd_{\tilde{\XX}}(t) = \sigma^2 \left\{t + \alpha \left[1 - e^{-t/\tau}\right]\right\},
+\msd_{\tilde{\XX}}(t) = 2\ndim \sigma^2 \left\{t + \alpha \left[1 - e^{-t/\tau}\right]\right\},
 $$
 
-where $\tau = \tau_M/(1+q) = \eta_2/\Gamma$, $\alpha = \tau q = \eta_1/\Gamma$, and $\sigma^2 = 2\kbt / (\xi_V(1+q)) = 2\kbt / (6\pi r \eta_1)$.  In the formulation of the location-scale model \@ref(eq:locscale), the CSI process $Z(t)$ underlying the particle trajectory $\XX(t)$ has MSD
+where $\tau = \tau_M/(1+q) = \eta_2/\Gamma$, $\alpha = \tau q = \eta_1/\Gamma$, and $\sigma^2 = \kbt / (\xi_V(1+q)) = \kbt / (6\pi r \eta_1)$.  In the formulation of the location-scale model \@ref(eq:locscale), the CSI process $Z(t)$ underlying the particle trajectory $\XX(t)$ has MSD
 
 $$
 \eta(t \mid \pph) = \msd_Z(t) = \left\{t + \alpha \left[1 - e^{-t/\tau}\right]\right\}
 $$
 
-with $\pph = (\alpha, \tau)$, and the MSD scale factor is $\sigma^2 = \tr(\SSi)/\ndim$.
+with $\pph = (\alpha, \tau)$, and the MSD scale factor is $\sigma^2 = \tr(\SSi)/(2\ndim)$.
 
 ## Creating the Jeffreys Model Class
 
@@ -60,7 +60,7 @@ In order to fit the Jeffreys model \@ref(eq:jfsmsd) to trajectory data, we will 
 	\acf_{\Delta Z}(h) = \cov(\Delta Z_n, \Delta Z_{n+h}).
 	$$
 
-	This must be supplied as a function with arguments $(\pph, \dt, N)$ and return the vector $\big(\acf_{\Delta Z}(0), \ldots, \acf_{\Delta Z}(N-1)\big)$.  Note that $\msd_{Z}(t)$ can be converted to $\acf_{\Delta Z}(h)$ via the function `SuperGauss::msd2acf()`.
+	This must be supplied as a function with arguments $(\pph, \dt, N)$ and return the vector $\big(\acf_{\Delta Z}(0), \ldots, \acf_{\Delta Z}(N-1)\big)$.  Note that $\msd_{Z}(t)$ can be converted to $\acf_{\Delta Z}(h)$ via the function `SuperGauss::msd2acf()`, as we do in the function `jfs_acf()` below.
 
 - Functions to convert back and forth between the kernel parameters in the "inferential" basis, $\pph$, and these parameters in a "computational basis", $\pps$.  That is, $\pps$ should have the same dimension as $\pph$ but have no constraints.  For the Jeffreys model, since $\alpha, \tau > 0$, a natural choice of computational basis is $\pps = (\log \alpha, \log \tau)$.
 
@@ -137,7 +137,7 @@ acf <- jfs_acf(alpha = alpha, tau = tau, dt = dt, N = N)
 # increment drift matrix: in this case zero drift
 drift <- matrix(0, N, ndim)
 # scale matrix (micron^2)
-sigma2 <- 1e12 * 2*kB*Temp / (xi_V * (1+q))
+sigma2 <- 1e12 * kB*Temp / (xi_V * (1+q))
 Sigma <- sigma2 * diag(ndim)
 # position at time t = 0
 X0 <- rep(0, ndim)
@@ -151,7 +151,7 @@ tmax <- 10 # maximum time to plot
 nmax <- floor(tmax/dt) # corresponding MSD lag number
 tibble(
   Time = 1:nmax * dt, # time sequence
-  Theoretical = sigma2 * SuperGauss::acf2msd(acf[1:nmax]), # theoretical msd
+  Theoretical = 2*ndim*sigma2 * SuperGauss::acf2msd(acf[1:nmax]), # theoretical msd
   Empirical = msd_fit(Xt, nlag = nmax) # empirical msd
 ) %>%
   pivot_longer(cols = Theoretical:Empirical, names_to = "MSD Type",
@@ -338,7 +338,7 @@ $$
 
 where $\JJ(\pps)$ is the $P \times Q$ Jacobian matrix with elements $[\JJ(\pps)]_{ij} = \frac{\partial}{\partial \psi_i} G_j(\pps)$.  The code below shows how to do this for the Jeffreys model parameters $\zze = (\eta_1, \eta_2, \Gamma)$ for a particle of radius $r = `r rad` \, \mu\mathrm{m}$ at temperature $T = `r Temp`\, \mathrm{K}$.  The Jacobian matrix $\JJ(\hat{\pps})$ is calculated numerically using `numDeriv::jacobian()`.
 
-```{r jfs_zeta, ref = "jfs_zeta_calc"}
+```{r jfs_zeta, ref.label = "jfs_zeta_calc"}
 ```
 
 Finally we can convert the variance matrix estimate to standard errors and 95% confidence intervals for each element of $\zze$.

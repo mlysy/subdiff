@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: yes
 vignette: >
-  %\VignetteIndexEntry{msd_conventions}
+  %\VignetteIndexEntry{Visual Check of Subdiffusion Estimators}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -59,7 +59,7 @@ First let us compare the empirical MSD estimate to the true function $\msd(t) = 
 ndim <- 2 # number of trajectory dimensions
 # true parameter values
 D <- .43
-mu <- runif(d) # drift per coordinate
+mu <- runif(ndim) # drift per coordinate
 # simulation setup
 N <- 1800 # number of observations
 dt <- 1/60 # framerate
@@ -71,8 +71,8 @@ Xt <- apply(dX, 2, cumsum)
 msd_hat <- cbind(nodrift = msd_fit(Xt, nlag = nrow(Xt)-2),
                  direct = msd_fit(Xt, nlag = nrow(Xt)-2, demean = FALSE))
 tibble(t = 1:nrow(msd_hat) * dt,
-       direct = 2 * msd_hat[,"direct"],
-       nodrift = 2 * msd_hat[,"nodrift"],
+       direct = msd_hat[,"direct"],
+       nodrift = msd_hat[,"nodrift"],
        true = 2*ndim * D * t) %>%
   pivot_longer(cols = direct:true, names_to = "type",
                values_to = "msd") %>%
@@ -83,7 +83,7 @@ tibble(t = 1:nrow(msd_hat) * dt,
   ggplot(aes(x = t, y = msd)) +
   geom_line(aes(color = type)) +
   scale_x_log10() + scale_y_log10() +
-  scale_color_discrete(labels = parse_format()) +
+  scale_color_discrete(labels = label_parse()) +
   xlab(expression("Time "*"(s)")) +
   ylab(expression("MSD "*(mu*m^2))) +
   theme(legend.position = c(0,1),
@@ -94,43 +94,50 @@ tibble(t = 1:nrow(msd_hat) * dt,
 
 Now let us compare various subdiffusion estimators to the true values of $(\alpha, D)$.  The subdiffusion estimators are:
 
-- A version of least-squares (`LS`).  There is no unique definition of the LS estimator as it depends among other things on the method of drift correction and the set of timepoints used in the regression.  Here we use a linear drift subtraction and timepoints $t = \dt \cdot (1, 2, 5, 10, 20, 50, 100, 200, 500)$.
+- A version of least-squares (`ls`).  There is no unique definition of the LS estimator as it depends among other things on the method of drift correction and the set of timepoints used in the regression.  Here we use a linear drift subtraction and timepoints $t = \dt \cdot (1, 2, 5, 10, 20, 50, 100, 200, 500)$.
 
-- MLE of fractional Brownian motion (`fBM`).  Drift correction in this and the subsequent MLE estimators is linear.
+- MLE of fractional Brownian motion (`fbn`).  Drift correction in this and the subsequent MLE estimators is linear.
 
 <!-- - MLE of fBM + white noise floor (`fSN`). -->
 
-- MLE with fBM + Savin-Doyle noise model (`fSD`).  This accounts for static noise via a white noise floor and dynamic errors due to particle movement during the camera exposure time for each frame.  It's identical to fSN when there is no dynamic error (camera exposure time = 0).
+- MLE with fBM + Savin-Doyle noise model (`fsd`).  This accounts for static noise via a white noise floor and dynamic errors due to particle movement during the camera exposure time for each frame.  It's identical to fSN when there is no dynamic error (camera exposure time = 0).
 
-- MLE with fBM + MA(1) noise (`fMA`).  This is one of the models proposed in our AOAS paper.
+- MLE with fBM + MA(1) noise (`fma`).  This is one of the models proposed in our AOAS paper.
 
-- MLE with fBM + ARMA(1,1) noise (`fARMA`), another model proposed in our AOAS paper.
+- MLE with fBM + ARMA(1,1) noise (`farma`), another model proposed in our AOAS paper.
 
 Since there is no noise here and the fBM model is correct -- in that BM is a special case of it with $\alpha = 1$ -- we expect all estimators to produce very similar results.  The code below shows that the **subdiff** implementation of these models consistently estimates $(\alpha, D)$.
 
 ```{r bm_fit}
-# fit various estimators
+#' Calculate `(alpha, log(D))` estimates for various estimators.
+#'
+#' @param Xt Matrix of `N x ndim` particle trajectory observations.
+#' @param dt Interobservation time.
+#' @return Matrix with two rows corresponding to `alpha` and `D` estimates for models: "ls", "fbm", "fsd", "fma", and "farma".
 fit_models <- function(Xt, dt) {
   ls_lags <- c(1, 2, 5, 10, 20, 50, 100, 200, 500)
-  cbind(
+  ad <- cbind(
     ls = ls_fit(Xt, dt, lags = ls_lags, vcov = FALSE),
     fbm = fbm_fit(Xt, dt, vcov = FALSE),
     fsd = fsd_fit(Xt, dt, vcov = FALSE),
     fma = farma_fit(Xt, dt, order = c(0, 1), vcov = FALSE),
     farma = farma_fit(Xt, dt, order = c(1, 1), vcov = FALSE)
   )
+  ad[2,] <- exp(ad[2,]) # convert logD to D
+  rownames(ad)[2] <- "D"
+  ad
 }
+
 ad_fit <- fit_models(Xt, dt)
-ad_fit[2,] <- exp(ad_fit[2,])/2 # new convention for D
 # display alongside true value
 signif(cbind(True = c(alpha = 1, D = D), ad_fit), 2)
 ```
 
 # Fractional Brownian Motion
 
-This just confirms that the estimators remain consistent with simulated fBM.
+This just confirms that the estimators remain consistent with simulated [fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion) (fBM).  First, we simulate an fBM trajectory and plot the true and empirical MSD.  Note that, for testing purposes, the fBM trajectory is generated via the Cholesky decomposition of its variance matrix.  This method is transparent but scales cubically in the number of fBM observations.  A more efficient method of simulation is used by `SuperGauss::rnormtz()`, which is also used internally by **subdiff**.
 
-```{r fbm_fit, fig.width = 7, fig.height = 3.5, out.width = "100%"}
+```{r fbm_msd, fig.width = 7, fig.height = 3.5, out.width = "100%"}
 ndim <- 2 # number of trajectory dimensions
 # true parameter values
 D <- .43
@@ -160,8 +167,8 @@ Xt <- Xt + (1:N * dt) %o% mu
 msd_hat <- cbind(nodrift = msd_fit(Xt, nlag = nrow(Xt)-2),
                  direct = msd_fit(Xt, nlag = nrow(Xt)-2, demean = FALSE))
 tibble(t = 1:nrow(msd_hat) * dt,
-       direct = 2 * msd_hat[,"direct"],
-       nodrift = 2 * msd_hat[,"nodrift"],
+       direct = msd_hat[,"direct"],
+       nodrift = msd_hat[,"nodrift"],
        true = 2*ndim * D * t^alpha) %>%
   pivot_longer(cols = direct:true, names_to = "type",
                values_to = "msd") %>%
@@ -172,17 +179,20 @@ tibble(t = 1:nrow(msd_hat) * dt,
   ggplot(aes(x = t, y = msd)) +
   geom_line(aes(color = type)) +
   scale_x_log10() + scale_y_log10() +
-  scale_color_discrete(labels = parse_format()) +
+  scale_color_discrete(labels = label_parse()) +
   xlab(expression("Time "*"(s)")) +
   ylab(expression("MSD "*(mu*m^2))) +
   theme(legend.position = c(0,1),
         legend.title = element_blank(),
         legend.justification = c(-.02, 1.02),
         legend.text.align = 0)
+```
 
+Now we fit the fBM trajectory wit various subdiffusion estimators:
+
+```{r fbm_fit}
 # fit various estimators
 ad_fit <- fit_models(Xt, dt)
-ad_fit[2,] <- exp(ad_fit[2,])/2 # new convention for D
 
 # display estimates with true value
 signif(cbind(True = c(alpha = alpha, D = D), ad_fit), 2)

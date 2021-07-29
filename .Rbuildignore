@@ -1,5 +1,7 @@
 ^Meta$
 ^doc$
+^docs$
+^pkgdown$
 ^man-roxygen$
 ^TODO\.md$
 ^README\.md$

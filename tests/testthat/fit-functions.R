@@ -1,7 +1,10 @@
 require(fftw)
 
-# dimension of covariacne matrix
-getq <- function(ndims) if(ndims == 1) 1 else 3
+# dimension of covariance matrix in computational basis
+getq <- function(ndims) {
+  ## if(ndims == 1) 1 else 3
+  ndims * (ndims+1) / 2
+}
 
 # max of min of abs and rel error
 max_xdiff <- function(x) {

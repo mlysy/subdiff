@@ -17,6 +17,8 @@
 #'
 #' For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by `NA` in the `msd` matrix.
 #'
+#' @note Currently only used by [msd_subdiff()], which should probably be refactored to remove this dependency.
+#'
 #' @noRd
 msd_ls <- function(msd, tseq, pooled = TRUE, logw = TRUE) {
   yy <- log(as.matrix(msd))

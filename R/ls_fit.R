@@ -136,6 +136,8 @@ ls_msd_fit <- function(msd, dt, lags, N, ndim,
       V_hat <- solve(qX, t(solve(qX, V)))
     }
   }
+  # correct logD by 2*d factor
+  theta_hat[2] <- theta_hat[2] - log(2*ndim)
   # format output
   tnames <- c("alpha", "logD")
   ans <- setNames(theta_hat, tnames)

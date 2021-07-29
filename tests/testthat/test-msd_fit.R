@@ -2,7 +2,7 @@
 context("msd_fit")
 
 test_that("msd calculation in C++ matches that of R", {
-  test_cases <- expand.grid(ndims = 1:2,
+  test_cases <- expand.grid(ndims = 1:3,
                             demean = c(TRUE, FALSE))
   ntest <- nrow(test_cases)
   for(ii in 1:ntest) {
@@ -29,7 +29,7 @@ test_that("msd calculation in C++ matches that of R", {
     }
     msd_R <- rep(NA, nlag)
     for(ii in 1:nlag) {
-      msd_R[ii] <- mean(apply(Zt, 2, diff, lag = ii)^2)
+      msd_R[ii] <- mean(apply(Zt, 2, diff, lag = ii)^2) * ndims
     }
     expect_equal(msd_C, msd_R)
   }

@@ -5,14 +5,14 @@ Let $\XX_n = \XX(t_n)$ denote the position of a givne particle at time $t_n = n 
 1.  Calculate the empirical MSD for each trajectory, defined as
 
     \begin{equation}
-	\widehat{\msd}_{\XX}(t_n) = \frac 1 {\ndim(N-n+1)} \sum_{h=0}^{N-n} \Vert \XX_{h+n}-\XX_{h}\Vert^2.
+	\widehat{\msd}_{\XX}(t_n) = \frac 1 {(N-n+1)} \sum_{h=0}^{N-n} \Vert \XX_{h+n}-\XX_{h}\Vert^2.
 	(\#eq:msdemp)
 	\end{equation}
 		
 2.  Estimate $\aD$ by regressing $y_n = \log \widehat{\msd}_{\XX}(t_n)$ onto $x_n = \log t_n$, such that
 
     $$
-    \hat \alpha = \frac{\sum_{n=0}^N(y_n - \bar y)(x_n - \bar x)}{\sum_{n=0}^N(x_n - \bar x)^2}, \qquad \hat D = \tfrac 1 2 \exp(\bar y - \hat \alpha \bar x),
+    \hat \alpha = \frac{\sum_{n=0}^N(y_n - \bar y)(x_n - \bar x)}{\sum_{n=0}^N(x_n - \bar x)^2}, \qquad \hat D = \frac 1 {2\ndim} \exp(\bar y - \hat \alpha \bar x),
 	$$
 	
 	where $\bar x$ and $\bar y$ are the samples means of $x_n$ and $y_n$.

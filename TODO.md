@@ -6,13 +6,15 @@
 
 - [x] `farma_fit()` and `farma_model$new()` specify order via `order` and `p,q` respectively.  Use `order` to be consistent with `stats::arima()`.
 
-- [ ] Adopt the usual conventions `MSD(t) = sum E[(X_i(t) - X_i(0))^2]` and `MSD(t) = 2d D t^alpha`.
+- [x] Adopt the usual conventions `MSD(t) = sum E[(X_i(t) - X_i(0))^2]` and `MSD(t) = 2d D t^alpha`.
 
     Files/functions affected: vignette, `csi_model$msd()` (documentation update), `{fbm/farma/fsd}_model$get_subdiff()`, `ls_fit()` and `msd_fit()`.  Also makes sense not to standardize in `src/msd_empirical.cpp`.  
+	
+	**Update:** Done except possibly `msd_subdiff()` and `msd_ls()`.  See below.
 
 - [x] Clean up `msd_fit()`, `ls_fit()`, and `msd_ls()`.  Proposal is to remove the latter (put in `inst/proj`), and instead have `ls_fit()` optionally accept `msd` argument if these have already been calculated by `msd_fit()`.  `ls_fit()` can still be given weights though.
 
-	Update: No weights, but now providing `msd_fit()`, `ls_fit()`, and `ls_msd_fit()`, where the latter uses the MSD directly.  Also, `msd_ls()` is an internal function because it is still used by `msd_subdiff()`.  See below.
+	**Update:** No weights, but now providing `msd_fit()`, `ls_fit()`, and `ls_msd_fit()`, where the latter uses the MSD directly.  Also, `msd_ls()` is an internal function because it is still used by `msd_subdiff()`.  See below.
 	
 - [x] Standardize unconstrained parametrization for variances.
 

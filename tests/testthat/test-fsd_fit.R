@@ -1,4 +1,3 @@
-
 context("fsd_fit")
 
 source("fit-functions.R")
@@ -32,10 +31,10 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
     dt <- runif(1)
     alpha <- runif(1, 0, 0.8)
     tau <- runif(1, 0, 1)
-    sig <- runif(1, 0, 0.05)
+    sigma2 <- runif(1, 0, 0.0025)
     D <- runif(1, .9, 1.1)
     ndims <- sample(1:3, 1)
-    acf1 <- D * fsd_acf(alpha, tau, sig^2, dt, N)
+    acf1 <- D * fsd_acf(alpha, tau, sigma2, dt, N)
     dX <- as.matrix(rnormtz(n = ndims, fft = FALSE, acf = acf1))
     Xt <- apply(rbind(rnorm(ndims), dX), 2, cumsum)
     # fsd
@@ -49,6 +48,20 @@ test_that("MLE is at the mode of the projection plots, dynamic and localization.
     expect_lt(max_xdiff(ocheck), .05)
   }
 })
+
+## log1pe <- subdiff:::log1pe
+## model <- fsd_model$new(Xt, dt)
+## penalty <- function(psi) log1pe(psi[2]) + log1pe(-psi[2]) - psi[3]
+## objfun1 <- model$nlp
+## objfun2 <- function(psi) model$nlp(psi) + penalty(psi)
+
+## fit1 <- optim(par = rep(0, 3), fn = objfun1)
+## fit2 <- optim(par = rep(0, 3), fn = objfun2)
+
+## optim_proj(xsol = fit1$par, fun = objfun1, maximize = FALSE)
+## optim_proj(xsol = fit2$par, fun = objfun2, maximize = FALSE)
+
+## model$get_omega(fit2$par)
 
 # # fdy loglikelihood
 # loglik1 <- function(omega, sigma2, dX, dt, Tz, penalty) {

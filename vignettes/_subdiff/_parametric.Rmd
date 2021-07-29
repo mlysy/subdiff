@@ -19,9 +19,9 @@ where:
 
 An attractive feature of model \@ref(eq:fbmlin) is that the MSD of the drift-subtracted particle trajectory $\tilde{\XX}(t) = \XX(t) - t \mmu = \SSi^{1/2} \BB^{(\alpha)}(t)$ is simply given by
 $$
-\msd_{\tilde{\XX}} = \tfrac 1 {\ndim} \tr(\SSi) \cdot  t^{\alpha},
+\msd_{\tilde{\XX}} = \tr(\SSi) \cdot  t^{\alpha},
 $$
-such that $D = \tfrac 1 {\ndim} \tr(\SSi)$.  The MLE $(\hat \alpha, \log \hat D)$ for $(\alpha, \log D)$ and the corresponding variance estimator $\hat V = \widehat{\var}(\hat \alpha, \log \hat D)$ for each trajectory can be computed with `subdiff::fbm_fit()`:
+such that $D = \tr(\SSi)/(2\ndim)$.  The MLE $(\hat \alpha, \log \hat D)$ for $(\alpha, \log D)$ and the corresponding variance estimator $\hat V = \widehat{\var}(\hat \alpha, \log \hat D)$ for each trajectory can be computed with `subdiff::fbm_fit()`:
 
 ```{r fbmfit1}
 # extract a single trajectory
@@ -47,7 +47,7 @@ Nmax <- floor(tmax/dt)
 
 tibble(t = 1:Nmax * dt,
        Empirical = msd_fit(Xt, nlag = Nmax),
-       fBM = exp(fbm_est$coef["logD"]) * (1:Nmax * dt)^fbm_est$coef["alpha"]) %>%
+       fBM = 4 * exp(fbm_est$coef["logD"]) * (1:Nmax * dt)^fbm_est$coef["alpha"]) %>%
   pivot_longer(cols = Empirical:fBM, names_to = "MSD Type", values_to = "msd") %>%
   ggplot(aes(x = t, y = msd, group = `MSD Type`)) +
   geom_line(aes(col = `MSD Type`)) +

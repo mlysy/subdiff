@@ -6,6 +6,9 @@
 \description{
 Base class for CSI models.
 }
+\details{
+TBD.  See \code{vignette("subdiff")} for details of the CSI model employed here.
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
@@ -134,7 +137,8 @@ The \code{self$msd()} method is defined this way because the MSD of some CSI mod
 }
 
 \subsection{Returns}{
-A vector of MSD values the same length as \code{t}.
+A vector of \emph{unscaled} MSD values the same length as \code{t}.  That is, for the drift-subtracted process \code{X_sub(t) = X(t) - drift(t) * mu}, the method returns \code{eta(t)} where\preformatted{MSD_\{X_sub\}(t) = trace(Sigma) * eta(t).
+}
 }
 }
 \if{html}{\out{<hr>}}

@@ -34,6 +34,7 @@ NumericVector log1pe(NumericVector x) {
   int n = x.length();
   NumericVector y(n);
   for(int ii=0; ii<n; ii++) {
+    // Rprintf("x[%i%] = %f\n", ii, x[ii]);
     y[ii] = log1pexp(x[ii]);
   }
   return y;

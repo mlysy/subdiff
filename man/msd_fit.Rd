@@ -19,6 +19,10 @@ Sample MSD vector of length \code{nlag}.
 \description{
 Sample estimate of mean squared displacement.
 }
+\details{
+The MSD of a \code{d}-dimensional stochastic process \verb{X(t) = (X_1(t), ..., X_d(t))} is defined as\preformatted{MSD_X(t) = E[ (X_1(t) - X_1(0))^2 ] + ... + E[ (X_d(t) - X_d(0))^2 ].
+}
+}
 \examples{
 # simulate a 2D fbm trajectory.
 alpha <- 0.8

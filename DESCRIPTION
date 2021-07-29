@@ -2,7 +2,7 @@ Package: subdiff
 Type: Package
 Title: Subdiffusive Modeling in Passive Particle-Tracking Microrheology
 Version: 0.0.1.9002
-Date: 2020-04-10
+Date: 2021-07-28
 Authors@R: c(person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
 	            role = c("aut", "cre")),
              person("Yun", "Ling", role = "aut"))
@@ -17,12 +17,13 @@ Encoding: UTF-8
 Suggests: 
     testthat,
     knitr,
-    bookdown,
     rmarkdown,
+    bookdown,
     tidyr,
     dplyr,
     optimCheck,
     ggplot2,
+    scales,
     gridExtra
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)

@@ -29,7 +29,7 @@ void msd_empirical(double* msd, double* Xt, int n_obs, int n_lag) {
 /// @param[in] Xt Matrix where each column is one dimension of the trajectory.
 /// @param[in] n_lag Number of MSD lags to compute.
 ///
-/// @return Vector of length `n_lag` containing the *average* MSD per coordinate.
+/// @return Vector of length `n_lag` containing the MSD per coordinate.
 /// 
 //[[Rcpp::export]]
 NumericVector msd_empirical(NumericMatrix Xt, int n_lag) {
@@ -41,5 +41,5 @@ NumericVector msd_empirical(NumericMatrix Xt, int n_lag) {
   for(int ii=0; ii<n_dim; ii++) {
     msd_empirical(msd, &xt[n_obs*ii], n_obs, n_lag);
   }
-  return msd_out/(1.0*n_dim);
+  return msd_out;
 }

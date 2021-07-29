@@ -58,7 +58,7 @@ fsd_model <- R6::R6Class(
       theta <- self$itrans_full(omega) # convert to inferential basis
       # extract alpha and logD
       setNames(c(theta$phi["alpha"],
-                 log(mean(diag(theta$Sigma)))),
+                 log(mean(diag(theta$Sigma))/2)),
                nm = c("alpha", "logD"))
     }
   )

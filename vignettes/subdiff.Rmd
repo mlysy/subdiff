@@ -93,12 +93,12 @@ cran_link <- function(pkg) {
 
 The **subdiff** package provides a number of utilities for analyzing subdiffusion in passive particle tracking data.  Let $\XX(t) = \big(X_1(t), \ldots, X_{\ndim}(t)\big)$ denote the $\ndim$-dimensional position of a particle at time $t$, where $\ndim$ is typically between 1 and 3.  In an ideal experiment, it is typically assumed that $\XX(t)$ is a Continuous Stationary Increments (CSI) process, i.e., a stochastic process with mean zero and such that the distribution of $\dX(t) = \XX(t+\dt) - \XX(t)$ is independent of $t$.  Under these conditions, the covariance properties of $\XX(t)$ can often be deduced entirely from the particle's mean square displacement (MSD),
 \begin{equation}
-\msd_{\XX}(t) = \frac 1 \ndim \sum_{i=1}^\ndim E\big[\big(X_i(t)-X_i(0)\big)^2\big].
+\msd_{\XX}(t) = \sum_{i=1}^\ndim E\big[\big(X_i(t)-X_i(0)\big)^2\big].
 (\#eq:msd)
 \end{equation}
 A widely observed phenomenon is that the MSD of microparticles diffusing in biological fluids has a power-law signature on a given timescale,
 \begin{equation}
-  \msd_{\XX}(t) \sim D \cdot t^\alpha, \qquad t \in (\tmin, \tmax).
+  \msd_{\XX}(t) \sim 2\ndim D \cdot t^\alpha, \qquad t \in (\tmin, \tmax).
   (\#eq:subdiff)
 \end{equation}
 Whereas $\alpha = 1$ corresponds to the MSD of ordinary diffusion observed in Brownian particles, the power law MSD \@ref(eq:subdiff) with $\alpha \in (0,1)$ is referred to as *subdiffusion*.  
