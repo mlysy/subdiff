@@ -1,0 +1,209 @@
+# Parametric Modeling with Fractional Brownian Motion
+
+In addition to the semiparameteric "least-squares" (LS) estimator presented above, **subdiff** offers a range of fully-parametric subdiffusion modeling options.  To illustrate, let's start with a basic model in which the particle trajectory $\XX(t)$ is given by
+\begin{equation}
+  \XX(t) = \mmu \cdot t + \SSi^{1/2} \BB^{(\alpha)}(t),
+  (\#eq:fbmlin)
+\end{equation}
+where:
+
+- $\mmu = (\mu_1, \ldots, \mu_{\ndim})$ is the linear drift velocity per coordinate.
+
+- $\SSi$ is a $\ndim \times \ndim$ symmetric positive-definite scaling matrix.
+
+- $\BB^{(\alpha)}(t) = \big(B_1^{(\alpha)}(t), \ldots, Z_{\ndim}^{(\alpha)}(t)\big)$ are independent and identically distributed (iid) copies of a [fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion) (fBM) process $B^{(\alpha)}(t)$.  That is, fBM is the only Gaussian CSI process with MSD
+
+	$$
+	\msd_{B^{(\alpha)}}(t) = t^\alpha.
+	$$
+
+An attractive feature of model \@ref(eq:fbmlin) is that the MSD of the drift-subtracted particle trajectory $\tilde{\XX}(t) = \XX(t) - t \mmu = \SSi^{1/2} \BB^{(\alpha)}(t)$ is simply given by
+$$
+\msd_{\tilde{\XX}} = \tr(\SSi) \cdot  t^{\alpha},
+$$
+such that $D = \tr(\SSi)/(2\ndim)$.  The MLE $(\hat \alpha, \log \hat D)$ for $(\alpha, \log D)$ and the corresponding variance estimator $\hat V = \widehat{\var}(\hat \alpha, \log \hat D)$ for each trajectory can be computed with `subdiff::fbm_fit()`:
+
+```{r fbmfit1}
+# extract a single trajectory
+Xt <- hbe %>%
+  filter(id == 1) %>%
+  select(x, y) %>%
+  as.matrix()
+
+# fit fbm to data
+fbm_est <- fbm_fit(Xt = Xt, dt = dt, drift = "linear")
+fbm_est
+```
+
+But what about estimates of the full set of parameters, $\tth = (\alpha, \mmu, \SSi)$?  We'll return to this point [below](#deltamethod).
+
+# Parametric Modeling in the Presense of Noise
+
+Figure \@ref(fig:msdnoise) displays MSD estimates for the trajectory `Xt` above, using the (drift-subtracted) empirical estimator \@ref(eq:msdemp) and that of the fitted fBM model. 
+
+```{r msdnoise, fig.width = 7, fig.height = 3, out.width = "100%", fig.cap = "Empirical and fBM-fitted MSDs."}
+tmax <- 10 # seconds
+Nmax <- floor(tmax/dt)
+
+tibble(t = 1:Nmax * dt,
+       Empirical = msd_fit(Xt, nlag = Nmax),
+       fBM = 4 * exp(fbm_est$coef["logD"]) * (1:Nmax * dt)^fbm_est$coef["alpha"]) %>%
+  pivot_longer(cols = Empirical:fBM, names_to = "MSD Type", values_to = "msd") %>%
+  ggplot(aes(x = t, y = msd, group = `MSD Type`)) +
+  geom_line(aes(col = `MSD Type`)) +
+  scale_x_continuous(name = expression("Time (s)"), trans = "log10") +
+  scale_y_continuous(name = expression("MSD ("*mu*m^2*")"), trans = "log10")  
+```
+
+Figure \@ref(fig:msdnoise) shows that the empirical MSD has an inflection point around 0.05 seconds, which we also see in the average MSD (over all `r npaths` trajectories) in Figure \@ref(fig:msdemp).  This is not a feature of the underlying particle motion, but rather of various sources of experimental noise due to e.g.: mechanical vibrations of the instrumental setup;  particle displacement while the camera shutter is open; noisy estimation of true position from the pixelated microscopy image; and error-prone tracking of particle positions when they are out of the camera focal plane.  
+
+The **subdiff** package currently provides two parametric models to account for the high-frequency "localization errors" described above.  The first relies on a physical characterization of the localization errors given in the seminal paper of @savin.doyle05.  For a one dimensional particle trajectory $X(t)$, let $Y_n$ denote the measured position at time $t_n = n \cdot \dt$.  The Savin-Doyle model for $Y_n$ is
+
+\begin{equation}
+Y_n = \frac 1 \tau \int_0^{\tau} X(t_n - s) \ud s + \eps_n,
+(\#eq:fsd)
+\end{equation}
+
+where $\eps_n \iid \N(0, \sigma^2)$ represents the "static" noise due to measurement error in recording the position of the particle at a given time, and the integral term represents the "dynamic" noise due to movement of the particle during the camera exposure time $0 < \tau < \dt$. 
+
+The second parametric noise model provided by **subdiff** is that of @ling.etal19.  Rather than attempting to characterize the complex physics of the localization errors, the strategy here is to provide sufficient modeling flexibility to capture any high-frequency errors exhibited by the experimental data.  This is achieved via the general family of $\arma(p, q)$ models, such that the measurements $Y_n$ related to the true positions $X_n = X(t_n)$ via
+
+\begin{equation}
+Y_n = \sum_{i=1}^p \theta_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j},
+\end{equation}
+
+where we have the parameter restriction $\rho_0 = 1 - \sum_{i=1}^p \theta_i - \sum_{j=1}^q \rho_j$.  To illustrate the difference between the two noise models, suppose that $X(t) = D \cdot B^{(\alpha)}(t)$ is an fBM process with $\alpha = 0.8$ and $D = 1$.  The MSD of the corresponding fBM-driven Savin-Doyle model \@ref(eq:fsd), which we call fSD, is plotted in Figure \@ref(fig:fsdvsfma)(a), with different values of the noise parameters.  Here, we parametrize the static error by the signal-to-noise ratio, $\snr = \var(X(\dt))/\sigma^2 = D \dt^\alpha / \sigma^2$.  Figure \@ref(fig:fsdvsfma)(b) displays the MSD of the simplest fBM-driven $\arma(p,q)$ model, a purely moving-average model with $p = 0$ and $q = 1$:
+
+$$
+Y_n = (1-\rho) X_n + \rho X_{n-1}.
+$$
+
+We call this model fMA. Figure \@ref(fig:fsdvsfma)(b) plots its MSD over the valid parameter range $-1 \le \rho \le 0.5$ (see Appendix for code).
+
+```{r fsdvsfma, echo = FALSE, warning = FALSE, fig.width = 7*1.5, fig.height = 3*1.5, out.width = "100%", fig.cap = "MSDs of the fSD and fMA models with different noise parameter values."}
+# fbm parameters
+alpha <- .8
+D <- 1
+
+# fsd: static error parameters
+snr_seq <- c(.25, .5, 1, 2, 5)
+# fsd: dynamic error parameters (as a proportion of dt)
+ptau_seq <- c(0, .2, .5, .9, 1)
+
+# fma model parameters
+rho_seq <- c(-1, -.8, -.6, -.4, -.2, 0, 0.1, .2, .3, .5)
+
+# msd timescale
+dt <- 1/60
+N <- 60 # one second of data
+tseq <- dt * 1:N # time sequence
+
+#--- msd calculations ----------------------------------------------------------
+
+fma_msd <- sapply(rho_seq, function(rho) {
+  acf <- farma_acf(alpha = alpha, rho = rho, dt = dt, N = N)
+  SuperGauss::acf2msd(acf) # convert acf to msd
+})
+colnames(fma_msd) <- ifelse(rho_seq != 0, paste0("rho == ", rho_seq), '"fBM"')
+
+stat_msd <- sapply(snr_seq, function(snr) {
+  sigma2 <- dt^alpha/snr # static error variance
+  acf <- fsd_acf(alpha = alpha, tau = 0, sigma2 = sigma2, dt = dt, N = N)
+  SuperGauss::acf2msd(acf)
+})
+colnames(stat_msd) <- paste0('"SNR" == ', snr_seq)
+
+dyn_msd <- sapply(ptau_seq, function(ptau) {
+  # ptau is called tau in fsd_acf
+  acf <- fsd_acf(alpha = alpha, tau = ptau, sigma2 = 0, dt = dt, N = N)
+  SuperGauss::acf2msd(acf)
+})
+colnames(dyn_msd) <- paste0("tau == ", ptau_seq, "*Delta*t")
+colnames(dyn_msd)[ptau_seq == 0] <- '"fBM"'
+colnames(dyn_msd)[ptau_seq == 1] <- "tau == Delta*t"
+
+#--- plot ----------------------------------------------------------------------
+
+#' Plot MSDs.
+#'
+#' @param data Tibble containing the plotting data.  Must contain variables `time`, `msd` and `par`.
+#' @param col Line color specification.
+#' @param ylim Vector of min and max values for y-limits.
+plot_msd <- function(data, col, ylim) {
+  data %>%
+    ggplot(aes(x = time, y = msd, group = par)) +
+    geom_line(aes(color = par)) +
+    scale_x_log10() +
+    scale_y_log10(limits = ylim) +
+    scale_color_manual(label = function(breaks) parse(text = breaks),
+                       values = col) +
+    xlab(expression("Time (s)")) + ylab(expression("MSD "*(mu*m^2))) +
+    guides(
+      color = guide_legend(
+        title = element_blank(),
+        ncol = 2
+      )
+    ) +
+    theme(
+      legend.position = c(.95, .05),
+      legend.justification = c(1,0)
+    )
+}
+
+ylim <- c(.01, 1) # common y-limits
+
+# fma plot
+clrs <- c(
+  colorRampPalette(c("red", "orange"))(sum(rho_seq < 0)),
+  "black",
+  colorRampPalette(c("purple", "blue"))(sum(rho_seq > 0))
+)
+fma_plt <- as_tibble(fma_msd) %>%
+  mutate(time = tseq) %>%
+  pivot_longer(cols = !time, names_to = "par", values_to = "msd",
+               names_ptypes = list(par = factor())) %>%
+  plot_msd(col = clrs, ylim = ylim)
+
+# fsd plot
+clrs <- c(
+  colorRampPalette(c("red", "orange"))(length(snr_seq)),
+  "black",
+  colorRampPalette(c("purple", "blue"))(sum(ptau_seq > 0))
+)
+fsd_plt <- as_tibble(cbind(stat_msd, dyn_msd)) %>%
+  mutate(time = tseq) %>%
+  pivot_longer(cols = !time, names_to = "par", values_to = "msd",
+               names_ptypes = list(par = factor())) %>%
+  plot_msd(col = clrs, ylim = ylim)
+
+# combine the two
+grid.arrange(
+  fsd_plt + ggtitle("(a) fSD Model"),
+  fma_plt + ggtitle("(b) fMA Model"),
+  ncol = 2
+)
+
+```
+As we can see, the fSD model is more expressive for localization errors which inflate the MSD at shorter timescales, while fMA is more expressive errors which suppress it.  The following code fits the fSD and fMA models, and compare their estimates to fBM without error correction.
+
+```{r fbmvsloc}
+# fit fsd to data
+fsd_est <- fsd_fit(Xt = Xt, dt = dt, drift = "linear")
+# fit fma to data
+fma_est <- farma_fit(Xt = Xt, dt = dt, order = c(0, 1), drift = "linear")
+
+# display nicely
+
+# display estimates and standard errors for (alpha, logD) 
+to_summary <- function(est) {
+  coef <- est$coef
+  se <- setNames(sqrt(diag(est$vcov)), nm = paste0(names(coef), "_se"))
+  c(coef[1], se[1], coef[2], se[2])
+}
+disp <- rbind(fbm = to_summary(fbm_est),
+              fsd = to_summary(fsd_est),
+              fma = to_summary(fma_est))
+signif(disp, 2)
+```
+
+These numbers indicate that the $\aD$ estimates with noise correction are more than two standard errors away from those of pure fBM.

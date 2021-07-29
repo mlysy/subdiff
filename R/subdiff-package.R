@@ -1,9 +1,9 @@
-#' Inference for Subdiffusive Particle Tracking
+#' Inference for Subdiffusive Particle Tracking.
 #'
-#' @name subdiff
-#' @docType package
+#' @importFrom Rcpp evalCpp
 #' @import SuperGauss
 #' @import LMN
 #' @importFrom numDeriv hessian
+#' @importFrom stats lm setNames cov optim optimize pbeta pchisq pnorm sd shapiro.test var
 #' @useDynLib subdiff, .registration = TRUE
-NULL
+"_PACKAGE"

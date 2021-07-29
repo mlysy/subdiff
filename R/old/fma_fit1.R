@@ -4,14 +4,14 @@
 #' @param dT Interobservation time.
 #' @param nlag Maximum number of lags for the fMA model.
 #' @param Tz Optional Toeplitz matrix for intermediate calculations.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
-#' @param ... Additional arguments to \code{stats::optim}.
+#' @param var_calc If `TRUE`, also estimate variance matrix.
+#' @param ... Additional arguments to `stats::optim`.
 #' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 #' @details The fractional MA(1) model has the form
 #' \deqn{
 #' \Delta X_n = (1-\rho) \Delta Z_n + \rho \Delta Z_{n-1},
 #' }
-#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by `trans(rho) = logit(1-rho/2)`, `trans(mu) = mu`, [trans_alpha()], and [trans_Sigma()].
 #' @export
 fma_fit1 <- function(dX, dT, nlag, Tz, var_calc = TRUE, ...) {
   # memory allocation

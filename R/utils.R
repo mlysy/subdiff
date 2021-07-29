@@ -12,7 +12,13 @@ solveV <- function(V, x, ldV = FALSE) {
   ans
 }
 
-#--- logit and its inverse -----------------------------------------------------
+#--- get problem dimension -----------------------------------------------------
 
-logit <- function(x) log(x) - log(1-x)
-ilogit <- function(x) 1/(1+exp(-x))
+get_nq <- function(qq) qq*(qq+1)/2
+
+#--- transformations (to be depreciated) ---------------------------------------
+
+trans_alpha <- function(alpha) log(alpha/(2-alpha))
+itrans_alpha <- function(gamma) 2/(1+exp(-gamma))
+trans_tau <- function(tau) log(tau/(1-tau))
+itrans_tau <- function(tau) 1/(1+exp(-tau))

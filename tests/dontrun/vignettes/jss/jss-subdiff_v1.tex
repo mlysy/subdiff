@@ -1,0 +1,386 @@
+\documentclass[article]{jss}
+
+%% -- LaTeX packages and custom commands ---------------------------------------
+
+%% recommended packages
+\usepackage{thumbpdf,lmodern}
+
+%% other packages
+\usepackage{amsmath,amsfonts,amsthm}
+% \usepackage{physics}
+\usepackage{bm}
+\usepackage{framed} % (only for this demo article)
+
+%% new custom commands
+\newcommand{\class}[1]{`\code{#1}'}
+\newcommand{\fct}[1]{\code{#1()}}
+% \newcommand{\bm}[1]{\boldsymbol{#1}}
+\newcommand{\nd}{k}
+\newcommand{\np}{d}
+\newcommand{\aD}{(\alpha,D)}
+\newcommand{\tth}{\bm{\theta}}
+\newcommand{\pph}{\bm{\phi}}
+\newcommand{\pps}{\bm{\psi}}
+\newcommand{\aal}{\bm{\alpha}}
+\newcommand{\bbe}{\bm{\beta}}
+\newcommand{\gga}{\bm{\gamma}}
+\newcommand{\FF}{\bm{F}}
+\newcommand{\mmu}{\bm{\mu}}
+\newcommand{\lla}{\bm{\lambda}}
+\newcommand{\rrh}{\bm{\rho}}
+\newcommand{\nnu}{\bm{\nu}}
+\newcommand{\LLa}{\bm{\Lambda}}
+\newcommand{\UUp}{\bm{\Upsilon}}
+\newcommand{\SSi}{\bm{\Sigma}}
+\newcommand{\OOm}{\bm{\Omega}}
+\newcommand{\TTh}{\bm{\Theta}}
+\newcommand{\PPs}{\bm{\Psi}}
+\newcommand{\XX}{\bm{X}}
+\newcommand{\JJ}{\bm{J}}
+\newcommand{\dXX}{\Delta\XX}
+\newcommand{\dt}{\Delta t}
+\newcommand{\VV}{\bm{V}}
+\newcommand{\ZZ}{\bm{Z}}
+\newcommand{\dZZ}{\Delta\ZZ}
+\newcommand{\UU}{\bm{U}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ind}{\stackrel{\mathrm{ind}}{\sim}}
+\newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
+\newcommand{\FI}{\bm{\mathcal{I}}}
+\newcommand{\tmin}{t_{\textnormal{min}}}
+\newcommand{\tmax}{t_{\textnormal{max}}}
+\newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}}
+\newcommand{\ctrans}{\bm{g}}
+\newcommand{\correct}[1]{\textbf{[{\color{red}#1}]}}
+% \newcommand{\logit}{\mathrm{logit}}
+\DeclareMathOperator{\logit}{logit}
+\DeclareMathOperator{\ilogit}{ilogit}
+\DeclareMathOperator{\matnorm}{MatNorm}
+\DeclareMathOperator{\mniw}{MNIW}
+\DeclareMathOperator{\dir}{Dirichlet}
+\DeclareMathOperator{\N}{\mathcal{N}}
+\DeclareMathOperator{\toep}{Toepliz}
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\cov}{cov}
+\DeclareMathOperator{\se}{se}
+\DeclareMathOperator{\msd}{\textsc{msd}}
+\DeclareMathOperator{\acf}{\textsc{acf}}
+\DeclareMathOperator{\tr}{tr}
+% \DeclareMathOperator{\logit}{logit}
+
+
+%% -- Article metainformation (author, title, ...) -----------------------------
+
+%% - \author{} with primary affiliation
+%% - \Plainauthor{} without affiliations
+%% - Separate authors by \And or \AND (in \author) or by comma (in \Plainauthor).
+%% - \AND starts a new line, \And does not.
+\author{
+  Martin Lysy\\University of Waterloo
+  \And
+  Yun Ling\\University of Waterloo
+  \AND
+  Katherine Slyman\\University of North Carolina\\Chapel Hill
+  \And
+  Katherine Sutherlin\\University of North Carolina\\Chapel Hill
+  \AND
+  Neall Caughman\\University of North Carolina\\Chapel Hill
+  \And
+  M.~Gregory Forest\\University of Carolina\\Chapel Hill
+}
+\Plainauthor{Martin Lysy, Yun Ling}
+
+%% - \title{} in title case
+%% - \Plaintitle{} without LaTeX markup (if any)
+%% - \Shorttitle{} with LaTeX markup (if any), used as running title
+\title{\pkg{subdiff}: An \proglang{R} Toolchain for Analysis of Subdiffusion in Single-Particle Tracking}
+\Plaintitle{subdiff: An R Toolchain for Analysis of Subdiffusion in Single-Particle Tracking}
+\Shorttitle{The \pkg{subdiff} Toolchain for Single-Particle Tracking}
+
+%% - \Abstract{} almost as usual
+\Abstract{\noindent%
+  \begin{itemize}
+  \item Scientific importance of single-particle tracking and understanding subdiffusion.
+  \item Challenges: cost of likelihood evaluations.  camera errors.  heterogeneity of fluids.
+  \item Contribution: Fast and flexible set of tools to analysis particle tracking data.
+  \end{itemize}
+  % This short article illustrates how to write a manuscript for the
+  % \emph{Journal of Statistical Software} (JSS) using its {\LaTeX} style files.
+  % Generally, we ask to follow JSS's style guide and FAQs precisely. Also,
+  % it is recommended to keep the {\LaTeX} code as simple as possible,
+  % i.e., avoid inclusion of packages/commands that are not necessary.
+  % For outlining the typical structure of a JSS article some brief text snippets
+  % are employed that have been inspired by \cite{Zeileis+Kleiber+Jackman:2008},
+  % discussing count data regression in \proglang{R}. Editorial comments and
+  % instructions are marked by vertical bars.
+}
+
+%% - \Keywords{} with LaTeX markup, at least one required
+%% - \Plainkeywords{} without LaTeX markup (if necessary)
+%% - Should be comma-separated and in sentence case.
+% \Keywords{JSS, style guide, comma-separated, not capitalized, \proglang{R}}
+% \Plainkeywords{JSS, style guide, comma-separated, not capitalized, R}
+\Keywords{Single-particle tracking, subdiffusion, etc.}
+
+%% - \Address{} of at least one author
+%% - May contain multiple affiliations for each author
+%%   (in extra lines, separated by \emph{and}\\).
+%% - May contain multiple authors for the same affiliation
+%%   (in the same first line, separated by comma).
+\Address{
+  Martin Lysy\\
+  Department of Statistics and Actuarial Science\\
+  University of Waterloo\\
+  E-mail: \email{mlysy@uwaterloo.ca}%\\
+  % URL: \url{https://eeecon.uibk.ac.at/~zeileis/}
+}
+
+\begin{document}
+
+
+%% -- Introduction -------------------------------------------------------------
+
+\section{Introduction} \label{sec:intro}
+
+%% -- Manuscript ---------------------------------------------------------------
+
+\section{Subdiffusion models and estimators}
+
+Follow AOAS pretty closely:
+\begin{itemize}
+\item Empirical MSD estimator
+\item OLS subdiffusion estimator
+\item Location-Scale parametric model
+\end{itemize}
+
+\subsection{Overview}
+
+The \pkg{subdiff} package provides a number of utilities for analyzing subdiffusion in passive particle tracking data.  Let $\XX(t) = \big(X_1(t), \ldots, X_k(t)\big)$ denote the $k$-dimensional position of a particle at time $t$, where $k = 1-3$.  In an ideal experiment, it is typically assumed that $\XX(t)$ is a Continuous Stationary Increment (CSI) process, i.e., a stochastic process with mean zero and such that the distribution of $\dXX(t) = \XX(t+\dt) - \XX(t)$ is independent of $t$.  Under these conditions, the covariance properties of $\XX(t)$ can be deduced entirely from the particle's mean square displacement (MSD),
+\begin{equation}\label{eq:msd}
+  \msd_{\XX}(t) = \frac 1 \nd \times E\bigl[\lVert \XX(t) - \XX(0) \rVert^2\bigr] = \frac 1 \nd \times \sum_{j=1}^\nd E\bigl[\lvert X_j(t) - X_j(0) \rvert^2\bigr].
+\end{equation}
+A widely observed phenomenon is that the MSD of microparticles diffusing in biological fluids has a power-law signature on a given timescale,
+\begin{equation}
+  \msd_{\XX}(t) \sim 2D t^\alpha, \qquad t \in (\tmin, \tmax).
+  \label{eq:subdiff}
+\end{equation}
+Whereas $\alpha = 1$ corresponds to the MSD of ordinary diffusion observed in Brownian particles, the power law MSD \eqref{eq:subdiff} with $\alpha \in (0,1)$ is referred to as subdiffusion.  
+
+\subsection{Empirical MSD and Semiparametric Subdiffusion Estimator}
+
+The \code{hbe} dataset included in \pkg{subdiff} package consists of \code{`r length(unique(hbe[["id"]]))`} 2D trajectories consisting of \code{`r n_rng[1]`-`r n_rng[2]`} observations recorded at a frequency of \code{`r 1/dt`}Hz.  These trajectories are displayed in Figure~\ref{fig:hbe_plot}. 
+
+Let $\XX = (\rv [0] \XX N)$, $\XX_n = \XX(n \cdot \dt)$ denote recorded positions of a given particle trajectory.  The semi-parametric subdiffusion estimator consists of two steps:
+\begin{enumerate}
+\item Calculate the empirical MSD for each trajectory, defined as
+  \[
+    \widehat{\msd}_{\XX}(n \cdot \dt) = \frac 1 {q(N-n+1)} \sum_{h=0}^{N-n} \Vert \XX_{h+n}-\XX_{h}\Vert^2.
+  \]
+\item Estimate $\aD$ by regressing $y_n = \log \widehat{\msd}_{\XX}(n \cdot \dt)$ onto $x_n = \log(n\cdot \dt)$, such that
+  \begin{equation}\label{eq:ols}
+    \hat \alpha = \frac{\sum_{n=0}^N(y_n - \bar y)(x_n - \bar x)}{\sum_{n=0}^N(x_n - \bar x)^2}, \qquad \hat D = \tfrac 1 2 \exp(\bar y - \hat \alpha \bar x),
+  \end{equation}
+  where $\bar x$ and $\bar y$ are the samples means of $x_n$ and $y_n$.
+\end{enumerate}
+	
+Since particle trajectories are often contaminated with low-frequency drift, the empirical MSD is often calculated on the drift-subtracted observations, $\tilde \XX_n = (\XX_n - \XX_0) - n \overline{\dXX}$, where $\dXX = \frac 1 N \sum_{n=1}^N (\XX_n - \XX_{n-1})$ is the average displacement over the interobservation time $\dt$.  Morever, the empirical MSD is known to be biased at large lag times, such that only about 30-50\% of the shortest lagtimes are usually kept for estimating $\aD$.
+
+Figure~\ref{fig:msd_emp} displays the empirical MSD of the first 500 lags for each trajectory and the corresponding estimates of $\aD$.
+
+\subsection{Fully-Parametric Subdiffusion Estimators}\label{sec:parest}
+
+While the semiparametric estimator~\eqref{eq:ols} operates under minimal modeling assumptions, complete specification of the stochastic process $\XX(t)$ provides not only a considerable increase in statistical efficiency~\citep[e.g.,][]{mellnik.etal16}, but in fact is necessary to establish dynamical properties of particle-fluid interactions 
+% -- such as first-passage times of microparticle pathogens through protective mucosal layers --
+which cannot be determined from second-order moments (such as the MSD) alone~\citep{gal.etal13,lysy.etal16}.  A convenient framework for stochastic subdiffusion modeling is the location-scale model of~\cite{lysy.etal16},
+\begin{equation}\label{eq:lsmodel}
+  \XX(t) = \sum_{j=1}^\np \bbe_j f_j(t) + \SSi^{1/2} \ZZ(t),
+\end{equation}
+where $f_1(t), \ldots f_\np(t)$ are known functions accounting for low-frequency drift (typically linear, $f_1(t) = t$, and occasionally quadratic, $f_2(t) = t^2$), $\rv \bbe \np \in \mathbb R^\nd$ are regression coefficients, $\SSi_{\nd \times \nd}$ is a variance matrix, and $\ZZ(t) = \bigl(Z_1(t), \ldots, Z_\nd(t)\bigr)$ are iid continuous stationary-increments (CSI) Gaussian processes with mean zero and MSD parametrized by $\pph$,
+\begin{equation}\label{eq:csimsd}
+  \msd_Z(t) = E\bigl[\lVert Z_j(t) - Z_j(0) \rVert^2\bigr] = \eta(t \mid \pph),
+\end{equation}
+such that the MSD of the drift-subtracted process $\tilde \XX(t) = \XX(t) - \sum_{j=1}^\np \bbe_j f_j(t)$ is given by
+\begin{equation}\label{eq:csimsddrift}
+  \msd_{\tilde \XX}(t) = \tfrac{1}{\nd} \tr(\SSi) \cdot \eta(t \mid \pph).
+\end{equation}
+
+Perhaps the simplest parametric subdiffusion model sets $Z_j(t) = B_\alpha(t)$ to be fractional Brownian Motion (fBM)~\citep[e.g.,][]{szymanski.weiss09,weiss13}, a mean-zero CSI Gaussian process with covariance function
+\begin{equation}\label{eq:fbm-cov}
+  \cov\bigl(B_\alpha(t), B_\alpha(s)\bigr) = \tfrac 1 2 (|t|^\alpha + |s|^\alpha - |t-s|^\alpha), \qquad 0 < \alpha < 2.
+\end{equation}
+Indeed, as the covariance function of a CSI process is completely determined by its MSD, fBM is the only (mean-zero) CSI Gaussian process exhibiting \emph{uniform} subdiffusion,
+\begin{equation}\label{eq:fbm-msd}
+  \msd_{B_\alpha}(t) = t^\alpha, \qquad 0 < t < \infty,
+  % \qquad 0 < \alpha < 1
+\end{equation}
+in which case the diffusivity coefficient is given by
+\[
+  D = \frac{1}{2\nd} \times \tr(\SSi).
+\]
+Other examples of driving CSI processes are the confined diffusion model of~\cite{ernst.etal17} and the viscoelastic Generalized Langevin Equation (GLE) of~\cite{mckinley.etal09}, both of which exhibit \emph{transient}
+% (anomalous)
+subdiffusion, i.e., power-law scaling only on a given timescale $t \in (\tmin, \tmax)$. In this case, the subdiffusion parameters $\aD$ become functions of the other parameters, namely $\alpha = \alpha(\pph)$ and $D = D(\pph, \SSi)$.  We shall revisit these transient subdiffusion models in Section~\ref{sec:sim}.
+
+
+% Let $\XX = (\rv [0] \XX N)$, $\XX_n = \XX(n\cdot \dt)$, denote the discrete-time observations of a given particle trajectory $\XX(t)$ recorded at frequency $1/\dt$. 
+% Assuming that %the position process
+% $\XX(t)$ has second-order stationary increments,
+% \begin{equation}\label{eq:statincr}
+%   E\bigl[\lVert \XX(s+t) - \XX(s) \rVert^2\bigr] = E\bigl[\lVert \XX(t) - \XX(0) \rVert^2\bigr],
+% \end{equation}
+% a standard nonparametric estimator for the particle MSD is given by
+% \begin{equation}\label{eq:msdemp}
+%   \widehat \msd_{\XX}(n \cdot \dt) = \frac{1}{\nd\cdot(N-n+1)} \sum_{i=0}^{N-n} \lVert \XX_{n+i} - \XX_i \rVert^2.
+% \end{equation}
+% Based on the linear relation
+% \begin{equation}\label{eq:logreg}
+%   \log \msd_{\XX}(t) = \log 2D + \alpha \log t
+% \end{equation}
+% over the subdiffusion timescale $t \in (\tmin, \tmax)$, a commonly-used subdiffusion estimator~\citep[e.g.,][]{gal.etal13} is obtained from the  least-squares regression of $y_n = \log \bigl(\widehat \msd_{\XX}(n\cdot \dt)\bigr)$ onto $x_n = \log(n\cdot \dt)$, namely
+% \begin{equation}\label{eq:ols}
+%   \hat \alpha = \frac{\sum_{n=0}^N(y_n - \bar y)(x_n - \bar x)}{\sum_{n=0}^N(x_n - \bar x)^2}, \qquad \hat D = \tfrac 1 2 \exp(\bar y - \hat \alpha \bar x).
+% \end{equation}
+
+\section{Software}
+
+Main idea: efficient likelihoods/posteriors for $\tth = (\mmu, \SSi, \pph)$ under
+\begin{equation}
+  \label{eq:mnmod}
+  \dXX \sim \matnorm(\FF_{\pph} \mmu, \VV_{\pph}, \SSi),
+\end{equation}
+where $\VV_{\pph} = \toep(\gga_{\pph})$ is a Toeplitz matrix with autocorrelation $\gga_{\pph}$.
+
+\subsection[modelobject class]{\class{model\_object} class}
+
+Inputs:
+\begin{itemize}
+\item $\dXX$.
+\item Autocorrelation function \code{acf(phi)} which returns $\gga_{\pph}$ (information about $\dt$ is built in to \code{acf()}).
+\item Drift function \code{drift(phi)} which returns a vector or matrix of drift functions.
+\item Both \code{acf} and \code{drift} can be input as vectors or matrices, in which case it is assumed they do not depend on $\pph$.  Can also be scalars as can be specified in the \pkg{LMN} package.
+\item Optionally, gradient vectors (or matrices or tensors) for \code{acf()} and \code{drift()}.
+\end{itemize}
+
+Outputs:
+\begin{itemize}
+\item Profile likelihood function \code{nlp(phi)}.
+\item Residual function \code{resid(phi)}.
+\item Likelihood function \code{loglik(phi, mu, Sigma)}.
+\item Conditional MLEs \code{mu_hat(phi)} and \code{Sigma_hat(phi)}.
+\end{itemize}
+
+\subsection[modelfit class]{\class{model\_fit} class}
+
+The basic idea is that it's better to tailor the parameter fitting to a specific model, i.e., choice of optimization method, penalty function, etc.  We provide a couple of fitting methods for commonly used models in the package, e.g., \class{fbm\_fit}, \class{farma\_fit}, \class{fsd\_fit}.  However, the output of model fitting should be somewhat generic, so that we can write generic code for downstream analysis, e.g., confidence intervals, p-values, predictions, etc.
+
+Outputs:
+\begin{itemize}
+\item $\hat \pps$, where $\pps = \ctrans(\tth)$ is reparametrized into a computational basis (see below).
+\item $\hat{\var}(\hat \pps)$, provided \code{vcov = TRUE}.
+\item Functions \code{trans(mu, Sigma, phi)} and \code{itrans(psi)} to go back and forth between the two parametrizations.
+\item Residuals (if \code{resid_calc = TRUE}).
+\item Loglikelihood $\ell(\dXX \mid \tth)$ (for AIC and BIC).
+\end{itemize}
+
+\subsection{Implementation}
+
+Ideally, 
+
+\subsection{Computational Basis}
+
+\correct{This computational basis is not yet implemented in \pkg{subdiff}!  See tutorial for the current implementation.}
+
+The idea of the computational basis is that the model parameters $\tth = (\mmu, \SSi, \pph)$ are bijectively reparametrized as $\pps = \ctrans(\tth)$, where $\pps$ is a completely unconstrained vector.  A default reparametrization is as follows:
+\begin{itemize}
+\item $\mmu$ is left as-is.
+\item $\SSi$ is transformed to the log-Cholesky scale, i.e., let $\UU$ denote the upper Cholesky factor of $\SSi = \UU'\UU$. The log-Cholesky factor is then defined as the upper-triangular elements of $\UU$ is column-major order, with logs of the diagonal elements.  We will provide functions \fct{log\_chol} and \fct{ilog\_chol} to compute this transformation and its inverse.
+\item $\pph$ is transformed as dictated by the specific model.  For example, with fBM we have $\phi = \alpha$, and a natural transformation is $\nu = \logit(\alpha/2)$.  The package will thus also provide generalized \fct{logit} and \fct{ilogit} functions, where generalized means that they are with respect to an arbitrary bounded interval.
+\end{itemize}
+
+\section{Illustrations}
+
+\begin{itemize}
+\item Empirical methods: MSD and OLS subdiffusion estimators.
+\item Parametric estimator: fBM + Static Noise, together with CIs for parameters of interest $(\alpha, D_N)$ (see below).
+\item Camera error: ARMA model and compare to fBM estimator.
+\item Bad data: filter paths too close together, big jumps, terrible residuals.  Should illustrate how these last two aren't always the same (we've done this somewhere for the JOR data).
+\item Heterogeneity: Fitting of normal-mixture model in hierarchical setting.  Largely based on computations from the JASA paper.
+\end{itemize}
+
+\subsection{fBM Example}
+
+The \proglang{R} code below shows how to fit the fBM model to all 76 HBE datasets, parallelizing computations with the \proglang{R} package \pkg{parallel}.
+
+FIXME:
+\begin{itemize}
+\item \code{try-catch} to avoid crashing when optimization doesn't work for a given dataset.
+\item Save-to-disk after each fit, so you can resume the computation where you left off.
+\item Might be worth using a more complicated model to really show how package works...
+\end{itemize}
+
+\subsection{GLE Example}
+
+This is mainly to introduce the GLE and our method to estimate the subdiffusion timescale.
+
+\subsection{Camera Error}
+
+Again, the point is to introduce our work in the AOAS paper.
+
+\subsection{Confidence Intervals}
+
+Suppose that the parametric subdiffusion model parameters are $\pps = \ctrans(\tth) = \ctrans(\mmu, \SSi, \pph)$ in the computational basis. 
+% Essentially this means that $\pps$ is a completely unconstrained vector in $\mathbb{R}^{\dim(\tth)}$.
+\pkg{subdiff} will take a dataset $\XX$ and return the MLE $\hat \pps$ of $\pps$ and an estimate $\hat \SSi_{\pps}$ of the variance of the MLE, $\var(\hat \pps)$.  Using asymptotic normal theory, the confidence 95\% confidence interval for $\pps_i$ is $\hat \pps_i \pm 1.96 \times \sqrt{[\hat \SSi_{\pps}]_{ii}}$.
+
+Now suppose we want to calculate confidence intervals for the parameters of interest, $\lla = (\alpha, D_N) = \JJ(\pps)$.  We have two ways to do this:
+\begin{enumerate}
+\item The MLE of $\lla$ is $\hat \lla = \JJ(\hat \pps)$ and its variance estimator is $\hat \SSi_{\lla} = [\frac{\partial\JJ(\hat \pps)}{\partial \lla}] \hat \SSi_{\pps} [\frac{\partial\JJ(\hat \pps)}{\partial \lla}]$.  Construct a symmetric confidence interval using $\pm 1.96$ standard errors exactly as before.
+\item While $D_N > 0$, there is nothing preventing $\hat D_N \pm 1.96 \se(\hat D_N)$ to have a negative endpoint, which isn't very useful.  A more accurate CI would first construct a symmetric CI for $\log D_N$ using method 1, then exponentiate the interval to get a CI for $D_N$.  The main downside to this is that the interval is no longer symmetric.
+\end{enumerate}
+
+\subsection{Filtering Bad Data}
+
+This will need some work.  Here are the main things we can filter so far:
+\begin{itemize}
+\item Trajectories that are too short -- presumably because they are/have travelled too far in the $z$ direction, in which case tracking measurements become less accurate.
+\item For some experimental data we have a time-dependent signal-to-noise ratio (SNR).  So we can filter trajectories for which the SNR drops below a given level.
+\item Another method of filtering is based on the within-path van Hove correlations.  The basic idea is as follows.  Suppose that the trajectory increments $\dXX$ follow the matrix-normal distribution~\eqref{eq:mnmod}, and consider the linear transformation
+  \[
+    \dZZ_{N\times\nd} = \VV_{\pph}^{-1/2}(\dXX - \FF_{\pph}\mmu)\SSi^{-1/2}.
+  \]
+  Then the null hypothesis that the model is correct, is equivalent to
+  \[
+    H_0: \Delta Z_{ij} \iid \N(0,1).
+  \]
+  This provides an extremely powerful method of testing whether the within-path van Hove correlations are Gaussian via p-values against $H_0$.  These p-values are calculated with the functions \fct{ad\_test} and \fct{sw\_test}.  As for the specific square-roots of $\VV_{\pph}$ and $\SSi$, the recommendation is to pick the Cholesky decomposition for the former, and the eigendecomposition for the latter.  This is implemented in the function \fct{lsc\_resid}.
+  
+\end{itemize}
+
+\subsection{Heterogeneity modeling}
+
+Let's suppose we wish to identify $K$ different regimes of dynamic motion for particles in a given medium.  A data-generating mechanism for this is:
+\begin{equation}
+  \label{eq:hetmod}
+  \begin{split}
+  \dXX_i \mid \tth_i & \ind \matnorm(\FF_{\pph_i}\mmu_i, \VV_{\pph_i}, \SSi_i) \\
+  \pps_i = g(\tth_i) & \iid \sum_{k=1}^K \rho_k \N(\lla_k, \OOm_k),
+  \end{split}
+\end{equation}
+where $\dXX_i$ are the increments for particle $i$ and $\pps_i = g(\tth_i)$ is a parameter transformation to a scale on which the particle-wise MLEs $\hat \pps_i$ are approximately normal:
+\[
+  \hat \pps_i \mid \pps_i \approx \N(\pps_i, \FI(\pps_i)^{-1}),
+\]
+where $\FI(\pps_i) = -E[\frac{\partial^2}{\partial \pps \partial \pps'} \ell(\pps_i \mid \dXX_i)]$ is the Fisher information.  Upon replacing $\FI(\pps_i)^{-1}$ by an estimator $\hat \SSi_i$, model~\eqref{eq:hetmod} approximately simplifies to 
+\[
+  \hat \pps_i \mid \pps_i \ind \N(\pps_i, \hat\SSi_i), \qquad \pps_i \iid \sum_{k=1}^K \rho_k \N(\lla_k, \OOm_k),
+\]
+for which there are fast Bayesian methods to estimate the posterior distribution of the model parameters $p(\rrh, \lla, \OOm, \TTh, \PPs \mid \dXX)$.  The usual approach is to consider the indicator variables $I_i \in \{1, \ldots, K\}$ as missing data.  Also, a useful function for some of the normal conditionals is \fct{rRxNorm} in the \pkg{mniw} package.  For convenience, you should use the same priors as in the \pkg{mniw} package, i.e.,
+\begin{align*}
+  (\lla_k, \OOm_k) & \ind \mniw(\LLa_k, \UUp_k, \PPs_k, \nnu_k) \\
+  \rrh & \sim \dir(\aal).
+\end{align*}
+
+%% -----------------------------------------------------------------------------
+
+
+\end{document}

@@ -1,1 +1,14 @@
-man-roxygen/*
+^Meta$
+^doc$
+^docs$
+^pkgdown$
+^man-roxygen$
+^TODO\.md$
+^README\.md$
+^tests/dontrun$
+^examples$
+^vignettes/subdiff_cache$
+^vignettes/subdiff_files$
+^subdiff-design\.md$
+^install\.md$
+^inst/extdata/data$

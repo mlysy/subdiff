@@ -9,7 +9,7 @@
 #' \deqn{
 #' X_t = \mu t + \Sigma^{1/2} Z_t,
 #' }
-#' where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.  The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+#' where \eqn{Z_t} consists of `q = 1,2` iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.  The MLE and variance estimate are calculated on the transformed scale defined by `trans(mu) = mu`, [trans_alpha()], and [trans_Sigma()].
 #' @export
 fbm_fit <- function(dX, dT, Tz, var_calc = TRUE) {
   # memory allocation

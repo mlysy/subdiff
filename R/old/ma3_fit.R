@@ -2,8 +2,8 @@
 #'
 #' @param dX one or two-column matrix of trajectory increments.
 #' @param dT Interobservation time.
-#' @param var_calc If \code{TRUE}, also estimate variance matrix.
-#' @param ... Additional \code{control} arguments to \code{stats::optim}.
+#' @param var_calc If `TRUE`, also estimate variance matrix.
+#' @param ... Additional `control` arguments to `stats::optim`.
 #' @return Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
 #' @details The fractional MA(3) model has the form
 #' \deqn{
@@ -12,7 +12,7 @@
 #' \deqn{
 #' Z_n = \epsilon_n + \phi_1 \epsilon_{n-1} + \phi_2 \epsilon_{n-2} + \phi_3 \epsilon_{n-3},
 #' }
-#' where \eqn{\epsilon_n \sim N(0,1)}. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(phi) = phi}, \code{trans(mu) = mu}, and \code{\link{trans_Sigma}}.  Fitting is done by assuming that \code{eps[0] = eps[-1] = eps[-2] = 0}, leading to a simple formula for the model residuals via the \code{stats::filter} function.  Preliminary parameter estimates obtained from \code{stats::arima} are passed on to \code{optim}.
+#' where \eqn{\epsilon_n \sim N(0,1)}. The MLE and variance estimate are calculated on the transformed scale defined by `trans(phi) = phi`, `trans(mu) = mu`, and [trans_Sigma()].  Fitting is done by assuming that `eps[0] = eps[-1] = eps[-2] = 0`, leading to a simple formula for the model residuals via the `stats::filter` function.  Preliminary parameter estimates obtained from `stats::arima` are passed on to `optim`.
 #' @export
 ma3_fit <- function(dX, dT, var_calc = TRUE, ...) {
   # memory allocation

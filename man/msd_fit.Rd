@@ -7,15 +7,35 @@
 msd_fit(Xt, nlag, demean = TRUE)
 }
 \arguments{
-\item{Xt}{Vector or matrix of trajectory positions (each column is a different coordinate).  The trajectory is assumed to be sampled at a constant frequency.}
+\item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
 
 \item{nlag}{Number of MSD lags to calculate.}
 
-\item{demean}{Logical; whether or not to remove the mean of \code{Xt} as estimated by linear drift.}
+\item{demean}{Logical; whether or not to subtract from \code{Xt} a regression-based estimate of its linear drift.}
 }
 \value{
 Sample MSD vector of length \code{nlag}.
 }
 \description{
 Sample estimate of mean squared displacement.
+}
+\details{
+The MSD of a \code{d}-dimensional stochastic process \verb{X(t) = (X_1(t), ..., X_d(t))} is defined as\preformatted{MSD_X(t) = E[ (X_1(t) - X_1(0))^2 ] + ... + E[ (X_d(t) - X_d(0))^2 ].
+}
+}
+\examples{
+# simulate a 2D fbm trajectory.
+alpha <- 0.8
+dt <- 1/60
+N <- 1800
+acf <- fbm_acf(alpha, dt, N)
+dX <- SuperGauss::rnormtz(n = 2, acf = acf)
+Xt <- apply(dX, 2, cumsum)
+
+# Compute the MSD of Xt
+nlag <- 600
+msd <- msd_fit(Xt, nlag = nlag)
+
+plot(dt*(1:nlag), msd, xlab = "Time", ylab = "MSD")
+
 }

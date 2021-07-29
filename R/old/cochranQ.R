@@ -1,6 +1,6 @@
 #' Cochran's Q-test for heterogeneity.
 #'
-#' Under \code{H0}, \code{k} independent estimators are of a common parameter; their precision-weighted sum-of-squares follows asymptotically a chi^2 distribution with \code{k-1} degrees of freedom.
+#' Under `H0`, `k` independent estimators are of a common parameter; their precision-weighted sum-of-squares follows asymptotically a chi^2 distribution with `k-1` degrees of freedom.
 #'
 #' @param est A vector of independent estimates of a common parameter.
 #' @param se A corresponding vector of standard errors.

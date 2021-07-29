@@ -6,7 +6,7 @@
 #' @param N TBD
 #' @return Vector of length N
 #' @details
-#' \code{Yt = (1-rho) Xt + rho Xt-1}, where \code{Xt} is fBM process with parameter \code{alpha}.
+#' `Yt = (1-rho) Xt + rho Xt-1`, where `Xt` is fBM process with parameter `alpha`.
 #' @export
 fma_acf <- function(alpha, rho, dT, N) {
   nlag <- length(rho)

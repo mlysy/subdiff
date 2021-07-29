@@ -1,55 +1,50 @@
-#' Fit the fractional Autoregressive Moving-average model.
+#' Fit the farma model.
 #'
-#' @template args-dX
-#' @template args-dT
-#' @param nlag Number of lags (see Details).
-#' @param alpha Subdiffusion parameter, optional.
-#' @template args-Tz
-#' @template args-var_calc
-#' @template args-dots_optim
-#' @template ret-cov_vcov
-#' @details The fractional Moving-average model has the form
-#' \deqn{
-#' \Delta X_n = (1-\sum_{i=1}^p \rho_i) \Delta Z_n + \sum_{i=1}^p \rho_{i} \Delta Z_{n-i},
+#' Fit a fARMA(p,q) model to a multi-dimensional CSI process (See 'Details').
+#'
+#' @template args-Xt
+#' @template args-dt
+#' @param order A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.
+#' @template args-drift_preset
+#' @template args-vcov
+#' @template args-ad_only
+#' @return A vector of estimated parameters on transformed scale (See [farma_model()]). If `vcov`, a list with components:
+#' \describe{
+#' \item{coef}{A vector of estimated parameters on transformed scale.}
+#' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
 #' }
-#' where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+#'
+#' @details The farma(p,q) model is of following form:
+#' \deqn{
+#' Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
+#' }{
+#' Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
+#' }
+#' where \eqn{X_n} is a `d`-dimensional fBM model (See [fbm_fit()]).
+#'
+#' Optimization is done by [stats::optim()]. It works better when parameters are re-parametrized into unrestricted form (See [farma_model()]).
+#'
+#' @example examples/farma_sim.R
+#' @example examples/farma_fit.R
+#'
 #' @export
-farma_fit <- function(dX, dT, order, Tz, var_calc = TRUE) {
-  # memory allocation
-  N <- nrow(dX)
-  qq <- ncol(dX)
-  nq <- if(qq == 1) 1 else 3
-  if(missing(Tz)) Tz <- Toeplitz(n = N)
-  
-  if(order[1]) {
-    # order = c(p,q): arma
-    theta_names <- c("alpha", paste0("theta", 1:order[1]), 
-                     paste0("rho", 1:order[2]), paste0("mu", 1:qq),
-                     paste0("lambda", 1:nq))
-    # acf function on transformed scale
-    acf_func <- function(theta) {
-      farma_acf(itrans_alpha(theta[1]), itrans_rho(theta[2]), itrans_rho(theta[2+1:order[2]]), dT, N)
-    }
-  } else {
-    # order = c(0,q): ma
-    theta_names <- c("alpha", paste0("rho", 1:order[2]), paste0("mu", 1:qq),
-                     paste0("lambda", 1:nq))
-    # acf function on transformed scale
-    acf_func <- function(theta) {
-      farma_acf(itrans_alpha(theta[1]), 0, itrans_rho(theta[1+1:order[2]]), dT, N)
-    }
+farma_fit <- function(Xt, dt, order,
+                      drift = c("linear", "none", "quadratic"),
+                      vcov = TRUE, ad_only = TRUE) {
+  drift <- match.arg(drift)
+  ## if((length(order) != 2) || !all(order - as.integer(order) == 0)) {
+  ##   stop("order must be a vector of 2 nonnegative integers.")
+  ## }
+  if(length(order) == 2 && all(order == 0)) {
+    return(fbm_fit(Xt = Xt, dt = dt, drift = drift,
+                   vcov = vcov, ad_only = ad_only))
   }
-  
-  # estimation
-  ans <- Tz_fit(1+sum(order), acf_func, dX, dT, Tz, var_calc)
-  
-  # add names
-  if(var_calc) {
-    names(ans$coef) <- colnames(ans$vcov) <- 
-      rownames(ans$vcov) <- theta_names
-  } else {
-    names(ans) <- theta_names
-  }
-  ans
+  model <- farma_model$new(Xt = Xt, dt = dt, drift = drift,
+                           order = order, m = 50)
+  out <- model$fit(psi0 = rep(0, length(model$phi_names)),
+                   vcov = vcov)
+  if(ad_only) out <- to_ad(out, model, vcov)
+  out
+  ## ans <- csi_fit(model, dX, dt, Tz, vcov)
+  ## ans
 }
-

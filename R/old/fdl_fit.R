@@ -7,18 +7,18 @@
 #' @param sigma2 Magnitude of localization error.  Estimated if missing. See Details.
 #' @template args-Tz
 #' @template args-var_calc
-#' @param penalty logic, employ a small penalty on \code{(tau, sigma2)} when \code{TRUE}
-#' @param theta0 Length-3 vector of initial values for \code{(alpha, tau, sigma)}.  Default value is \code{(1, .1, .1)}.
+#' @param penalty logic, employ a small penalty on `(tau, sigma2)` when `TRUE`
+#' @param theta0 Length-3 vector of initial values for `(alpha, tau, sigma)`.  Default value is `(1, .1, .1)`.
 #' @template args-dots_optim 
 #' @template ret-cov_vcov 
 #' @details The fBM + dynamic and localization error (fdl) model has the form
 #' \deqn{
 #' X_n = 1/\tau \int_0^\tau Z_(n+s) ds + \sigma e_{n},
 #' }
-#' where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(tau) = logit(tau)}, \code{trans(sigma) = log(sigma)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
-#' When put \code{tau} = 0, this model becomes fractional localization error model.
-#' When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
-#' When put \code{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
+#' where \eqn{Z_n} is a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by `trans(tau) = logit(tau)`, `trans(sigma) = log(sigma)`, `trans(mu) = mu`, [trans_alpha()], and [trans_Sigma()].
+#' When put `tau` = 0, this model becomes fractional localization error model.
+#' When put `sigma2` = 0, this model becomes fractional dynamic error model.
+#' When put `(tau, sigma2)` = 0, this model becomes fractional Brownian model.
 #' 
 #' @export
 fdl_fit <- function(dX, dT, tau, sigma2, Tz, var_calc = TRUE, penalty = TRUE, theta0, ...) {

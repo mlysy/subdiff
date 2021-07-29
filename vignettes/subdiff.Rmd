@@ -1,0 +1,176 @@
+---
+title: "Introduction to **subdiff**: Tools for the Analysis of Passive Particle-Tracking Data"
+author: "Martin Lysy, Yun Ling"
+date: "`r Sys.Date()`"
+pkgdown:
+  as_is: true
+output: 
+  bookdown::html_vignette2:
+    toc: true
+  bookdown::html_document2:
+    toc: true
+    toc_float: true
+    #code_folding: hide
+    #keep_md: yes
+bibliography: references.bib
+csl: taylor-and-francis-harvard-x.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Introduction to **subdiff**: Tools for the Analysis of Passive Particle-Tracking Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+      TeX: {
+	  Macros: {
+	      rv: ["#2_{#1},\\ldots,#2_{#3}",3,"1"]
+	  }
+      }
+  });
+</script>
+
+
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+\newcommand{\tx}[1]{\textrm{#1}}
+<!-- \newcommand{\rv}[3][1]{#2_{#1},\ldots,#2_{#3}} -->
+\newcommand{\RR}{\bm{R}}
+\newcommand{\BB}{\bm{B}}
+\newcommand{\JJ}{\bm{J}}
+\newcommand{\XX}{\bm{X}}
+\newcommand{\UU}{\bm{U}}
+\newcommand{\VV}{\bm{V}}
+\newcommand{\dX}{\Delta\XX}
+\newcommand{\YY}{\bm{Y}}
+\newcommand{\ZZ}{\bm{Z}}
+\newcommand{\dt}{\Delta t}
+\newcommand{\tmin}{t_{\tx{min}}}
+\newcommand{\tmax}{t_{\tx{max}}}
+\newcommand{\aD}{(\alpha,D)}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\iid}{\stackrel{\mathrm{iid}}{\sim}}
+\newcommand{\msd}{\operatorname{MSD}}
+\newcommand{\acf}{\operatorname{ACF}}
+\newcommand{\var}{\operatorname{var}}
+\newcommand{\se}{\operatorname{se}}
+\newcommand{\cov}{\operatorname{cov}}
+\newcommand{\tr}{\operatorname{trace}}
+\newcommand{\arma}{\operatorname{ARMA}}
+\newcommand{\snr}{\mathrm{SNR}}
+\newcommand{\kbt}{k_{\mathrm{B}}T}
+\newcommand{\argmax}{\operatorname{arg\,max}}
+\newcommand{\mmu}{\bm{\mu}}
+\newcommand{\eet}{\bm{\eta}}
+\newcommand{\tth}{\bm{\theta}}
+\newcommand{\lla}{\bm{\lambda}}
+\newcommand{\oom}{\bm{\omega}}
+\newcommand{\pps}{\bm{\psi}}
+\newcommand{\pph}{\bm{\phi}}
+\newcommand{\zze}{\bm{\zeta}}
+\newcommand{\SSi}{\bm{\Sigma}}
+\newcommand{\ndim}{d}
+\newcommand{\ndrift}{k}
+\newcommand*\ud{\mathop{}\!\mathrm{d}}
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+# silently load packages not used in code
+## suppressMessages({
+##   require(kableExtra)
+## })
+# format link to CRAN packages
+cran_link <- function(pkg) {
+  paste0("[**", pkg, "**](https://CRAN.R-project.org/package=", pkg, ")")
+}
+```
+
+# Introduction
+
+The **subdiff** package provides a number of utilities for analyzing subdiffusion in passive particle tracking data.  Let $\XX(t) = \big(X_1(t), \ldots, X_{\ndim}(t)\big)$ denote the $\ndim$-dimensional position of a particle at time $t$, where $\ndim$ is typically between 1 and 3.  In an ideal experiment, it is typically assumed that $\XX(t)$ is a Continuous Stationary Increments (CSI) process, i.e., a stochastic process with mean zero and such that the distribution of $\dX(t) = \XX(t+\dt) - \XX(t)$ is independent of $t$.  Under these conditions, the covariance properties of $\XX(t)$ can often be deduced entirely from the particle's mean square displacement (MSD),
+\begin{equation}
+\msd_{\XX}(t) = \sum_{i=1}^\ndim E\big[\big(X_i(t)-X_i(0)\big)^2\big].
+(\#eq:msd)
+\end{equation}
+A widely observed phenomenon is that the MSD of microparticles diffusing in biological fluids has a power-law signature on a given timescale,
+\begin{equation}
+  \msd_{\XX}(t) \sim 2\ndim D \cdot t^\alpha, \qquad t \in (\tmin, \tmax).
+  (\#eq:subdiff)
+\end{equation}
+Whereas $\alpha = 1$ corresponds to the MSD of ordinary diffusion observed in Brownian particles, the power law MSD \@ref(eq:subdiff) with $\alpha \in (0,1)$ is referred to as *subdiffusion*.  
+
+The purpose of the **subdiff** library is to provide simple and computationally efficient tools for modeling and estimating subdiffusion.  An overview of these tools is presented below.  
+
+## Installation
+
+```{r load_packages, include = FALSE, message = FALSE}
+# load required packages
+require(subdiff)
+require(tidyr)
+require(dplyr)
+require(optimCheck)
+require(ggplot2)
+require(gridExtra)
+## require(RColorBrewer)
+## require(parallel)
+```
+
+To install the **subdiff** package:
+
+1.  Install the `r cran_link("Rcpp")` package.  To do this properly you will also need to install a C++ compiler.  Instructions for this are available [here](https://teuder.github.io/rcpp4everyone_en/020_install.html).  
+
+    To test that this step is done correctly, quit + restart R, then run the following command:
+	
+    ```{r rcpp_test, eval = FALSE}
+    Rcpp::evalCpp("2 + 2")
+    ```
+
+    If the output is `4` then **Rcpp** is installed correctly.
+
+2.  Install the `r cran_link("devtools")` package.
+
+3.  In an R session run the following commands:
+
+    ```{r install, eval =FALSE}
+    devtools::install_github("mlysy/LMN")
+    devtools::install_github("mlysu/subdiff")
+    ```
+
+4.  Once the packages are installed, to test that everything works correctly, quit + restart R then run the command:
+
+    ```{r subdiff_test, eval = FALSE}
+    testthat::test_package("subdiff", reporter = "progress")
+    ```
+	
+	Occasionally due to random chance a few of the tests may fail.  However, if everything works correctly then rerunning this a few times will eventually produce zero test failures.  
+
+
+```{r hbe_info, include = FALSE}
+npaths <- length(unique(hbe$id)) # number of trajectories
+n_rng <- range(tapply(hbe$id, hbe$id, length)) # range of trajectory lengths
+dt <- 1/60 # interobservation time
+```
+
+```{r dataset, child = "_subdiff/_dataset.Rmd"}
+```
+
+```{r semiparam, child = "_subdiff/_semiparametric.Rmd"}
+```
+
+```{r param, child = "_subdiff/_parametric.Rmd"}
+```
+
+```{r csiclass, child = "_subdiff/_csiclass.Rmd"}
+```
+
+# Appendix: Code for Figure \@ref(fig:fsdvsfma)
+
+```{r fsdvsfmacode, ref.label = "fsdvsfma", eval = FALSE}
+```
+
+# References
+

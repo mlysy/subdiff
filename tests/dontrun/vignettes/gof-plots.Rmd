@@ -1,0 +1,227 @@
+---
+title: "Goodness-of-Fit Analysis of Subdiffusive Trajectories"
+author: "Martin Lysy (mlysy@uwaterloo.ca)"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+\newcommand{\N}{\mathcal N}
+
+```{r include = FALSE, eval = FALSE}
+rmarkdown::render("gof-plots.Rmd") # run this line to compile document
+```
+
+## Summary
+
+This Appendix describes a testing framework to assess whether the fBM + drift model adequately describes a set of particle trajectories recorded under given experimental conditions.  The key principle underlying the framework is that, since the fBM + drift model posits that the observations for a given trajectory are from a multivariate Gaussian distribution, an appropriate linear transformation converts them to iid $\N(0,1)$ "white noise" residuals.  We leverage this result in two ways:
+
+i.  Borrowing from a rich statistical literature on Gaussian white noise testing, we construct aggregate p-values against the null hypothesis that fBM + drift adequately describes all trajectories in a given experiment.
+
+ii. A popular method of model assessment in single particle tracking is to compare the MSD curves of experimental to simulated data.  While typical simulations are generated stochastically, we propose a deterministic simulation method, mapping each experimental trajectory to an idealized realization under the fBM + drift model.  This is done by mapping each white noise residual to the $\N(0,1)$ quantile corresponding to its rank, then inverting the linear transformation to convert the idealized white noise back to the original data scale.  This effectively removes the enormous variability between one stochastic MSD reconstruction and the next, thereby greatly facilitating visual MSD comparisons between experimental and synthetic datasets.
+
+## Setup
+
+For each PEO/HA dataset, we collect the following summary statistics:
+
+* `exper`: name of experiment (e.g., `PEO1MD_w1`).
+* `movieID`: movie ID.
+* `fps`: framerate.
+* `alpha`: MLE of subdiffusion exponent.
+* `nu`: MLE of diffusion coefficient ($\nu = \log D$).
+* `size`: length of trajectory.
+* `ad`: Anderson-Darling normality test for histogram shape of residuals.
+* `sw`: Shapiro-Wilk normality test for histogram shape of residuals.
+* `bc`: Berkowitz correlation test for independence of residuals.
+* `rmax`: Ratio of maximum to median increment size.
+
+```{r}
+# required functions and packages
+require(subdiff) # subdiffusive model fitting
+# various goodness-of-fit plotting functions
+source(system.file("proj", "gof-functions.R", package = "subdiff"))
+
+# data, parameter estimates and gof calculations, framerate info
+data_path <- "/Users/mlysy/Dropbox/Shared/gpsi/JOR_paper"
+stats_path <- file.path(data_path, "model-stats")
+fps_info <- read.csv(file.path(data_path, "framerates.csv"),
+                     stringsAsFactors = FALSE)
+
+# collect summary statistics for all experiments:
+data_names <- fps_info$name[1:37] # exclude sucrose
+data_stats <- lapply(data_names, function(data_name) {
+  # load data
+  data_stats <- file.path(stats_path,
+                          paste0("fbm-stats_", data_name, ".rds"))
+  data_stats <- readRDS(data_stats)
+  # extract summary statistics
+  dstats <- sapply(data_stats, function(ds) {
+    c(movieID = ds$movieID,
+      fps = fps_info$fps[fps_info$name == data_name],
+      alpha = as.numeric(itrans_alpha(gamma = ds$coef["gamma"])),
+      nu = as.numeric(ds$coef["lambda1"]),
+      size = ds$size,
+      ad = as.numeric(ds$ad[1]),
+      sw = as.numeric(ds$sw[1]),
+      bc = as.numeric(ds$bc[3]),
+      rmax = ds$rmax,
+      zmax = ds$zmax)
+  })
+  dstats <- as.data.frame(t(dstats))
+  cbind(exper = data_name, dstats)
+})
+data_stats <- do.call(rbind, data_stats)
+```
+
+## Goodness-of-Fit Assessment
+
+### Experimental Conditions
+
+Each of the normality test p-values are plotted against `rmax`, which essentially checks for jumps in the trajectory.  The dotted horizontal line indicates the 5% cutoff level for the minimum p-value per experimental condition.  In other words, if every single trajectory in these plots came from fBM + drift, then the minimum p-value in 1/20 plots would be below this cutoff value.  The dotted vertical line is set to an arbitrary ratio of $\max(|\Delta \boldsymbol{X}|) / \mathrm{median}(|\Delta \boldsymbol{X}|) = 5$.
+
+Generally speaking, low `ad` and `sw` p-values are highly correlated with `rmax`, indicating that "bad paths" in a p-value sense are typically due to large jumps in the trajectory, perhaps due to particle tracking errors.  However, this isn't always the case as we'll see in the next section.
+
+```{r pv_rmax, fig.height = 2.5, out.width = "\\textwidth", cache = TRUE}
+# association between pvalue and rmax
+PEO_names <- fps_info$name
+PEO_names <- PEO_names[grepl("^PEO*", PEO_names)]
+# sort the names
+for(ii in 1:length(PEO_names)) {
+  data_name <- PEO_names[ii]
+  iexper <- data_stats$exper == data_name
+  dstats <- data_stats[iexper,]
+  nexper <- nrow(dstats)
+  ylog <- TRUE
+  pvcut <- qbeta(.05, 1, nexper) # 5% cutoff for minimum value
+  pval_plot(dstats, data_name, ylog = ylog, pvcut = pvcut, rcut = 5)
+  box("outer")
+}
+```
+
+### Individual Trajectories
+
+Below are 7 examples of the goodness-of-fit tests applied to individual trajectories.  For each plot, the top three rows corresponds to 1D and 2D raw trajectories.  The bottom row displays graphical and numerical normality tests, the former as QQ-plots, the latter as p-values for each of the three tests above.  The first two residual plots are time-decorrelated *and* spatially rotated along the first and second principal components.  The third residual plot aggregates the two.
+
+* Trajectories 1-2 are typical examples of how low normality p-values correspond to large increment jumps.  The second plot is interesting in the sense that the low p-value occurs on the 2nd PC, while almost everywhere else it occurs on the first.
+
+* Trajectories 3-5 are representative of some of the other types of p-value failures which don't coincide with large increment jumps.  Trajectory 4 seems (to me) very likely due to camera tracking errors, and to a lesser extent, so does Trajectory 3.  But what about Trajectory 5?  That being said, these trajectories are all from the bottom left corner of the plots above, which contains a very small number of paths.
+
+* Trajectories 6-7 are representative of large increment jumps which do not fall below the p-value cutoff (top right corner of plots above).  There are many more trajectories here, suggesting that eliminating trajectories based only on `rmax` might throw out about 5% of "good data".  Note that for Trajetory 7 the Shapiro-Wilk p-value on PC1 is $.0036$.  However, there are $M = 56$ paths in the corresponding experiment (`PEO8MD_w0p86`).  Under the null hypothesis that the fBM+drift model is correct, the $M$ p-values behave like $M$ iid $\mathrm{Uniform}(0,1)$ random variables, of which the minimum has a $\mathrm{Beta}(1, M)$ distribution.  Thus, the probability of the minimum in $M = 56$ independent p-values under $H_0$ being less than $.0036$ is 18\%, i.e., one in five experimental runs on $M = 56$ trajetories would produce a smaller p-value than Trajectory 7.
+
+```{r pv_path, fig.height = 4.5, out.width = "\\textwidth", cache = TRUE}
+# interesting paths
+select_paths <- data.frame(name = c("PEO5MD_w0p91", "PEO5MD_w0p91",
+                                    "PEO5MD_w0p61", "PEO5MD_w1p22",
+                                    "PEO1MD_w5", "PEO5MD_w0p3",
+                                    "PEO8MD_w0p86"),
+                           path = c(32, 57, 52, 5, 25, 80, 19),
+                           stringsAsFactors = FALSE)
+select_paths <- select_paths[c(6, 5, 4, 2, 1, 3, 7),] # reorder
+
+# plot them
+for(ii in 1:nrow(select_paths)) {
+  data_name <- select_paths$name[ii]
+  ipath <- select_paths$path[ii]
+  data_paths <- read.csv(file.path(data_path,
+                                   paste0(data_name, ".csv")))
+  npaths <- length(unique(data_paths$pathID))
+  dt <- 1/fps_info$fps[fps_info$name == data_name]
+  iexper <- data_stats$exper == data_name
+  dstats <- data_stats[iexper,]
+  nexper <- sum(iexper)
+  pvcut <- qbeta(.05, 1, nexper) # 5% cutoff for minimum value
+  pind <- data_paths$pathID == ipath
+  Xt <- cbind(X = data_paths$X[pind], Y = data_paths$Y[pind])
+  dX <- apply(Xt, 2, diff)
+  # MLE
+  theta <- file.path(data_path, "model-stats",
+                     paste0("fbm-stats_", data_name, ".rds"))
+  theta <- readRDS(file = theta)[[ipath]]$coef
+  main <- paste0("Trajectory ", ii, ":     ", data_name, " -- Path ", ipath)
+  ## main <- paste0("Dataset: ", data_name, "    Path: ", ipath)
+  gof_plot(Xt, dt, theta, type = "qq", main = main)
+  box("figure")
+}
+```
+
+### Per-Experiment Aggregate Normality Tests
+
+```{r exper_pval, cache = TRUE}
+# all residuals for given experiment
+all_resid <- function(exper_name) {
+  model_name <- "fbm"
+  # parameter estimates, gof p-values, etc.
+  data_stats <- paste0(model_name, "-stats_", exper_name, ".rds")
+  data_stats <- readRDS(file.path(stats_path, data_stats))
+  # residuals
+  data_resid <- paste0(model_name, "-resid_", exper_name, ".rds")
+  data_resid <- readRDS(file.path(stats_path, data_resid))
+  path_id <- unique(data_resid$pathID)
+  # cutoff values
+  pvcut <- qbeta(.05, 1, npaths)
+  rcut <- 5
+  ifilter <- sapply(data_stats, function(dstats) {
+    if(!anyNA(dstats)) dstats$rmax < 5 else FALSE
+  })
+  dresid <- data_resid[data_resid$pathID %in% path_id[ifilter],]
+  dresid
+}
+
+# now calculate p-values
+exper_names <- fps_info$name
+nexper <- length(exper_names)
+exper_pval <- matrix(NA, nexper, 4)
+colnames(exper_pval) <- c("sw", "ad", "bc", "N")
+rownames(exper_pval) <- exper_names
+for(ii in 1:nexper) {
+  data_name <- exper_names[ii]
+  ## message("experiment: ", data_name)
+  data_resid <- all_resid(data_name)
+  Z1 <- data_resid$Z1
+  # aggregate bc test
+  pv <- tapply(Z1, data_resid$pathID, function(x) bc_pval(x))
+  exper_pval[ii,] <- c(sw = sw_pval(Z1), ad = ad_pval(Z1),
+                       bc = pbeta(min(pv), 1, length(pv)), N = length(Z1))
+}
+```
+
+```{r, results = "asis"}
+xpval <- exper_pval[,1:3]
+idec <- xpval <= .01
+xpval[idec] <- format(signif(xpval[idec],2))
+xpval[!idec] <- gsub("^0", "", format(round(as.numeric(xpval[!idec]),2)))
+colnames(xpval) <- c("SW_Test", "AD_Test", "BC_Test")
+rownames(xpval) <- gsub("^Jeremy", "", rownames(xpval))
+xpval <- data.frame(Dataset = rownames(xpval), xpval,
+                    stringsAsFactors = FALSE)
+rownames(xpval) <- NULL
+
+egroup <- c("PEO1MD", "PEO5MD", "PEO8MD", "HA")
+for(gr in egroup) {
+  pv <- xpval[grepl(gr, xpval$Dataset),]
+  rownames(pv) <- NULL
+  print(kable(pv))
+  cat("", paste0("Table: Experiment: ", gr), "", sep = "\n")
+}
+```
+
+```{r exper_qq, fig.width = 3.5, fig.height = 3, out.width = "33%", fig.show = "hold", cache = TRUE}
+# all residual plots
+exper_names <- fps_info$name
+nexper <- length(exper_names)
+par(mar = c(3.6,3.6,2,.2)+.1)
+for(data_name in exper_names[1:37]) {
+  data_resid <- all_resid(data_name)
+  ## Z1 <- unlist(sapply(data_resid, function(Z) Z[,1]))
+  Z1 <- data_resid$Z1
+  Z1 <- Z1[!is.na(Z1)]
+  pv <- c(sw = sw_pval(Z1), ad = ad_pval(Z1)) #, bc = bc_pval(Z1))
+  main <- paste0("list(", data_name, ", N==", trunc(length(Z1)/1000), "*\"k\")")
+  lgd <- paste0("p[", names(pv), "]==", signif(pv, 2))
+  ## lgd <- parse(text = c(paste0("N==", length(Z1)), lgd))
+  qq_plot(Z1, parse(text = main), lgd)
+}
+```

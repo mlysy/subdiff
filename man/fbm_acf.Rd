@@ -2,20 +2,24 @@
 % Please edit documentation in R/fbm_acf.R
 \name{fbm_acf}
 \alias{fbm_acf}
-\title{Acf function for the increment of fBM process.}
+\title{Calculate the autocorrelation of the fBM model.}
 \usage{
-fbm_acf(alpha, dT, N)
+fbm_acf(alpha, dt, N)
 }
 \arguments{
-\item{alpha}{fBM parameter, range from 0 to 2.}
+\item{alpha}{Subdiffusion exponent. A scalar between 0 and 2.}
 
-\item{dT}{interobservation time.}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{N}{number of samples.}
+\item{N}{Number of observations (positive integer).}
 }
 \value{
-vector of length N.
+A vector of \code{N} autocorrelation values.
 }
 \description{
-Acf function for the increment of fBM process.
+Compute the autocorrelation of fractional Brownian motion (fBM) increments at equally-spaced time points (see 'Details').
+}
+\details{
+Let \code{X_t} denote an fBM process and \verb{dX_n = X_\{dt * (n+1)\} - X_\{dt * n\}} denote the \code{n}th increment of \code{X_t} with interobservation time \code{dt}.  The autocorrelation of the fBM increment process \code{dX_n} is given by\preformatted{acf_dX(n) = 0.5 * dt^alpha * (|n+1|^alpha + |n-1|^alpha - 2|n|^\\alpha).
+}
 }

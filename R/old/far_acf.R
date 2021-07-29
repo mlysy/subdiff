@@ -6,7 +6,7 @@
 #' @param N TBD
 #' @return Vector of length N
 #' @details
-#' \code{Yt = (1-rho) Yt-1 + rho Xt}, where \code{Xt} is fBM process with parameter \code{alpha}.
+#' `Yt = (1-rho) Yt-1 + rho Xt`, where `Xt` is fBM process with parameter `alpha`.
 #' @export
 far_acf <- function(alpha, rho, dT, N, nlim = 1e2) {
   if(rho > 0) {

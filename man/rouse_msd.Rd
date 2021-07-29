@@ -15,7 +15,7 @@ rouse_msd(t, alpha, tau, K, ...)
 
 \item{K}{Number of relaxation modes.}
 
-\item{...}{Additional arguments to pass to \code{prony.msd}.}
+\item{...}{Additional arguments to pass to \code{\link[=prony_msd]{prony_msd()}}.}
 }
 \value{
 Vector of mean square displacements.
@@ -33,5 +33,5 @@ where \eqn{acf_F(t) = k_B T \gamma(t)} and
 \gamma(t) = 1/K sum_{n=1}^K exp(-\lambda_n * t), \lambda_n = (n/K)^(1/alpha)/tau.
 }
 
-As the temperature \eqn{T} is not supplied, the output is only proportional to the MSD, in the sense that \eqn{MSD_x(t) = (2 * k_B * T * K) * msd}.
+As the temperature \eqn{T} is not supplied, the output is only proportional to the MSD, in the sense that \eqn{MSD_X(t) = (2 * k_B * T * K) * msd}.
 }

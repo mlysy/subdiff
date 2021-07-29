@@ -2,35 +2,68 @@
 % Please edit documentation in R/farma_fit.R
 \name{farma_fit}
 \alias{farma_fit}
-\title{Fit the fractional Autoregressive Moving-average model.}
+\title{Fit the farma model.}
 \usage{
-farma_fit(dX, dT, order, Tz, var_calc = TRUE)
+farma_fit(
+  Xt,
+  dt,
+  order,
+  drift = c("linear", "none", "quadratic"),
+  vcov = TRUE,
+  ad_only = TRUE
+)
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments.}
+\item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
 
-\item{dT}{Interobservation time.}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
+\item{order}{A specification of the farma model: the two integer components (p, q) are the AR order and the MA order.}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+\item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
-\item{nlag}{Number of lags (see Details).}
+\item{vcov}{Logical; if \code{TRUE}, also estimate the variance matrix.}
 
-\item{alpha}{Subdiffusion parameter, optional.}
-
-\item{...}{Additional arguments to \code{\link[stats]{optim}}.}
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
-Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+A vector of estimated parameters on transformed scale (See \code{\link[=farma_model]{farma_model()}}). If \code{vcov}, a list with components:
+\describe{
+\item{coef}{A vector of estimated parameters on transformed scale.}
+\item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
+}
 }
 \description{
-Fit the fractional Autoregressive Moving-average model.
+Fit a fARMA(p,q) model to a multi-dimensional CSI process (See 'Details').
 }
 \details{
-The fractional Moving-average model has the form
+The farma(p,q) model is of following form:
 \deqn{
-\Delta X_n = (1-\sum_{i=1}^p \rho_i) \Delta Z_n + \sum_{i=1}^p \rho_{i} \Delta Z_{n-i},
+Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
+}{
+Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
 }
-where \eqn{\Delta Z_n} are increments of a 1D or 2D fBM process. The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(rho) = logit(1-rho/2)}, \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+where \eqn{X_n} is a \code{d}-dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
+
+Optimization is done by \code{\link[stats:optim]{stats::optim()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=farma_model]{farma_model()}}).
+}
+\examples{
+# simulate data from a farma(1,1) model
+alpha <- .8
+phi <- .1
+rho <- .1
+
+dt <- 1/60
+N <- 1800
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = farma_acf(alpha, phi = phi, rho = rho, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
+# Fit the farma(1,1) model
+farma_fit(Xt, dt = dt, order = c(1,1), vcov = TRUE)
+
 }

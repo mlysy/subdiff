@@ -1,1 +1,0 @@
-#' @param dT Interobservation time.

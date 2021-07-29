@@ -41,7 +41,7 @@ transFunc <- function(alpha, Beta, Sigma, trans) {
 
 #' @title Inverse function of transFunc
 #' @param theta transformed parameters
-#' @param trans logic, true means \code{theta} is transformed
+#' @param trans logic, true means `theta` is transformed
 #' @return list containing {alpha, Beta, Sigma}
 #' @export
 itransFunc <- function(theta, trans) {

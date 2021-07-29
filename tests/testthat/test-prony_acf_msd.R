@@ -6,7 +6,7 @@ context("Prony-GLE ACF and MSD")
 ##   c(abs = max(abs(x1-x2)), rel = max(abs(x1-x2)/max(abs(x1), 1e-8)))
 ## }
 
-ntest <- 20
+ntest <- 1
 test_that("MSD => ACF", {
   for(ii in 1:ntest) {
     Temp <- runif(1, 290, 300)
@@ -18,8 +18,8 @@ test_that("MSD => ACF", {
     dt <- runif(1)
     N <- 1e4
     tseq <- 1:N*dt
-    acf <- prony_acf(lambda, N, dt)
-    msd <- prony_msd(tseq, lambda)
+    acf <- prony_acf(lambda, vsigma, dt, N)
+    msd <- prony_msd(tseq, lambda, vsigma)
     expect_equal(acf, msd2acf(msd))
   }
 })
@@ -35,8 +35,8 @@ test_that("ACF => MSD", {
     dt <- runif(1)
     N <- 1e4
     tseq <- 1:N*dt
-    acf <- prony_acf(lambda, N, dt)
-    msd <- prony_msd(tseq, lambda)
+    acf <- prony_acf(lambda, vsigma, dt, N)
+    msd <- prony_msd(tseq, lambda, vsigma)
     expect_equal(msd, acf2msd(acf))
   }
 })

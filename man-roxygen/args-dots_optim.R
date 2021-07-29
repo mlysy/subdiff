@@ -1,1 +1,1 @@
-#' @param ... Additional arguments to \code{\link[stats]{optim}}.
+#' @param ... Additional arguments to [stats::optim()].

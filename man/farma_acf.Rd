@@ -2,27 +2,37 @@
 % Please edit documentation in R/farma_acf.R
 \name{farma_acf}
 \alias{farma_acf}
-\title{ACF of the Autoregressive Moving Average Model with fBM Noise}
+\title{Calculate the autocorrelation of the fARMA model.}
 \usage{
-farma_acf(alpha, theta, rho, dT, N, m = 30)
+farma_acf(alpha, phi = numeric(), rho = numeric(), dt, N, m = 50)
 }
 \arguments{
-\item{alpha}{TBD}
+\item{alpha}{Subdiffusion exponent of the underlying fBM process. A scalar between 0 and 2.}
 
-\item{theta}{parameter of AR model}
+\item{phi}{A vector of \code{p >= 0} autoregressive (AR) coefficients.}
 
-\item{rho}{parameter of MA model}
+\item{rho}{A vector of \code{q >= 0} moving-average (MA) coefficients (see 'Details').}
 
-\item{dT}{TBD}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{N}{TBD}
+\item{N}{Number of observations (positive integer).}
+
+\item{m}{Number of MA coefficients used for approximating the ARMA filter (see \strong{Details}).}
 }
 \value{
-Vector of length N
+A vector of \code{N} autocorrelation values.
 }
 \description{
-ACF of the Autoregressive Moving Average Model with fBM Noise
+Compute the autocorrelation of fARMA(p,q) process increments at equally-spaced time points (see 'Details').
 }
 \details{
-\code{Yt = theta Yt-1 + rho0 Xt + ...}, where \code{Xt} is fBM process with parameter \code{alpha}.
+Let \code{X_n} denote the position of an fBM process at time \code{t = n * dt}. The fARMA(p,q) process \code{Y_n} is then defined as\preformatted{Y_n = rho_0 X_n + sum_\{i=1\}^p phi_i Y_\{n-i\} + sum_\{j=1\}^q + rho_j X_\{n-j\}.
+}
+
+where \code{rho_0 = 1 - sum(phi) - sum(rho)}.
+
+This function returns the autocorrelation of the stationary process \verb{dY_n = Y_\{n+1\} - Y_n}.  The \code{ARMA(p,q)} filter is approximated with \code{m} moving-average terms (see \code{\link[=arma_acf]{arma_acf()}} for details).
+}
+\references{
+Ling, Y., Lysy, M., Seim, I., Newby, J.M., Hill, D.B., Cribb, J., and Forest, M.G. "Measurement error correction in particle tracking microrheology" (2019). \url{https://arxiv.org/abs/1911.06451}.
 }

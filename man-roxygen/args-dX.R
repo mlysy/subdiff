@@ -1,1 +1,1 @@
-#' @param dX One or two-column matrix of increments.
+#' @param dX Matrix of trajectory increments.

@@ -1,0 +1,6 @@
+development:
+  mode: unreleased
+template:
+  path: "pkgdown"
+  params:
+    bootswatch: readable

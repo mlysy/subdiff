@@ -1,14 +1,29 @@
 Package: subdiff
 Type: Package
-Title: Inference for Subdiffusive Particle Tracking
-Version: 0.0.0.9001
-Date: 2017-07-27
-Author: Yun Ling [aut], Martin Lysy [aut,cre]
-Maintainer: Martin Lysy <mlysy@uwaterloo.ca>
-Description: Tools for implementing various models for particle subdiffusion in biological fluids.  Currently the models are (1) fractional Brownian motion (fBM) and (2) a zero-mass Generalized Langevin Equation (GLE) with sum-of-exponentials memory kernel.
-License: GPL 3
-Imports: Rcpp (>= 0.12.12), numDeriv
-Depends: LMN, SuperGauss
-LinkingTo: Rcpp
-RoxygenNote: 6.1.1
-Suggests: testthat, optimCheck
+Title: Subdiffusive Modeling in Passive Particle-Tracking Microrheology
+Version: 0.0.1.9002
+Date: 2021-07-28
+Authors@R: c(person("Martin", "Lysy", email = "mlysy@uwaterloo.ca",
+	            role = c("aut", "cre")),
+             person("Yun", "Ling", role = "aut"))
+Description: Tools for implementing various models for particle subdiffusion in biological fluids.  In addition to the well-known semiparametric least-squares estimator based on the mean square displacement (MSD), the package provides functions for simulation, inference, and goodness-of-fit for two fully-parametric subdiffusion models: fractional Brownian motion and the generalized Langevin equation (GLE) model with Rouse memory kernel.  A generic model class allows users to easily implement custom subdiffusion models, with a ready-made framework for drift, high-frequency error correction, and efficient maximum likelihood estimation.
+License: GPL-3
+Depends: R (>= 2.10)
+Imports: Rcpp (>= 0.12.12), LMN, SuperGauss, R6, numDeriv, fftw, methods, stats
+LinkingTo: Rcpp, RcppEigen
+LazyData: true
+RoxygenNote: 7.1.1
+Encoding: UTF-8
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown,
+    bookdown,
+    tidyr,
+    dplyr,
+    optimCheck,
+    ggplot2,
+    scales,
+    gridExtra
+VignetteBuilder: knitr
+Roxygen: list(markdown = TRUE)

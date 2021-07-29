@@ -4,27 +4,61 @@
 \alias{fbm_fit}
 \title{Fit the fBM model.}
 \usage{
-fbm_fit(dX, dT, Tz, var_calc = TRUE)
+fbm_fit(
+  Xt,
+  dt,
+  drift = c("linear", "none", "quadratic"),
+  vcov = TRUE,
+  ad_only = TRUE
+)
 }
 \arguments{
-\item{dX}{One or two-column matrix of increments.}
+\item{Xt}{Matrix of trajectory positions, where each row is an observation and each column is a measurement coordinate.  The trajectory is assumed to be sampled at a constant frequency.}
 
-\item{dT}{Interobservation time.}
+\item{dt}{Interobservation time \eqn{\Delta t} = 1/fps (positive scalar).}
 
-\item{Tz}{Optional Toeplitz matrix for intermediate calculations.}
+\item{drift}{Character string specifying one of the \emph{preset} drift types "linear", "none", or "quadratic".  Custom drift functions are not supported through this simplified interface.  See \link{csi_model} for details.}
 
-\item{var_calc}{If \code{TRUE}, also estimate variance matrix.}
+\item{vcov}{Logical; if \code{TRUE}, also estimate the variance matrix.}
+
+\item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
-Vector of coefficients and possibly variance matrix on the transformed scale (see Details).
+A vector of estimated parameters on transformed scale (See \code{\link[=fbm_model]{fbm_model()}}). If \code{vcov}, a list with components:
+\describe{
+\item{coef}{A vector of estimated parameters on transformed scale.}
+\item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
+}
 }
 \description{
-Fit the fBM model.
+Fit a fBM model to a multi-dimensional CSI process.
 }
 \details{
-The fBM model is of the form
+The fBM model is of the form:
 \deqn{
-X_t = \mu t + \Sigma^{1/2} Z_t,
+X_t = \mu t + \Sigma^{1/2} Z_t
+}{
+X[t] = \mu t + \Sigma^{1/2} Z[t],
 }
-where \eqn{Z_t} consists of \code{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.  The MLE and variance estimate are calculated on the transformed scale defined by \code{trans(mu) = mu}, \code{\link{trans_alpha}}, and \code{\link{trans_Sigma}}.
+where \eqn{Z[t]} consists of \verb{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
+
+Optimization is done by \code{\link[stats:optimize]{stats::optimize()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fbm_model]{fbm_model()}}).
+}
+\examples{
+# simulate data from the fbm model
+alpha <- .8
+
+dt <- 1/60
+N <- 1800
+ndim <- 2
+
+Xt <- csi_sim(drift = matrix(0, N-1, ndim),
+              acf = fbm_acf(alpha, dt, N-1),
+              Sigma = diag(ndim),
+              X0 = rep(0, ndim))
+
+
+# Fit the fbm model
+fbm_fit(Xt, dt = dt, drift = "linear")
+
 }

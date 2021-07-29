@@ -4,7 +4,7 @@
 \alias{rouse_acf}
 \title{ACF of the Rouse-GLE model.}
 \usage{
-rouse_acf(alpha, tau, K, N, dt, ...)
+rouse_acf(alpha, tau, K, dt, N, ...)
 }
 \arguments{
 \item{alpha}{Subdiffusion coefficient between 0 and 1.}
@@ -13,11 +13,11 @@ rouse_acf(alpha, tau, K, N, dt, ...)
 
 \item{K}{Number of relaxation modes.}
 
-\item{N}{Number of observations.}
-
 \item{dt}{Time between obserations.}
 
-\item{...}{Additional arguments to pass to \code{\link{prony_acf}}.}
+\item{N}{Number of observations.}
+
+\item{...}{Additional arguments to pass to \code{\link[=prony_acf]{prony_acf()}}.}
 }
 \value{
 Vector of autocorrelations.
@@ -32,8 +32,8 @@ F_t - \int_{-\infty}^t \gamma(t-s) \dot X_s ds = 0,
 }
 where \eqn{acf_F(t) = k_B T \gamma(t)} and
 \deqn{
-\gamma(t) = 1/K sum_{n=1}^K exp(-\lambda_n * t), \lambda_n = (n/K)^(1/alpha)/tau.
+\gamma(t) = 1/K sum_{k=1}^K exp(-\lambda_k * t), \lambda_k = (k/K)^(1/alpha)/tau.
 }
 
-As the temperature \eqn{T} is not supplied, the output is only proportional to the autocorrelation, in the sense that \eqn{acf_x(t) = (2 * k_B * T * K) * acf}.
+As the temperature \eqn{T} is not supplied, the output is only proportional to the autocorrelation, in the sense that \code{ACF_X(t) = k_B * T * rouse_acf}.
 }

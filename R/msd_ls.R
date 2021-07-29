@@ -4,7 +4,7 @@
 #' @param tseq Vector of time points at which the MSDs are recorded (see Details).
 #' @param pooled Logical; whether to calculate separate regressions for each MSD or pool all of them together.
 #' @param logw Logical; whether or not regression should be log-weighted (see Details).
-#' @return A vector of length 2 if \code{pooled = TRUE}, or a 2-row matrix of \code{alpha} and \code{D} values if \code{pooled = FALSE}.
+#' @return A vector of length 2 if `pooled = TRUE`, or a 2-row matrix of `alpha` and `D` values if `pooled = FALSE`.
 #' @details A power-law fit to the empirical MSD is calculated by performing the linear regression
 #' \preformatted{
 #' log(msd) ~ log(D) + alpha * log(tseq).
@@ -13,10 +13,13 @@
 #' \preformatted{
 #' integral_0^Inf | log MSD(t) - log(D) - alpha * log(t) |^2 w(t) dt,
 #' }
-#' where \code{w(t) > 0} is a weight function.  The default value of \code{logw = FALSE} uses \code{w(t) = 1}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting \code{logw = TRUE} uses uniform weighting on the log-scale, which corresponds to \code{w(t) = 1/t}.
+#' where `w(t) > 0` is a weight function.  The default value of `logw = FALSE` uses `w(t) = 1`, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit.  Setting `logw = TRUE` uses uniform weighting on the log-scale, which corresponds to `w(t) = 1/t`.
 #'
-#' For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by \code{NA} in the \code{msd} matrix.
-#' @export
+#' For computational efficiency, the MSDs are expected to all be sampled at the same time points.  If this is not the case, missing time points should beindicated by `NA` in the `msd` matrix.
+#'
+#' @note Currently only used by [msd_subdiff()], which should probably be refactored to remove this dependency.
+#'
+#' @noRd
 msd_ls <- function(msd, tseq, pooled = TRUE, logw = TRUE) {
   yy <- log(as.matrix(msd))
   npaths <- ncol(yy)
@@ -35,15 +38,15 @@ msd_ls <- function(msd, tseq, pooled = TRUE, logw = TRUE) {
   rownames(Theta) <- c("alpha", "D")
   for(ii in 1:npaths) {
     ind <- !is.na(yy[,ii])
-    Theta[,ii] <- .weighted_ls(yy[ind,ii], xx[ind], ww[ind])
+    Theta[,ii] <- wls_fit(yy[ind,ii], xx[ind], ww[ind])
   }
   if(npaths == 1) Theta <- Theta[,1]
   Theta
 }
 
-# efficient weighted regression in alpha/D estimation context.
+# efficient weighted least-squares in alpha/D estimation context.
 # will eventually be converted to C++
-.weighted_ls <- function(yy, xx, ww) {
+wls_fit <- function(yy, xx, ww) {
   ww <- ww/sum(ww) # normalize weights
   ybar <- sum(ww * yy)
   xbar <- sum(ww * xx)
