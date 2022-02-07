@@ -151,11 +151,12 @@ tmax <- 10 # maximum time to plot
 nmax <- floor(tmax/dt) # corresponding MSD lag number
 tibble(
   Time = 1:nmax * dt, # time sequence
-  Theoretical = 2*ndim*sigma2 * SuperGauss::acf2msd(acf[1:nmax]), # theoretical msd
+  Theoretical = ndim*sigma2 * SuperGauss::acf2msd(acf[1:nmax]), # theoretical msd
   Empirical = msd_fit(Xt, nlag = nmax) # empirical msd
 ) %>%
   pivot_longer(cols = Theoretical:Empirical, names_to = "MSD Type",
-               values_to = "MSD", values_ptypes = list(factor())) %>%
+               values_to = "MSD") %>%
+  mutate(`MSD Type` = factor(`MSD Type`)) %>%
   ggplot(aes(x = Time, y = MSD, group = `MSD Type`)) +
   geom_line(aes(color = `MSD Type`)) +
   scale_x_log10() + scale_y_log10() +

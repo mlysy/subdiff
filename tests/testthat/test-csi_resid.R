@@ -1,5 +1,6 @@
-
 context("csi_resid")
+
+source("subdiff-testfunctions.R")
 
 # forward transformation
 csi_fwd <- function(Z, dt, mu, acf, Sigma) {

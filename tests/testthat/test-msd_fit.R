@@ -1,5 +1,6 @@
-
 context("msd_fit")
+
+source("subdiff-testfunctions.R")
 
 test_that("msd calculation in C++ matches that of R", {
   test_cases <- expand.grid(ndims = 1:3,

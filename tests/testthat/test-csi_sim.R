@@ -1,5 +1,7 @@
 context("csi_sim")
 
+source("subdiff-testfunctions.R")
+
 test_that("csi_ZX is doing the same thing as the explicit calculation.", {
   cases <- expand.grid(ndim = 1:3,
                        nobs = c(2, 5, 10),

@@ -1,6 +1,6 @@
 context("log1pe")
 
-source("fit-functions.R")
+source("subdiff-testfunctions.R")
 
 test_that("log1pe is same in C++ and R.", {
   ntest <- 10

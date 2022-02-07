@@ -1,6 +1,6 @@
-source("psd-functions.R")
-
 context("Prony-GLE PSD")
+
+source("subdiff-testfunctions.R")
 
 ## # maximum absolute and relative error between two arrays
 ## max.diff <- function(x1, x2) {

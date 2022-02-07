@@ -1,6 +1,6 @@
 context("ls_fit")
 
-source("fit-functions.R")
+source("subdiff-testfunctions.R")
 
 test_that("ls_var is same in C++ and R.", {
   ntest <- 10

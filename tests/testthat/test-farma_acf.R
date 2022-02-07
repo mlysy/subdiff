@@ -1,6 +1,6 @@
-
 context("farma_acf")
-source("fit-functions.R")
+
+source("subdiff-testfunctions.R")
 
 ## ntest <- 60
 test_that("farma_acf formula is correct for MA(q) filter.", {

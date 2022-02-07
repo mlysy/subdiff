@@ -1,7 +1,6 @@
-
 context("fbm_fit")
 
-source("fit-functions.R")
+source("subdiff-testfunctions.R")
 
 # fbm loglikelihood
 loglik <- function(omega, dX, dt, Tz,

@@ -1,7 +1,6 @@
-
 context("farma_fit")
 
-source("fit-functions.R")
+source("subdiff-testfunctions.R")
 
 # farma(1,1) loglikelihood
 loglik_11 <- function(omega, dX, dt, Tz) {
