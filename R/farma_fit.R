@@ -1,6 +1,4 @@
-#' Fit the farma model.
-#'
-#' Fit a fARMA(p,q) model to a multi-dimensional CSI process (See 'Details').
+#' Fit the fARMA(p,q) model.
 #'
 #' @template args-Xt
 #' @template args-dt
@@ -8,21 +6,10 @@
 #' @template args-drift_preset
 #' @template args-vcov
 #' @template args-ad_only
-#' @return A vector of estimated parameters on transformed scale (See [farma_model()]). If `vcov`, a list with components:
-#' \describe{
-#' \item{coef}{A vector of estimated parameters on transformed scale.}
-#' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
-#' }
 #'
-#' @details The farma(p,q) model is of following form:
-#' \deqn{
-#' Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
-#' }{
-#' Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
-#' }
-#' where \eqn{X_n} is a `d`-dimensional fBM model (See [fbm_fit()]).
+#' @template ret-fit
 #'
-#' Optimization is done by [stats::optim()]. It works better when parameters are re-parametrized into unrestricted form (See [farma_model()]).
+#' @seealso [farma_model], the class definition for the fARMA(p,q) model.
 #'
 #' @example examples/farma_sim.R
 #' @example examples/farma_fit.R
@@ -48,3 +35,14 @@ farma_fit <- function(Xt, dt, order,
   ## ans <- csi_fit(model, dX, dt, Tz, vcov)
   ## ans
 }
+
+## ' @details The farma(p,q) model is of following form:
+## ' \deqn{
+## ' Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
+## ' }{
+## ' Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
+## ' }
+## ' where \eqn{X_n} is a `d`-dimensional fBM model (See [fbm_fit()]).
+## '
+## ' Optimization is done by [stats::optim()]. It works better when parameters are re-parametrized into unrestricted form (See [farma_model()]).
+## '

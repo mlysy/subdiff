@@ -10,7 +10,7 @@ Class definition for the fBM model.
 Fractional Brownian motion \code{X_t} is the only (zero-mean) continuous stationary increments (CSI) Gaussian process having mean square displacement (MSD) function given by the power law\preformatted{E[(X_t-X_0)^2] = t^alpha,
 }
 
-with subdiffusion exponent \verb{0 < alpha < 2}.
+with subdiffusion exponent \verb{0 < alpha < 2}.  The resulting MSD as a function of \code{alpha} is what gets passed to the \link{csi_model} base class to construct the \code{fbm_model} derived class.
 }
 \examples{
 # simulate data from the fbm model

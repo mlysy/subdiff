@@ -5,6 +5,9 @@ date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
     toc: yes
+bibliography: references.bib
+csl: taylor-and-francis-harvard-x.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Visual Check of Subdiffusion Estimators}
   %\VignetteEngine{knitr::rmarkdown}
@@ -94,17 +97,17 @@ tibble(t = 1:nrow(msd_hat) * dt,
 
 Now let us compare various subdiffusion estimators to the true values of $(\alpha, D)$.  The subdiffusion estimators are:
 
-- A version of least-squares (`ls`).  There is no unique definition of the LS estimator as it depends among other things on the method of drift correction and the set of timepoints used in the regression.  Here we use a linear drift subtraction and timepoints $t = \dt \cdot (1, 2, 5, 10, 20, 50, 100, 200, 500)$.
+- `ls`: A version of least-squares.  There is no unique definition of the LS estimator as it depends among other things on the method of drift correction and the set of timepoints used in the regression.  Here we use a linear drift subtraction and timepoints $t = \dt \cdot (1, 2, 5, 10, 20, 50, 100, 200, 500)$.
 
-- MLE of fractional Brownian motion (`fbn`).  Drift correction in this and the subsequent MLE estimators is linear.
+- `fbm`: MLE of fractional Brownian motion.  Drift correction in this and the subsequent MLE estimators is linear.
 
 <!-- - MLE of fBM + white noise floor (`fSN`). -->
 
-- MLE with fBM + Savin-Doyle noise model (`fsd`).  This accounts for static noise via a white noise floor and dynamic errors due to particle movement during the camera exposure time for each frame.  It's identical to fSN when there is no dynamic error (camera exposure time = 0).
+- `fsd`: MLE of fBM + Savin-Doyle noise model [@savin.doyle05].  This accounts for static noise via a white noise floor and dynamic errors due to particle movement during the camera exposure time for each frame.  It's identical to fSN when there is no dynamic error (camera exposure time = 0).
 
-- MLE with fBM + MA(1) noise (`fma`).  This is one of the models proposed in our AOAS paper.
+- `fma`: MLE with fBM + MA(1) noise.  This is one of the models proposed in @ling.etal19.
 
-- MLE with fBM + ARMA(1,1) noise (`farma`), another model proposed in our AOAS paper.
+- `farma`: MLE with fBM + ARMA(1,1) noise, another model proposed in @ling.etal19.
 
 Since there is no noise here and the fBM model is correct -- in that BM is a special case of it with $\alpha = 1$ -- we expect all estimators to produce very similar results.  The code below shows that the **subdiff** implementation of these models consistently estimates $(\alpha, D)$.
 

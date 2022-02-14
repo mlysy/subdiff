@@ -2,7 +2,7 @@
 % Please edit documentation in R/farma_fit.R
 \name{farma_fit}
 \alias{farma_fit}
-\title{Fit the farma model.}
+\title{Fit the fARMA(p,q) model.}
 \usage{
 farma_fit(
   Xt,
@@ -27,25 +27,15 @@ farma_fit(
 \item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link[=farma_model]{farma_model()}}). If \code{vcov}, a list with components:
+A vector of estimated parameters on the transformed scale. If \code{vcov == TRUE}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
 }
+If \code{ad_only == TRUE}, instead of the transformed scale parameters, returns an estimate (and possibly the estimated convariance) of \verb{(alpha, D)}.
 }
 \description{
-Fit a fARMA(p,q) model to a multi-dimensional CSI process (See 'Details').
-}
-\details{
-The farma(p,q) model is of following form:
-\deqn{
-Y_n = \sum_{i=1}^p \phi_i Y_{n-i} + \sum_{j=0}^q \rho_j X_{n-j}
-}{
-Y[n] = \phi_1 Y_(n-1) + ... + \phi_p Y_(n-p) + \rho_0 X_(n) + ... + \rho_q X_(n-q)
-}
-where \eqn{X_n} is a \code{d}-dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
-
-Optimization is done by \code{\link[stats:optim]{stats::optim()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=farma_model]{farma_model()}}).
+Fit the fARMA(p,q) model.
 }
 \examples{
 # simulate data from a farma(1,1) model
@@ -66,4 +56,7 @@ Xt <- csi_sim(drift = matrix(0, N-1, ndim),
 # Fit the farma(1,1) model
 farma_fit(Xt, dt = dt, order = c(1,1), vcov = TRUE)
 
+}
+\seealso{
+\link{farma_model}, the class definition for the fARMA(p,q) model.
 }

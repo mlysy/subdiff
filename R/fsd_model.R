@@ -2,7 +2,7 @@
 #'
 #' @name fsd_model
 #'
-#' @details Constructor function that generates a list of fsd model for purpose of fitting.
+#' @template details-fsd_model
 #'
 #' @example examples/fsd_sim.R
 #' @example examples/fsd_model.R

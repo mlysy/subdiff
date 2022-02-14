@@ -7,7 +7,21 @@
 Base class for CSI models.
 }
 \details{
-TBD.  See \code{vignette("subdiff")} for details of the CSI model employed here.
+Let \code{Xt} denote an \verb{N x d} matrix of particle positions recorded at intervals of \code{dt}, where \verb{d = 1,2,3} is the number of recorded dimensions.  A CSI model for \code{Xt} is of the form\preformatted{Xt = R(phi) mu + Sigma^\{1/2\} Z,
+}
+
+where:
+\itemize{
+\item \code{R(phi)} is an \verb{N x p} matrix of drift terms, possibly dependent on a parameter \code{phi}.  In most cases though, \code{R(phi) = t((1:N-1) * dt)} is used to model linear drift.
+\item \code{mu} is a \verb{p x d} matrix of drift parameters.  For linear drift, it represents the drift velocity in each of the \code{d} dimensions.
+\item \code{Sigma} is a \verb{d x d} variance matrix.
+\item \code{Z} is an \verb{N x d} matrix where each column is an iid realization of \code{N} values of a Gaussian continuous stationary increments (CSI) process.  Such processes are completely determined by the mean square displacement (MSD) function\preformatted{MSD_Z(h) = E[ (Z_\{i+h,j\}, Z_\{i,j\})^2 ],
+}
+
+where the MSD function also depends on the parameter \code{phi}.
+}
+
+The \code{csi_model} class is a base class for CSI models which requires the user to specify the drift and msd functions, based on which it provides generic methods for parameter inference, simulation, etc.  For further details about the CSI model see \code{vignette("subdiff")}.
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}

@@ -17,7 +17,10 @@ An list of class \code{csi_class} with components:
 Constructor for farma model object.
 }
 \details{
-Constructor function that generates a list of farma(p,q) model for purpose of fitting.
+Let \code{X_n} denote the true position of an fBM process at time \verb{t = n dt}.  The farma(p,q) error model describes the measured position \code{Y_n} at time \verb{t = n dt} as\preformatted{Y_n = sum_\{i=1\}^p phi_i Y_\{n-i\} + sum_\{j=0\}^q rho_j X_\{n-j\},
+}
+
+with \verb{rho_0 = 1 - sum_\{i=1\}^p phi_i - sum_\{j=1\}^q rho_j}.  The resulting MSD as a function of \code{phi} and \code{rho} is what gets passed to the \link{csi_model} base class to construct the \code{farma_model} derived class.
 }
 \examples{
 # simulate data from a farma(1,1) model

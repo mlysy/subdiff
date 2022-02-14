@@ -1,27 +1,14 @@
 #' Fit the fBM model.
 #'
-#' Fit a fBM model to a multi-dimensional CSI process.
-#'
 #' @template args-Xt
 #' @template args-dt
 #' @template args-drift_preset
 #' @template args-vcov
 #' @template args-ad_only
-#' @return A vector of estimated parameters on transformed scale (See [fbm_model()]). If `vcov`, a list with components:
-#' \describe{
-#' \item{coef}{A vector of estimated parameters on transformed scale.}
-#' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
-#' }
 #'
-#' @details The fBM model is of the form:
-#' \deqn{
-#' X_t = \mu t + \Sigma^{1/2} Z_t
-#' }{
-#' X[t] = \mu t + \Sigma^{1/2} Z[t],
-#' }
-#' where \eqn{Z[t]} consists of `q = 1,2` iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
+#' @template ret-fit
 #'
-#' Optimization is done by [stats::optimize()]. It works better when parameters are re-parametrized into unrestricted form (See [fbm_model()]).
+#' @seealso [fbm_model], the class definition for the fBM model.
 #'
 #' @example examples/fbm_sim.R
 #' @example examples/fbm_fit.R
@@ -38,6 +25,18 @@ fbm_fit <- function(Xt, dt, drift = c("linear", "none", "quadratic"),
   if(ad_only) out <- to_ad(out, model = model, vcov = vcov)
   out
 }
+
+## ' @details The fBM model is of the form:
+## ' \deqn{
+## ' X_t = \mu t + \Sigma^{1/2} Z_t
+## ' }{
+## ' X[t] = \mu t + \Sigma^{1/2} Z[t],
+## ' }
+## ' where \eqn{Z[t]} consists of `q = 1,2` iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
+## '
+## ' Optimization is done by [stats::optimize()]. It works better when parameters are re-parametrized into unrestricted form (See [fbm_model()]).
+## '
+
 
 #--- helper functions ----------------------------------------------------------
 

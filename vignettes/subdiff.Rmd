@@ -137,7 +137,7 @@ To install the **subdiff** package:
 
     ```{r install, eval =FALSE}
     devtools::install_github("mlysy/LMN")
-    devtools::install_github("mlysu/subdiff")
+    devtools::install_github("mlysy/subdiff")
     ```
 
 4.  Once the packages are installed, to test that everything works correctly, quit + restart R then run the command:

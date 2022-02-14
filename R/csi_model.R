@@ -2,7 +2,22 @@
 #'
 #' @description Base class for CSI models.
 #'
-#' @details TBD.  See `vignette("subdiff")` for details of the CSI model employed here.
+#' @details Let `Xt` denote an `N x d` matrix of particle positions recorded at intervals of `dt`, where `d = 1,2,3` is the number of recorded dimensions.  A CSI model for `Xt` is of the form
+#' ```
+#' Xt = R(phi) mu + Sigma^{1/2} Z,
+#' ```
+#' where:
+#'
+#' - `R(phi)` is an `N x p` matrix of drift terms, possibly dependent on a parameter `phi`.  In most cases though, `R(phi) = t((1:N-1) * dt)` is used to model linear drift.
+#' - `mu` is a `p x d` matrix of drift parameters.  For linear drift, it represents the drift velocity in each of the `d` dimensions.
+#' - `Sigma` is a `d x d` variance matrix.
+#' - `Z` is an `N x d` matrix where each column is an iid realization of `N` values of a Gaussian continuous stationary increments (CSI) process.  Such processes are completely determined by the mean square displacement (MSD) function
+#'     ```
+#'     MSD_Z(h) = E[ (Z_{i+h,j}, Z_{i,j})^2 ],
+#'     ```
+#'     where the MSD function also depends on the parameter `phi`.
+#'
+#' The `csi_model` class is a base class for CSI models which requires the user to specify the drift and msd functions, based on which it provides generic methods for parameter inference, simulation, etc.  For further details about the CSI model see `vignette("subdiff")`.
 #'
 #' @importFrom stats optim optimize
 #' @export

@@ -2,11 +2,7 @@
 #'
 #' @name fbm_model
 #'
-#' @details Fractional Brownian motion `X_t` is the only (zero-mean) continuous stationary increments (CSI) Gaussian process having mean square displacement (MSD) function given by the power law
-#' ```
-#' E[(X_t-X_0)^2] = t^alpha,
-#' ```
-#' with subdiffusion exponent `0 < alpha < 2`.
+#' @template details-fbm_model
 #'
 #' @example examples/fbm_sim.R
 #' @example examples/fbm_model.R

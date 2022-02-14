@@ -24,25 +24,15 @@ fbm_fit(
 \item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link[=fbm_model]{fbm_model()}}). If \code{vcov}, a list with components:
+A vector of estimated parameters on the transformed scale. If \code{vcov == TRUE}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
 }
+If \code{ad_only == TRUE}, instead of the transformed scale parameters, returns an estimate (and possibly the estimated convariance) of \verb{(alpha, D)}.
 }
 \description{
-Fit a fBM model to a multi-dimensional CSI process.
-}
-\details{
-The fBM model is of the form:
-\deqn{
-X_t = \mu t + \Sigma^{1/2} Z_t
-}{
-X[t] = \mu t + \Sigma^{1/2} Z[t],
-}
-where \eqn{Z[t]} consists of \verb{q = 1,2} iid fBM processes with \eqn{MSD_Z(t) = t^\alpha}.
-
-Optimization is done by \code{\link[stats:optimize]{stats::optimize()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fbm_model]{fbm_model()}}).
+Fit the fBM model.
 }
 \examples{
 # simulate data from the fbm model
@@ -61,4 +51,7 @@ Xt <- csi_sim(drift = matrix(0, N-1, ndim),
 # Fit the fbm model
 fbm_fit(Xt, dt = dt, drift = "linear")
 
+}
+\seealso{
+\link{fbm_model}, the class definition for the fBM model.
 }

@@ -24,35 +24,19 @@ fsd_fit(
 \item{ad_only}{Whether to return estimates of (\verb{alpha, log(D)}) only, or the entire parameter vector \code{omega} in the computational basis.}
 }
 \value{
-A vector of estimated parameters on transformed scale (See \code{\link[=fsd_model]{fsd_model()}}). If \code{vcov = TRUE}, a list with components:
+A vector of estimated parameters on the transformed scale. If \code{vcov == TRUE}, a list with components:
 \describe{
 \item{coef}{A vector of estimated parameters on transformed scale.}
 \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
 }
+If \code{ad_only == TRUE}, instead of the transformed scale parameters, returns an estimate (and possibly the estimated convariance) of \verb{(alpha, D)}.
 }
 \description{
-Fit Savin & Doyle's localization error model with fBM process (See 'Details').
+Fit the fSD model.
 }
 \details{
 To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term\preformatted{penalty(psi) = log(1+exp(psi[2])) + log(1+exp(-psi[2])) - psi[3].
 }
-
-The Savin & Doyle's localization error model with fBM process (fsd model) has the following form:
-\deqn{
-Y_n = 1/\tau \int_0^\tau X_{n \Delta t +s} ds + \sigma e_{n}
-}{
-Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t +s} ds + \sigma e[n]
-}
-where \eqn{X_n} is an \verb{q = 1,2} dimensional fBM model (See \code{\link[=fbm_fit]{fbm_fit()}}).
-
-The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
-\eqn{e_n} is a standard white noise, and this term is called static error.
-
-When put \code{tau} = 0, this model becomes fractional static error model.
-When put \code{sigma2} = 0, this model becomes fractional dynamic error model.
-When put \verb{(tau, sigma2)} = 0, this model becomes fractional Brownian model.
-
-Optimization is done by \code{\link[=optimize]{optimize()}}. It works better when parameters are re-parametrized into unrestricted form (See \code{\link[=fsd_model]{fsd_model()}}).
 }
 \examples{
 # simulate data from the fsd model
@@ -75,4 +59,7 @@ fsd_fit(Xt, dt = dt, drift = "linear")
 }
 \references{
 Savin, T. and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
+}
+\seealso{
+\link{fsd_model}, the class definition for the fSD model.
 }

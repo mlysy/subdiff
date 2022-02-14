@@ -2,8 +2,7 @@
 #'
 #' @name farma_model
 #'
-#' @details Constructor function that generates a list of farma(p,q) model for purpose of fitting.
-#' @template ret-csi_class
+#' @template details-farma_model
 #'
 #' @example examples/farma_sim.R
 #' @example examples/farma_model.R

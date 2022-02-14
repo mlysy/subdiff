@@ -1,43 +1,21 @@
 #' Fit the fSD model.
 #'
-#' Fit Savin & Doyle's localization error model with fBM process (See 'Details').
-#'
 #' @template args-Xt
 #' @template args-dt
 #' @template args-drift_preset
 #' @template args-vcov
 #' @template args-ad_only
 #'
-#' @return A vector of estimated parameters on transformed scale (See [fsd_model()]). If `vcov = TRUE`, a list with components:
-#' \describe{
-#' \item{coef}{A vector of estimated parameters on transformed scale.}
-#' \item{vcov}{A matrix of estimated covariance of parameters on transformed scale.}
-#' }
+#' @template ret-fit
 #'
 #' @details To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term
 #' ```
 #' penalty(psi) = log(1+exp(psi[2])) + log(1+exp(-psi[2])) - psi[3].
 #' ```
 #'
-#' The Savin & Doyle's localization error model with fBM process (fsd model) has the following form:
-#' \deqn{
-#' Y_n = 1/\tau \int_0^\tau X_{n \Delta t +s} ds + \sigma e_{n}
-#' }{
-#' Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t +s} ds + \sigma e[n]
-#' }
-#' where \eqn{X_n} is an `q = 1,2` dimensional fBM model (See [fbm_fit()]).
-#'
-#' The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
-#' \eqn{e_n} is a standard white noise, and this term is called static error.
-#'
-#' When put `tau` = 0, this model becomes fractional static error model.
-#' When put `sigma2` = 0, this model becomes fractional dynamic error model.
-#' When put `(tau, sigma2)` = 0, this model becomes fractional Brownian model.
-#'
-#' Optimization is done by [optimize()]. It works better when parameters are re-parametrized into unrestricted form (See [fsd_model()]).
-#'
 #' @references Savin, T. and Doyle, P.S. "Static and dynamic errors in particle tracking microrheology." Biophysical Journal 88.1 (2005): 623-638.
 #'
+#' @seealso [fsd_model], the class definition for the fSD model.
 #' @example examples/fsd_sim.R
 #' @example examples/fsd_fit.R
 #'
@@ -73,6 +51,26 @@ fsd_fit <- function(Xt, dt, drift = c("linear", "none", "quadratic"),
 
 # #' @param tau Scalar between 0 and 1, indicating the percentage of time for which the camera shutter is open in the dynamic error model.  Estimated if missing. See Details.
 # #' @param sigma2 Magnitude of static error.  Estimated if missing. See Details.
+
+## '
+## ' The Savin & Doyle's localization error model with fBM process (fsd model) has the following form:
+## ' \deqn{
+## ' Y_n = 1/\tau \int_0^\tau X_{n \Delta t +s} ds + \sigma e_{n}
+## ' }{
+## ' Y[n] = 1/\tau integral_0^\tau X_{n  \Delta t +s} ds + \sigma e[n]
+## ' }
+## ' where \eqn{X_n} is an `q = 1,2` dimensional fBM model (See [fbm_fit()]).
+## '
+## ' The integral part measures the average displacement of particle trajectories during \eqn{[n \Delta t, n\Delta t + \tau]} and this term is called dynamic error.
+## ' \eqn{e_n} is a standard white noise, and this term is called static error.
+## '
+## ' When put `tau` = 0, this model becomes fractional static error model.
+## ' When put `sigma2` = 0, this model becomes fractional dynamic error model.
+## ' When put `(tau, sigma2)` = 0, this model becomes fractional Brownian model.
+## '
+## ' Optimization is done by [optimize()]. It works better when parameters are re-parametrized into unrestricted form (See [fsd_model()]).
+## '
+
 
 #--- quick test ----------------------------------------------------------------
 
