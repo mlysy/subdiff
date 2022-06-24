@@ -11,3 +11,5 @@ inst/extdata/data
 *.dll
 *.pdf
 vignettes/.build.timestamp
+/doc/
+/Meta/

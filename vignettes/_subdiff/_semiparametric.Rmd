@@ -1,6 +1,6 @@
 # Semiparametric Modeling
 
-Let $\XX_n = \XX(t_n)$ denote the position of a givne particle at time $t_n = n \cdot \dt$, such that the data for the entire trajectory is given by $\XX = (\rv [0] {\XX} N)$.  The semi-parametric subdiffusion estimator consists of two steps:
+Let $\XX_n = \XX(t_n)$ denote the position of a givne particle at time $t_n = n \cdot \dt$, such that the data for the entire trajectory is given by $\XX = (\rv {\XX} 0 N)$.  The semi-parametric subdiffusion estimator consists of two steps:
 
 1.  Calculate the empirical MSD for each trajectory, defined as
 
@@ -23,7 +23,7 @@ $$
 \tilde{\XX}_n = \XX_n - \hat{\mmu} \cdot t_n,
 $$
 	
-where $\hat{\mmu} = (\hat \mu_1, \ldots, \hat \mu_{\ndim})$ is the vector of slope terms of the linear regression of $\XX$ onto $\bm{t} = (\rv [0] t N)$.  Morever, the empirical MSD is known to be biased at large lag times, such that only about 30-50% of the shortest lagtimes are usually kept for estimating $\aD$.
+where $\hat{\mmu} = (\hat \mu_1, \ldots, \hat \mu_{\ndim})$ is the vector of slope terms of the linear regression of $\XX$ onto $\bm{t} = (\rv t 0 N)$.  Morever, the empirical MSD is known to be biased at large lag times, such that only about 30-50% of the shortest lagtimes are usually kept for estimating $\aD$.
 
 Figure \@ref(fig:msdemp) displays the empirical MSD of the first 500 lags for each trajectory and the corresponding estimates of $\aD$.
 

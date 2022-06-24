@@ -8,6 +8,14 @@
 \description{
 Tools for implementing various models for particle subdiffusion in biological fluids. In addition to the well-known semiparametric least-squares estimator based on the mean square displacement (MSD), the package provides functions for simulation, inference, and goodness-of-fit for two fully-parametric subdiffusion models: fractional Brownian motion and the generalized Langevin equation (GLE) model with Rouse memory kernel. A generic model class allows users to easily implement custom subdiffusion models, with a ready-made framework for drift, high-frequency error correction, and efficient maximum likelihood estimation.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mlysy/subdiff/}
+  \item Report bugs at \url{https://github.com/mlysy/subdiff/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Martin Lysy \email{mlysy@uwaterloo.ca}
 

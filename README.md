@@ -25,8 +25,8 @@ Tools for implementing various models for particle subdiffusion in biological fl
 3.  In an R session run the following commands:
 
     ```r
-    devtools::install_github("mlysy/LMN")
-    devtools::install_github("mlysu/subdiff")
+    devtools::install_github("mlysy/subdiff",
+                             force = TRUE, INSTALL_opts = "--install-tests")
     ```
 
 4.  Once the packages are installed, you can test that everything works correctly by first quitting + restarting R, then running the command:

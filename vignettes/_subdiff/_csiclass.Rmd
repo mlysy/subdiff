@@ -17,7 +17,7 @@ where:
 
 - $\RR(t \mid \pph) = \big( R_1(t \mid \pph), \ldots, R_{\ndrift}(t \mid \pph) \big)$ is a set of $\ndrift$ drift basis functions.  Typically it will be linear or quadratic, corresponding to $\RR(t) = t$ and $\RR(t) = (t, t^2)$ with $\ndrift = 1$ and $\ndrift = 2$, respectively.  However, **subdiff** allows for an arbitrary number of basis functions possibly dependent on the "kernel" parameters $\pph$.
 
-- $\mmu$ is $\ndrift \times \ndim$ matrix of drift coefficients.  For linear drift, $\mmu = (\rv \mu \ndim)$ correspond to per-coordinate drift velocities.
+- $\mmu$ is $\ndrift \times \ndim$ matrix of drift coefficients.  For linear drift, $\mmu = (\rv \mu 1 \ndim)$ correspond to per-coordinate drift velocities.
 
 An attractive feature of model \@ref(eq:locscale) is that the MSD of the drift-subtracted particle trajectory $\tilde{\XX}(t) = \XX(t) - \RR(t)' \mmu$ has the simple formula
 
@@ -25,7 +25,7 @@ $$
 \msd_{\tilde{\XX}} = \tr(\SSi) \cdot  \eta(t \mid \pph).
 $$
 
-Another appealing property of this model is that its parameters $\tth = (\pph, \mmu, \SSi)$ can be estimated from discrete observations $\XX = (\rv [0] {\XX} N)$ in a computationally efficient manner [@ling.lysy20].
+Another appealing property of this model is that its parameters $\tth = (\pph, \mmu, \SSi)$ can be estimated from discrete observations $\XX = (\rv {\XX} 0 N)$ in a computationally efficient manner [@ling.lysy20].
 
 ## Example: Brownian Motion in a Jeffreys Fluid
 

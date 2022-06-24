@@ -11,7 +11,7 @@ where:
 
 - $\SSi$ is a $\ndim \times \ndim$ symmetric positive-definite scaling matrix.
 
-- $\BB^{(\alpha)}(t) = \big(B_1^{(\alpha)}(t), \ldots, Z_{\ndim}^{(\alpha)}(t)\big)$ are independent and identically distributed (iid) copies of a [fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion) (fBM) process $B^{(\alpha)}(t)$.  That is, fBM is the only Gaussian CSI process with MSD
+- $\BB^{(\alpha)}(t) = \big(B_1^{(\alpha)}(t), \ldots, B_{\ndim}^{(\alpha)}(t)\big)$ are independent and identically distributed (iid) copies of a [fractional Brownian motion](https://en.wikipedia.org/wiki/Fractional_Brownian_motion) (fBM) process $B^{(\alpha)}(t)$.  That is, fBM is the only Gaussian CSI process with MSD
 
 	$$
 	\msd_{B^{(\alpha)}}(t) = t^\alpha.

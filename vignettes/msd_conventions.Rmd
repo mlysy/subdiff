@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: yes
 bibliography: references.bib
-csl: taylor-and-francis-harvard-x.csl
+csl: technometrics.csl
 link-citations: true
 vignette: >
   %\VignetteIndexEntry{Visual Check of Subdiffusion Estimators}
