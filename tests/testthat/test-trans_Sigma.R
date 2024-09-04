@@ -1,6 +1,6 @@
 context("trans_Sigma and itrans_Sigma")
 
-source("subdiff-testfunctions.R")
+## source("subdiff-testfunctions.R")
 
 test_that("Sigma = itrans(trans(Sigma))", {
   ntest <- 20

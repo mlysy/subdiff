@@ -1,6 +1,6 @@
 context("fsd_fit")
 
-source("subdiff-testfunctions.R")
+## source("subdiff-testfunctions.R")
 
 # fsd loglikelihood
 loglik_loc <- function(omega, dX, dt, Tz) {

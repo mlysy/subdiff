@@ -1,6 +1,6 @@
 context("fsd_acf")
 
-source("subdiff-testfunctions.R")
+## source("subdiff-testfunctions.R")
 
 ntest <- 10
 test_that("fsd_acf formula is correct.", {
