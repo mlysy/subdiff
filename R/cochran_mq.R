@@ -1,8 +1,8 @@
 #' Cochran's multivariate Q-test for heterogeneity.
 #'
-#' Suppose we have `k` independent estimators of `p`-dimensional vectors `theta_1, ..., theta_k`.  Under the null hypothesis `H0` that the `theta_i` are all the same, the Cochran Q-statistic is the precision-weighted sum-of-squares of the estimators.  Asymptotically it follows a chi-square distribution with `p*(k-1)` degrees of freedom.
+#' Suppose we have `k` independent estimators of `p`-dimensional vectors `theta_1, ..., theta_k`.  Under the null hypothesis `H0` that the `theta_i` are all the same, the Cochran Q-statistic is the precision-weighted sum-of-squares of the estimators.  In the asymptotic limit that each estimator is normally distributed, Cochran's Q-statistic under `H0` follows a chi-square distribution with `p*(k-1)` degrees of freedom.
 #'
-#' @param est A `k x p` matrix of independent estimates of a common parameter.
+#' @param est A `k x p` matrix of `k` independent estimates of a common `p`-dimensional parameter.
 #' @param ve A `(p x p x k)`-dimensional array of corresponding variance estimates.
 #' @return A list with elements:
 #' \describe{
@@ -30,7 +30,7 @@ cochran_mq <- function(est, ve) {
   Q <- 0
   for(ii in 1:k) {
     de <- est[ii,] - est0
-    Q <- Q + crossprod(de, IV[,1:p,ii] %*% de)
+    Q <- Q + crossprod(de, IV[,1:p,ii] %*% de)[1]
   }
   df0 <- p*(k-1) # is this correct???
   list(Q = Q,
