@@ -20,8 +20,9 @@
 #' The `csi_model` class is a base class for CSI models which requires the user to specify the drift and msd functions, based on which it provides generic methods for parameter inference, simulation, etc.  For further details about the CSI model see `vignette("subdiff")`.
 #'
 #' @importFrom stats optim optimize
+#' @importFrom R6 R6Class
 #' @export
-csi_model <- R6::R6Class(
+csi_model <- R6Class(
   classname = "csi_model",
 
   private = list(
