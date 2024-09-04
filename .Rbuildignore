@@ -12,3 +12,4 @@
 ^subdiff-design\.md$
 ^install\.md$
 ^inst/extdata/data$
+^\.github$
