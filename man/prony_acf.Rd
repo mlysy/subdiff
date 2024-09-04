@@ -39,6 +39,8 @@ X_t = C_0 B_t + \sum_{i=1}^{K-1} C_i W_{it},
 where \eqn{B_t} is Brownian motion and \eqn{d W_{it} = -\rho_i W_{it} dt + d B_{it}} are Ornstein-Uhlenbeck processes all independent of each other and of \eqn{B_t}.
 }
 \note{
-Since temperature is not provided, the result is only proportional to the desired ACF, such that\preformatted{ACF_dX(t) = k_B T * prony_acf(lambda, nu, N, dt)
-}
+Since temperature is not provided, the result is only proportional to the desired ACF, such that
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{ACF_dX(t) = k_B T * prony_acf(lambda, nu, N, dt)
+}\if{html}{\out{</div>}}
 }

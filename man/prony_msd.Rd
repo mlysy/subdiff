@@ -37,6 +37,8 @@ X_t = C_0 B_t + \sum_{i=1}^{K-1} C_i W_{it},
 where \eqn{B_t} is Brownian motion and \eqn{d W_{it} = -\rho_i W_{it} dt + d B_{it}} are Ornstein-Uhlenbeck processes all independent of each other and of \eqn{B_t}.
 }
 \note{
-Since temperature is not provided, the result is only proportional to the desired MSD, such that\preformatted{MSD_X(t) = k_B T * prony_msd(t, lambda, nu)
-}
+Since temperature is not provided, the result is only proportional to the desired MSD, such that
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{MSD_X(t) = k_B T * prony_msd(t, lambda, nu)
+}\if{html}{\out{</div>}}
 }

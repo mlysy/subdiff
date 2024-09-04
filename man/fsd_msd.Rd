@@ -24,8 +24,10 @@ Vector of MSD values the same length as \code{t}.
 Compute the MSD of the Savin & Doyle (2005) localization error model with fBM increments (see \code{\link[=fsd_acf]{fsd_acf()}}).
 }
 \details{
-Let \code{X_t} denote the true position of an fBM process at time \code{t}.  The Savin-Doyle localization error model describes the measured position \code{Y_n} at time \verb{t = n dt} as\preformatted{Y_n = sigma * eps_n + 1/(tau*dt) * int_0^(tau*dt) X_\{n dt - s\} ds,
-}
+Let \code{X_t} denote the true position of an fBM process at time \code{t}.  The Savin-Doyle localization error model describes the measured position \code{Y_n} at time \verb{t = n dt} as
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Y_n = sigma * eps_n + 1/(tau*dt) * int_0^(tau*dt) X_\{n dt - s\} ds,
+}\if{html}{\out{</div>}}
 
 where \verb{eps_n ~iid N(0,1)} is a Gaussian white noise process.  The resulting MSD as a function of \code{tau} and \code{sigma2 = sigma^2} is what gets passed to the \link{csi_model} base class to construct the \code{fsd_model} derived class.
 }

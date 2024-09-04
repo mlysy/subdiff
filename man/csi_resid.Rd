@@ -22,8 +22,10 @@ A residual matrix of the same size as \code{dX}.
 Calculate the residuals of a CSI process.
 }
 \details{
-The residuals are calculated as\preformatted{Z = toeplitz(acf)^\{-1/2\} \%*\% (dX - drift) \%*\% Sigma^\{-1/2\},
-}
+The residuals are calculated as
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Z = toeplitz(acf)^\{-1/2\} \%*\% (dX - drift) \%*\% Sigma^\{-1/2\},
+}\if{html}{\out{</div>}}
 
 where the "square roots" correspond to the Cholesky decomposition for the row-dependence matrix \code{toeplitz(acf)}, and the eigen decomposition for the column-dependence matrix \code{Sigma}.
 }

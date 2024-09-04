@@ -21,10 +21,12 @@ Variance matrix on the regular or unconstrained scale (see 'Details').
 Unconstraining transformation for variance matrices.
 }
 \details{
-The unconstraining transformation of a variance matrix is the so-called log-Cholesky decomposition.  Namely, the log-Cholesky decomposition of a variance matrix \code{Sigma} is a vector \code{lambda} corresponding to the upper triangular Cholesky factor, of which we take the log of the diagonal and then concatenate the non-zero elements in column-major order.  The exact calculation is given by:\preformatted{lambda <- chol(Sigma)
+The unconstraining transformation of a variance matrix is the so-called log-Cholesky decomposition.  Namely, the log-Cholesky decomposition of a variance matrix \code{Sigma} is a vector \code{lambda} corresponding to the upper triangular Cholesky factor, of which we take the log of the diagonal and then concatenate the non-zero elements in column-major order.  The exact calculation is given by:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{lambda <- chol(Sigma)
 diag(lambda) <- log(diag(lambda))
 lambda <- lambda[upper.tri(lambda,diag=TRUE)]
-}
+}\if{html}{\out{</div>}}
 
 The function \code{trans_Sigma()} converts \code{Sigma} to \code{lambda}, whereas \code{itrans_Sigma()} performs the inverse transformation from \code{lambda} to \code{Sigma}.
 }

@@ -7,7 +7,7 @@
 cochran_mq(est, ve)
 }
 \arguments{
-\item{est}{A \verb{k x p} matrix of independent estimates of a common parameter.}
+\item{est}{A \verb{k x p} matrix of \code{k} independent estimates of a common \code{p}-dimensional parameter.}
 
 \item{ve}{A \verb{(p x p x k)}-dimensional array of corresponding variance estimates.}
 }
@@ -22,5 +22,5 @@ A list with elements:
 }
 }
 \description{
-Suppose we have \code{k} independent estimators of \code{p}-dimensional vectors \verb{theta_1, ..., theta_k}.  Under the null hypothesis \code{H0} that the \code{theta_i} are all the same, the Cochran Q-statistic is the precision-weighted sum-of-squares of the estimators.  Asymptotically it follows a chi-square distribution with \code{p*(k-1)} degrees of freedom.
+Suppose we have \code{k} independent estimators of \code{p}-dimensional vectors \verb{theta_1, ..., theta_k}.  Under the null hypothesis \code{H0} that the \code{theta_i} are all the same, the Cochran Q-statistic is the precision-weighted sum-of-squares of the estimators.  In the asymptotic limit that each estimator is normally distributed, Cochran's Q-statistic under \code{H0} follows a chi-square distribution with \code{p*(k-1)} degrees of freedom.
 }

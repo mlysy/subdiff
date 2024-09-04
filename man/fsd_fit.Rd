@@ -35,8 +35,10 @@ If \code{ad_only == TRUE}, instead of the transformed scale parameters, returns 
 Fit the fSD model.
 }
 \details{
-To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term\preformatted{penalty(psi) = log(1+exp(psi[2])) + log(1+exp(-psi[2])) - psi[3].
-}
+To avoid issues with the boundary of the parameter support (on the regular scale), the optimization is conducted with a penalty term
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{penalty(psi) = log(1+exp(psi[2])) + log(1+exp(-psi[2])) - psi[3].
+}\if{html}{\out{</div>}}
 }
 \examples{
 # simulate data from the fsd model

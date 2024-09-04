@@ -7,8 +7,10 @@
 Class definition for the fBM model.
 }
 \details{
-Fractional Brownian motion \code{X_t} is the only (zero-mean) continuous stationary increments (CSI) Gaussian process having mean square displacement (MSD) function given by the power law\preformatted{E[(X_t-X_0)^2] = t^alpha,
-}
+Fractional Brownian motion \code{X_t} is the only (zero-mean) continuous stationary increments (CSI) Gaussian process having mean square displacement (MSD) function given by the power law
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{E[(X_t-X_0)^2] = t^alpha,
+}\if{html}{\out{</div>}}
 
 with subdiffusion exponent \verb{0 < alpha < 2}.  The resulting MSD as a function of \code{alpha} is what gets passed to the \link{csi_model} base class to construct the \code{fbm_model} derived class.
 }
@@ -48,36 +50,36 @@ model$loglik(phi = c(alpha = alpha),
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-acf}{\code{fbm_model$acf()}}
-\item \href{#method-trans}{\code{fbm_model$trans()}}
-\item \href{#method-itrans}{\code{fbm_model$itrans()}}
-\item \href{#method-get_subdiff}{\code{fbm_model$get_subdiff()}}
-\item \href{#method-clone}{\code{fbm_model$clone()}}
+\item \href{#method-fbm_model-acf}{\code{fbm_model$acf()}}
+\item \href{#method-fbm_model-trans}{\code{fbm_model$trans()}}
+\item \href{#method-fbm_model-itrans}{\code{fbm_model$itrans()}}
+\item \href{#method-fbm_model-get_subdiff}{\code{fbm_model$get_subdiff()}}
+\item \href{#method-fbm_model-clone}{\code{fbm_model$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="drift">}\href{../../subdiff/html/csi_model.html#method-drift}{\code{subdiff::csi_model$drift()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fisher">}\href{../../subdiff/html/csi_model.html#method-fisher}{\code{subdiff::csi_model$fisher()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fit">}\href{../../subdiff/html/csi_model.html#method-fit}{\code{subdiff::csi_model$fit()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_omega">}\href{../../subdiff/html/csi_model.html#method-get_omega}{\code{subdiff::csi_model$get_omega()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_vcov">}\href{../../subdiff/html/csi_model.html#method-get_vcov}{\code{subdiff::csi_model$get_vcov()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="initialize">}\href{../../subdiff/html/csi_model.html#method-initialize}{\code{subdiff::csi_model$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="itrans_full">}\href{../../subdiff/html/csi_model.html#method-itrans_full}{\code{subdiff::csi_model$itrans_full()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="loglik">}\href{../../subdiff/html/csi_model.html#method-loglik}{\code{subdiff::csi_model$loglik()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="msd">}\href{../../subdiff/html/csi_model.html#method-msd}{\code{subdiff::csi_model$msd()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nlp">}\href{../../subdiff/html/csi_model.html#method-nlp}{\code{subdiff::csi_model$nlp()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nu_hat">}\href{../../subdiff/html/csi_model.html#method-nu_hat}{\code{subdiff::csi_model$nu_hat()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="resid">}\href{../../subdiff/html/csi_model.html#method-resid}{\code{subdiff::csi_model$resid()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="sim">}\href{../../subdiff/html/csi_model.html#method-sim}{\code{subdiff::csi_model$sim()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="trans_full">}\href{../../subdiff/html/csi_model.html#method-trans_full}{\code{subdiff::csi_model$trans_full()}}\out{</span>}
-}
-\out{</details>}
-}
+\if{html}{\out{
+<details><summary>Inherited methods</summary>
+<ul>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="drift"><a href='../../subdiff/html/csi_model.html#method-csi_model-drift'><code>subdiff::csi_model$drift()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fisher"><a href='../../subdiff/html/csi_model.html#method-csi_model-fisher'><code>subdiff::csi_model$fisher()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="fit"><a href='../../subdiff/html/csi_model.html#method-csi_model-fit'><code>subdiff::csi_model$fit()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_omega"><a href='../../subdiff/html/csi_model.html#method-csi_model-get_omega'><code>subdiff::csi_model$get_omega()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="get_vcov"><a href='../../subdiff/html/csi_model.html#method-csi_model-get_vcov'><code>subdiff::csi_model$get_vcov()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="initialize"><a href='../../subdiff/html/csi_model.html#method-csi_model-initialize'><code>subdiff::csi_model$initialize()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="itrans_full"><a href='../../subdiff/html/csi_model.html#method-csi_model-itrans_full'><code>subdiff::csi_model$itrans_full()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="loglik"><a href='../../subdiff/html/csi_model.html#method-csi_model-loglik'><code>subdiff::csi_model$loglik()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="msd"><a href='../../subdiff/html/csi_model.html#method-csi_model-msd'><code>subdiff::csi_model$msd()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nlp"><a href='../../subdiff/html/csi_model.html#method-csi_model-nlp'><code>subdiff::csi_model$nlp()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="nu_hat"><a href='../../subdiff/html/csi_model.html#method-csi_model-nu_hat'><code>subdiff::csi_model$nu_hat()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="resid"><a href='../../subdiff/html/csi_model.html#method-csi_model-resid'><code>subdiff::csi_model$resid()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="sim"><a href='../../subdiff/html/csi_model.html#method-csi_model-sim'><code>subdiff::csi_model$sim()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="subdiff" data-topic="csi_model" data-id="trans_full"><a href='../../subdiff/html/csi_model.html#method-csi_model-trans_full'><code>subdiff::csi_model$trans_full()</code></a></span></li>
+</ul>
+</details>
+}}
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-acf"></a>}}
-\if{latex}{\out{\hypertarget{method-acf}{}}}
+\if{html}{\out{<a id="method-fbm_model-acf"></a>}}
+\if{latex}{\out{\hypertarget{method-fbm_model-acf}{}}}
 \subsection{Method \code{acf()}}{
 Increment autocorrelation function.
 \subsection{Usage}{
@@ -93,8 +95,8 @@ Increment autocorrelation function.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trans"></a>}}
-\if{latex}{\out{\hypertarget{method-trans}{}}}
+\if{html}{\out{<a id="method-fbm_model-trans"></a>}}
+\if{latex}{\out{\hypertarget{method-fbm_model-trans}{}}}
 \subsection{Method \code{trans()}}{
 Transform kernel parameters from regular to computational basis.
 \subsection{Usage}{
@@ -110,8 +112,8 @@ Transform kernel parameters from regular to computational basis.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-itrans"></a>}}
-\if{latex}{\out{\hypertarget{method-itrans}{}}}
+\if{html}{\out{<a id="method-fbm_model-itrans"></a>}}
+\if{latex}{\out{\hypertarget{method-fbm_model-itrans}{}}}
 \subsection{Method \code{itrans()}}{
 Transform kernel parameters from computational to regular basis.
 \subsection{Usage}{
@@ -127,8 +129,8 @@ Transform kernel parameters from computational to regular basis.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_subdiff"></a>}}
-\if{latex}{\out{\hypertarget{method-get_subdiff}{}}}
+\if{html}{\out{<a id="method-fbm_model-get_subdiff"></a>}}
+\if{latex}{\out{\hypertarget{method-fbm_model-get_subdiff}{}}}
 \subsection{Method \code{get_subdiff()}}{
 Transform parameters from computational basis to subdiffusion parameters.
 \subsection{Usage}{
@@ -147,8 +149,8 @@ Vector with named elements \code{alpha} and \code{logD}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-fbm_model-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-fbm_model-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{

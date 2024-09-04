@@ -24,8 +24,10 @@ A vector of \code{N} autocorrelation values.
 Compute the autocorrelation of the Savin & Doyle (2005) localization error model with fBM increments (see 'Details').
 }
 \details{
-Let \code{X_t} denote the position of an fBM process at time \code{t}.  The Savin-Doyle localization error model describes the observed position \code{Y_n} at time \code{t = n * dt} as\preformatted{Y_n = sigma * eps_n + 1/tau * int_0^tau X_\{n*dt + s\} ds,
-}
+Let \code{X_t} denote the position of an fBM process at time \code{t}.  The Savin-Doyle localization error model describes the observed position \code{Y_n} at time \code{t = n * dt} as
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Y_n = sigma * eps_n + 1/tau * int_0^tau X_\{n*dt + s\} ds,
+}\if{html}{\out{</div>}}
 
 where \verb{eps_n ~iid N(0,1)} is a Gaussian white noise process.
 

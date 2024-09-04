@@ -24,11 +24,15 @@ A vector of length 3 if \code{tmax = FALSE}, or a vector of length 4 if \code{tm
 Calculate effective subdiffusion time window and parameters from an arbitrary mean square displacement curve.
 }
 \details{
-Effective subdiffusion time window is defined as the longest time window whose power-law fit is within a small margin of real msd. It is actually performing the linear regression\preformatted{log(msd[tmin, tmax]) ~ log(D) + alpha * log(tseq[tmin,tmax]).
-}
+Effective subdiffusion time window is defined as the longest time window whose power-law fit is within a small margin of real msd. It is actually performing the linear regression
 
-where \code{tmin} is the starting point of time window and \code{tmax} is the end of time window. And the relative error between the true msd and power law approximation is defined as\preformatted{epsilon = max((msd[tmin, tmax] - D * tseq[tmin,tmax]^alpha) / msd[tmin, tmax]).
-}
+\if{html}{\out{<div class="sourceCode">}}\preformatted{log(msd[tmin, tmax]) ~ log(D) + alpha * log(tseq[tmin,tmax]).
+}\if{html}{\out{</div>}}
+
+where \code{tmin} is the starting point of time window and \code{tmax} is the end of time window. And the relative error between the true msd and power law approximation is defined as
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{epsilon = max((msd[tmin, tmax] - D * tseq[tmin,tmax]^alpha) / msd[tmin, tmax]).
+}\if{html}{\out{</div>}}
 
 Since in many experiment \code{tmax} is out-of-observation, this function allows to set \code{tmax = tseq[length(tseq)]}, which is the end of experiment. By doing this we only search for \code{tmin}. In addition, the default value of \code{log = FALSE} means the length of time window is defined as \code{tmax - tmin}, but this doesn't give the best MSD fit on the log-log scale, as there are exponentially more points as we move right in the graph, such that the right side of the graph will dominate the fit. Setting \code{log = TRUE} defines the length of time window as \code{log(tmax) - log(tmin)}.
 This function finds the longest time window whose \code{epsilon} is smaller than \code{rel_tol} by applying grid search.

@@ -26,8 +26,10 @@ A vector of \code{N} autocorrelation values.
 Compute the autocorrelation of fARMA(p,q) process increments at equally-spaced time points (see 'Details').
 }
 \details{
-Let \code{X_n} denote the position of an fBM process at time \code{t = n * dt}. The fARMA(p,q) process \code{Y_n} is then defined as\preformatted{Y_n = rho_0 X_n + sum_\{i=1\}^p phi_i Y_\{n-i\} + sum_\{j=1\}^q + rho_j X_\{n-j\}.
-}
+Let \code{X_n} denote the position of an fBM process at time \code{t = n * dt}. The fARMA(p,q) process \code{Y_n} is then defined as
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Y_n = rho_0 X_n + sum_\{i=1\}^p phi_i Y_\{n-i\} + sum_\{j=1\}^q + rho_j X_\{n-j\}.
+}\if{html}{\out{</div>}}
 
 where \code{rho_0 = 1 - sum(phi) - sum(rho)}.
 

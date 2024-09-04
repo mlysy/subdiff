@@ -18,6 +18,8 @@ Vector of MSD values the same length as \code{t}.
 Calculate the mean square displacement of the fBM model.
 }
 \details{
-If \code{X_t} is an fBM process, then\preformatted{msd_X(t) = t^alpha.
-}
+If \code{X_t} is an fBM process, then
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{msd_X(t) = t^alpha.
+}\if{html}{\out{</div>}}
 }

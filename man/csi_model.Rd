@@ -7,16 +7,20 @@
 Base class for CSI models.
 }
 \details{
-Let \code{Xt} denote an \verb{N x d} matrix of particle positions recorded at intervals of \code{dt}, where \verb{d = 1,2,3} is the number of recorded dimensions.  A CSI model for \code{Xt} is of the form\preformatted{Xt = R(phi) mu + Sigma^\{1/2\} Z,
-}
+Let \code{Xt} denote an \verb{N x d} matrix of particle positions recorded at intervals of \code{dt}, where \verb{d = 1,2,3} is the number of recorded dimensions.  A CSI model for \code{Xt} is of the form
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Xt = R(phi) mu + Sigma^\{1/2\} Z,
+}\if{html}{\out{</div>}}
 
 where:
 \itemize{
 \item \code{R(phi)} is an \verb{N x p} matrix of drift terms, possibly dependent on a parameter \code{phi}.  In most cases though, \code{R(phi) = t((1:N-1) * dt)} is used to model linear drift.
 \item \code{mu} is a \verb{p x d} matrix of drift parameters.  For linear drift, it represents the drift velocity in each of the \code{d} dimensions.
 \item \code{Sigma} is a \verb{d x d} variance matrix.
-\item \code{Z} is an \verb{N x d} matrix where each column is an iid realization of \code{N} values of a Gaussian continuous stationary increments (CSI) process.  Such processes are completely determined by the mean square displacement (MSD) function\preformatted{MSD_Z(h) = E[ (Z_\{i+h,j\}, Z_\{i,j\})^2 ],
-}
+\item \code{Z} is an \verb{N x d} matrix where each column is an iid realization of \code{N} values of a Gaussian continuous stationary increments (CSI) process.  Such processes are completely determined by the mean square displacement (MSD) function
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{MSD_Z(h) = E[ (Z_\{i+h,j\}, Z_\{i,j\})^2 ],
+}\if{html}{\out{</div>}}
 
 where the MSD function also depends on the parameter \code{phi}.
 }
@@ -42,29 +46,29 @@ The \code{csi_model} class is a base class for CSI models which requires the use
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-trans}{\code{csi_model$trans()}}
-\item \href{#method-itrans}{\code{csi_model$itrans()}}
-\item \href{#method-acf}{\code{csi_model$acf()}}
-\item \href{#method-msd}{\code{csi_model$msd()}}
-\item \href{#method-drift}{\code{csi_model$drift()}}
-\item \href{#method-get_omega}{\code{csi_model$get_omega()}}
-\item \href{#method-trans_full}{\code{csi_model$trans_full()}}
-\item \href{#method-itrans_full}{\code{csi_model$itrans_full()}}
-\item \href{#method-nlp}{\code{csi_model$nlp()}}
-\item \href{#method-nu_hat}{\code{csi_model$nu_hat()}}
-\item \href{#method-loglik}{\code{csi_model$loglik()}}
-\item \href{#method-fisher}{\code{csi_model$fisher()}}
-\item \href{#method-get_vcov}{\code{csi_model$get_vcov()}}
-\item \href{#method-fit}{\code{csi_model$fit()}}
-\item \href{#method-resid}{\code{csi_model$resid()}}
-\item \href{#method-sim}{\code{csi_model$sim()}}
-\item \href{#method-new}{\code{csi_model$new()}}
-\item \href{#method-clone}{\code{csi_model$clone()}}
+\item \href{#method-csi_model-trans}{\code{csi_model$trans()}}
+\item \href{#method-csi_model-itrans}{\code{csi_model$itrans()}}
+\item \href{#method-csi_model-acf}{\code{csi_model$acf()}}
+\item \href{#method-csi_model-msd}{\code{csi_model$msd()}}
+\item \href{#method-csi_model-drift}{\code{csi_model$drift()}}
+\item \href{#method-csi_model-get_omega}{\code{csi_model$get_omega()}}
+\item \href{#method-csi_model-trans_full}{\code{csi_model$trans_full()}}
+\item \href{#method-csi_model-itrans_full}{\code{csi_model$itrans_full()}}
+\item \href{#method-csi_model-nlp}{\code{csi_model$nlp()}}
+\item \href{#method-csi_model-nu_hat}{\code{csi_model$nu_hat()}}
+\item \href{#method-csi_model-loglik}{\code{csi_model$loglik()}}
+\item \href{#method-csi_model-fisher}{\code{csi_model$fisher()}}
+\item \href{#method-csi_model-get_vcov}{\code{csi_model$get_vcov()}}
+\item \href{#method-csi_model-fit}{\code{csi_model$fit()}}
+\item \href{#method-csi_model-resid}{\code{csi_model$resid()}}
+\item \href{#method-csi_model-sim}{\code{csi_model$sim()}}
+\item \href{#method-csi_model-new}{\code{csi_model$new()}}
+\item \href{#method-csi_model-clone}{\code{csi_model$clone()}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trans"></a>}}
-\if{latex}{\out{\hypertarget{method-trans}{}}}
+\if{html}{\out{<a id="method-csi_model-trans"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-trans}{}}}
 \subsection{Method \code{trans()}}{
 Transform kernel parameters from regular to computational basis.
 \subsection{Usage}{
@@ -83,8 +87,8 @@ Kernel parameters in the computational basis.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-itrans"></a>}}
-\if{latex}{\out{\hypertarget{method-itrans}{}}}
+\if{html}{\out{<a id="method-csi_model-itrans"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-itrans}{}}}
 \subsection{Method \code{itrans()}}{
 Transform kernel parameters from computational to regular basis.
 \subsection{Usage}{
@@ -103,8 +107,8 @@ Kernel parameters in the original basis.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-acf"></a>}}
-\if{latex}{\out{\hypertarget{method-acf}{}}}
+\if{html}{\out{<a id="method-csi_model-acf"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-acf}{}}}
 \subsection{Method \code{acf()}}{
 Increment autocorrelation function.
 \subsection{Usage}{
@@ -127,8 +131,8 @@ A vector of \code{N} autocorrelations.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-msd"></a>}}
-\if{latex}{\out{\hypertarget{method-msd}{}}}
+\if{html}{\out{<a id="method-csi_model-msd"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-msd}{}}}
 \subsection{Method \code{msd()}}{
 Position mean square displacement function.
 \subsection{Usage}{
@@ -151,13 +155,15 @@ The \code{self$msd()} method is defined this way because the MSD of some CSI mod
 }
 
 \subsection{Returns}{
-A vector of \emph{unscaled} MSD values the same length as \code{t}.  That is, for the drift-subtracted process \code{X_sub(t) = X(t) - drift(t) * mu}, the method returns \code{eta(t)} where\preformatted{MSD_\{X_sub\}(t) = trace(Sigma) * eta(t).
-}
+A vector of \emph{unscaled} MSD values the same length as \code{t}.  That is, for the drift-subtracted process \code{X_sub(t) = X(t) - drift(t) * mu}, the method returns \code{eta(t)} where
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{MSD_\{X_sub\}(t) = trace(Sigma) * eta(t).
+}\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-drift"></a>}}
-\if{latex}{\out{\hypertarget{method-drift}{}}}
+\if{html}{\out{<a id="method-csi_model-drift"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-drift}{}}}
 \subsection{Method \code{drift()}}{
 Increment autocorrelation function.
 \subsection{Usage}{
@@ -180,8 +186,8 @@ An \verb{N x n_drift} matrix of drift basis functions.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_omega"></a>}}
-\if{latex}{\out{\hypertarget{method-get_omega}{}}}
+\if{html}{\out{<a id="method-csi_model-get_omega"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-get_omega}{}}}
 \subsection{Method \code{get_omega()}}{
 Combine kernel parameters with conditional MLE of \code{mu} and \code{Sigma}.
 \subsection{Usage}{
@@ -200,8 +206,8 @@ Named vector of full parameter set in the computational basis.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-trans_full"></a>}}
-\if{latex}{\out{\hypertarget{method-trans_full}{}}}
+\if{html}{\out{<a id="method-csi_model-trans_full"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-trans_full}{}}}
 \subsection{Method \code{trans_full()}}{
 Convert from original to computational basis.
 \subsection{Usage}{
@@ -224,8 +230,8 @@ Full parameter vector in the computational basis.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-itrans_full"></a>}}
-\if{latex}{\out{\hypertarget{method-itrans_full}{}}}
+\if{html}{\out{<a id="method-csi_model-itrans_full"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-itrans_full}{}}}
 \subsection{Method \code{itrans_full()}}{
 Convert from computational to original basis.
 \subsection{Usage}{
@@ -244,8 +250,8 @@ List with elements \code{phi}, \code{mu}, and \code{Sigma}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-nlp"></a>}}
-\if{latex}{\out{\hypertarget{method-nlp}{}}}
+\if{html}{\out{<a id="method-csi_model-nlp"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-nlp}{}}}
 \subsection{Method \code{nlp()}}{
 Evaluate the negative profile loglikelihood.
 \subsection{Usage}{
@@ -264,8 +270,8 @@ Value of the negative profile loglikelihood (scalar).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-nu_hat"></a>}}
-\if{latex}{\out{\hypertarget{method-nu_hat}{}}}
+\if{html}{\out{<a id="method-csi_model-nu_hat"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-nu_hat}{}}}
 \subsection{Method \code{nu_hat()}}{
 Conditional MLE of nuisance parameters.
 \subsection{Usage}{
@@ -284,8 +290,8 @@ A list with elements \code{mu} and \code{Sigma}.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-loglik"></a>}}
-\if{latex}{\out{\hypertarget{method-loglik}{}}}
+\if{html}{\out{<a id="method-csi_model-loglik"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-loglik}{}}}
 \subsection{Method \code{loglik()}}{
 Evaluate the loglikelihood function.
 \subsection{Usage}{
@@ -308,8 +314,8 @@ Value of the loglikelihood (scalar).
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fisher"></a>}}
-\if{latex}{\out{\hypertarget{method-fisher}{}}}
+\if{html}{\out{<a id="method-csi_model-fisher"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-fisher}{}}}
 \subsection{Method \code{fisher()}}{
 Calculate the observed Fisher information matrix.
 \subsection{Usage}{
@@ -328,8 +334,8 @@ The \verb{n_omega x n_omega} observed Fisher information matrix.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-get_vcov"></a>}}
-\if{latex}{\out{\hypertarget{method-get_vcov}{}}}
+\if{html}{\out{<a id="method-csi_model-get_vcov"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-get_vcov}{}}}
 \subsection{Method \code{get_vcov()}}{
 Convert a Fisher information matrix to a variance matrix.
 \subsection{Usage}{
@@ -348,8 +354,8 @@ Variance matrix of size \verb{n_omega x n_omega} with parameters in the computat
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-fit"></a>}}
-\if{latex}{\out{\hypertarget{method-fit}{}}}
+\if{html}{\out{<a id="method-csi_model-fit"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-fit}{}}}
 \subsection{Method \code{fit()}}{
 Calculate the maximum likelihood parameter values.
 \subsection{Usage}{
@@ -372,8 +378,8 @@ A list with elements \code{coef} and optionally \code{vcov} containing the MLE i
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-resid"></a>}}
-\if{latex}{\out{\hypertarget{method-resid}{}}}
+\if{html}{\out{<a id="method-csi_model-resid"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-resid}{}}}
 \subsection{Method \code{resid()}}{
 Calculate the model residuals.
 \subsection{Usage}{
@@ -396,8 +402,8 @@ A matrix of residuals the same size as \code{dX} as calculated with \code{\link[
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-sim"></a>}}
-\if{latex}{\out{\hypertarget{method-sim}{}}}
+\if{html}{\out{<a id="method-csi_model-sim"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-sim}{}}}
 \subsection{Method \code{sim()}}{
 Simulate trajectories from the model.
 \subsection{Usage}{
@@ -424,8 +430,8 @@ A matrix of size \code{dim(Xt)} or an array of size \verb{nrow(Xt) x ncol(dX) x 
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-new"></a>}}
-\if{latex}{\out{\hypertarget{method-new}{}}}
+\if{html}{\out{<a id="method-csi_model-new"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-new}{}}}
 \subsection{Method \code{new()}}{
 Model object constructor.
 \subsection{Usage}{
@@ -448,8 +454,10 @@ Model object constructor.
 \subsection{Details}{
 The value of \code{n_phi} is automatically determined from \code{phi_names}.  But this means the latter must be set by \code{derived$initialize()} before \code{super$initialize()} is called.  Otherwise an error is thrown.
 
-The constructor can be called without \code{Xt} for accessing methods which don't require it, e.g.,\preformatted{derived$new(dt = dt)$acf(phi, dt, N)
-}
+The constructor can be called without \code{Xt} for accessing methods which don't require it, e.g.,
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{derived$new(dt = dt)$acf(phi, dt, N)
+}\if{html}{\out{</div>}}
 
 \emph{Development Notes}
 \itemize{
@@ -460,8 +468,8 @@ The constructor can be called without \code{Xt} for accessing methods which don'
 
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-clone"></a>}}
-\if{latex}{\out{\hypertarget{method-clone}{}}}
+\if{html}{\out{<a id="method-csi_model-clone"></a>}}
+\if{latex}{\out{\hypertarget{method-csi_model-clone}{}}}
 \subsection{Method \code{clone()}}{
 The objects of this class are cloneable with this method.
 \subsection{Usage}{
