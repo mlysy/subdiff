@@ -13,3 +13,4 @@
 ^install\.md$
 ^inst/extdata/data$
 ^\.github$
+^_pkgdown\.yml$

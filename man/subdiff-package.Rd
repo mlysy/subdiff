@@ -12,6 +12,7 @@ Tools for implementing various models for particle subdiffusion in biological fl
 Useful links:
 \itemize{
   \item \url{https://github.com/mlysy/subdiff/}
+  \item \url{https://mlysy.github.io/subdiff/}
   \item Report bugs at \url{https://github.com/mlysy/subdiff/issues}
 }
 
