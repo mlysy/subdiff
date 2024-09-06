@@ -1,0 +1,10 @@
+pandoc: 3.1.11
+pkgdown: 2.1.0
+pkgdown_sha: ~
+articles:
+  msd_conventions: msd_conventions.html
+  subdiff: subdiff.html
+last_built: 2024-09-06T13:24Z
+urls:
+  reference: https://mlysy.github.io/subdiff/reference
+  article: https://mlysy.github.io/subdiff/articles
